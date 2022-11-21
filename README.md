@@ -23,7 +23,7 @@
 ### LINK HOMOLOGATION
 
 ```
-    https://climb-dashboard.surge.sh/
+    https://climb-dashboard-homologation.surge.sh
 ```
 
 

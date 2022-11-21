@@ -8,7 +8,11 @@ import { useEffect, useState } from "react";
 import Select from "../../components/Select/Select";
 import CalendarIcon from "../../assets/icons/calendar.svg";
 import Calendar from "react-calendar";
-
+import Pagination from "../../components/Pagination/Pagination";
+import "react-circular-progressbar/dist/styles.css";
+import CircularProgress from "../../components/CircularProgress/CircularProgress";
+import CircularProgressBarBase from "../../components/CircularProgress/CircleProgressBarBase";
+import moment from "moment";
 export interface Select {
   name: string;
   email: string;
@@ -20,10 +24,14 @@ export interface Select {
 
 const Home = (): JSX.Element => {
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
+  const [disabledFilter, setDisabledFilter] = useState<boolean>(false);
   const [selectOrder, setSelectOrder] = useState<boolean>(false);
   const [selectDate, setSelectDate] = useState<boolean>(false);
   const [selectPendente, setSelectPendente] = useState<boolean>(false);
   const [selectEfetuado, setSelectEfetuado] = useState<boolean>(false);
+  const [pg, setPg] = useState<number>(0);
+  const [pp, setPp] = useState<number>(8);
+  const [search, setSearch] = useState<string>("");
   const [dateInitial, setDateInitial] = useState<any>();
   const [openDateInitial, setOpenDateInitial] = useState(false);
   const [dateEnd, setDateEnd] = useState<any>();
@@ -37,6 +45,222 @@ const Home = (): JSX.Element => {
     "Status de pagamento",
   ]);
   const [bodyTable, setBodyTable] = useState<Select[]>([
+    {
+      name: "Amanda Gomes Rocha",
+      email: "amandarocha@email.com",
+      date: "21/11/2022",
+      quantity: "R$ 15000,00",
+      parcela: "2/24",
+      status: "Pendente",
+    },
+    {
+      name: "Rafael Silva Mateus",
+      email: "rafael@email.com",
+      date: "21/10/2022",
+      quantity: "R$ 18000,00",
+      parcela: "6/24",
+      status: "Em atraso",
+    },
+    {
+      name: "Conh MackBook",
+      email: "jonh@email.com",
+      date: "21/08/2022",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Donh MackBook",
+      email: "jonh@email.com",
+      date: "14/06/2022",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Eonh MackBook",
+      email: "jonh@email.com",
+      date: "14/05/2001",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Fonh MackBook",
+      email: "jonh@email.com",
+      date: "14/04/2006",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Amanda Gomes Rocha",
+      email: "amandarocha@email.com",
+      date: "10/05/2022",
+      quantity: "R$ 15000,00",
+      parcela: "2/24",
+      status: "Pendente",
+    },
+    {
+      name: "Amanda Gomes Rocha",
+      email: "amandarocha@email.com",
+      date: "10/05/2022",
+      quantity: "R$ 15000,00",
+      parcela: "2/24",
+      status: "Pendente",
+    },
+    {
+      name: "Amanda Gomes Rocha",
+      email: "amandarocha@email.com",
+      date: "10/05/2022",
+      quantity: "R$ 15000,00",
+      parcela: "2/24",
+      status: "Pendente",
+    },
+    {
+      name: "Amanda Gomes Rocha",
+      email: "amandarocha@email.com",
+      date: "10/05/2022",
+      quantity: "R$ 15000,00",
+      parcela: "2/24",
+      status: "Pendente",
+    },
+    {
+      name: "Rafael Silva Mateus",
+      email: "rafael@email.com",
+      date: "30/08/1970",
+      quantity: "R$ 18000,00",
+      parcela: "6/24",
+      status: "Em atraso",
+    },
+    {
+      name: "Conh MackBook",
+      email: "jonh@email.com",
+      date: "14/06/1999",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Donh MackBook",
+      email: "jonh@email.com",
+      date: "14/06/2000",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Eonh MackBook",
+      email: "jonh@email.com",
+      date: "14/05/2001",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Fonh MackBook",
+      email: "jonh@email.com",
+      date: "14/04/2006",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Amanda Gomes Rocha",
+      email: "amandarocha@email.com",
+      date: "10/05/2022",
+      quantity: "R$ 15000,00",
+      parcela: "2/24",
+      status: "Pendente",
+    },
+    {
+      name: "Rafael Silva Mateus",
+      email: "rafael@email.com",
+      date: "30/08/1970",
+      quantity: "R$ 18000,00",
+      parcela: "6/24",
+      status: "Em atraso",
+    },
+    {
+      name: "Conh MackBook",
+      email: "jonh@email.com",
+      date: "14/06/1999",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Donh MackBook",
+      email: "jonh@email.com",
+      date: "14/06/2000",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Eonh MackBook",
+      email: "jonh@email.com",
+      date: "14/05/2001",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Fonh MackBook",
+      email: "jonh@email.com",
+      date: "14/04/2006",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Amanda Gomes Rocha",
+      email: "amandarocha@email.com",
+      date: "10/05/2022",
+      quantity: "R$ 15000,00",
+      parcela: "2/24",
+      status: "Pendente",
+    },
+    {
+      name: "Rafael Silva Mateus",
+      email: "rafael@email.com",
+      date: "30/08/1970",
+      quantity: "R$ 18000,00",
+      parcela: "6/24",
+      status: "Em atraso",
+    },
+    {
+      name: "Conh MackBook",
+      email: "jonh@email.com",
+      date: "14/06/1999",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Donh MackBook",
+      email: "jonh@email.com",
+      date: "14/06/2000",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Eonh MackBook",
+      email: "jonh@email.com",
+      date: "14/05/2001",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
+    {
+      name: "Fonh MackBook",
+      email: "jonh@email.com",
+      date: "14/04/2006",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
+      status: "Efetuado",
+    },
     {
       name: "Amanda Gomes Rocha",
       email: "amandarocha@email.com",
@@ -87,6 +311,7 @@ const Home = (): JSX.Element => {
     },
   ]);
   const [filteredItems, setFilteredItems] = useState<Select[]>([]);
+  const [messageNotFound, setMessageNotFound] = useState<string>();
 
   useEffect(() => {
     if (selectOrder) {
@@ -115,8 +340,46 @@ const Home = (): JSX.Element => {
     }
   }, [dateInitial, dateEnd]);
 
+  useEffect(() => {
+    if (search) {
+      let itemsFiltered = bodyTable.filter((item) =>
+        item.name.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())
+      );
+      if (itemsFiltered) {
+        setFilteredItems(itemsFiltered);
+      } else {
+        setMessageNotFound("Nenhum item encontrado.");
+      }
+    } else {
+      setDisabledFilter(false);
+      setFilteredItems([]);
+    }
+  }, [search]);
+
+  const handleFilterDate = (ultimateDate: number) => {
+    var dataUltimateDays = new Date();
+    dataUltimateDays.setDate(dataUltimateDays.getDate() - ultimateDate);
+    var dia = String(dataUltimateDays.getDate()).padStart(2, "0");
+    var mes = String(dataUltimateDays.getMonth() + 1).padStart(2, "0");
+    var ano = dataUltimateDays.getFullYear();
+    const dataAtual = dia + "/" + mes + "/" + ano;
+    setFilteredItems(
+      bodyTable.filter((item) => {
+        let date1 = moment(item.date, "DD/MM/YYYY").format("YYYYMMDD");
+        let date2 = moment(dataAtual, "DD/MM/YYYY").format("YYYYMMDD");
+        return moment(date1).isAfter(date2);
+      })
+    );
+    setDisabledFilter(true);
+  };
+
+  const pages: number = Math.ceil(bodyTable ? bodyTable.length / pp : 0);
+  const startIndex = pg * pp;
+  const endIndex = startIndex + pp;
+  const current: any | undefined = bodyTable?.slice(startIndex, endIndex);
+
   return (
-    <>
+    <HomeStyled>
       <Header />
       <Container>
         <FlexContainer>
@@ -131,7 +394,11 @@ const Home = (): JSX.Element => {
           <SubTitle>a</SubTitle>
           <DateTitle>25 de maio de 2022</DateTitle>
           <InputStyled>
-            <InputSearch placeholder="Buscar por nome" />
+            <InputSearch
+              placeholder="Buscar por nome"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
             <img src={Search} alt="search" />
           </InputStyled>
           <CollumnContainer>
@@ -152,7 +419,8 @@ const Home = (): JSX.Element => {
                 <FlexContainer>
                   <RadioButtonOrder
                     type="radio"
-                    name="radio"
+                    name="radioButtonOrder"
+                    value="radioButtonOrder"
                     checked={selectOrder}
                     onClick={() => setSelectOrder(!selectOrder)}
                   />
@@ -160,7 +428,8 @@ const Home = (): JSX.Element => {
                   <span>Ordem alfabética</span>
                   <RadioButtonDate
                     type="radio"
-                    name="radio"
+                    name="radioButtonDate"
+                    value="radioButtonDate"
                     checked={selectDate}
                     onClick={() => setSelectDate(!selectDate)}
                   />
@@ -171,7 +440,8 @@ const Home = (): JSX.Element => {
                 <FlexContainer>
                   <RadioButtonPendente
                     type="radio"
-                    name="radio"
+                    name="radioButtonPendente"
+                    value="radioButtonPendente"
                     checked={selectPendente}
                     onClick={() => setSelectPendente(!selectPendente)}
                   />
@@ -179,7 +449,8 @@ const Home = (): JSX.Element => {
                   <span>Pendente</span>
                   <RadioButtonEfetuado
                     type="radio"
-                    name="radio"
+                    name="radioButtonEfetuado"
+                    value="radioButtonEfetuado"
                     checked={selectEfetuado}
                     onClick={() => setSelectEfetuado(!selectEfetuado)}
                   />
@@ -240,7 +511,7 @@ const Home = (): JSX.Element => {
                 return <th>{title}</th>;
               })}
           </tr>
-          {filteredItems.length > 0
+          {search !== "" || disabledFilter
             ? filteredItems.map((body: Select) => {
                 return (
                   <tr>
@@ -258,8 +529,7 @@ const Home = (): JSX.Element => {
                   </tr>
                 );
               })
-            : bodyTable.length > 0 &&
-              bodyTable.map((body: Select) => {
+            : current.map((body: Select) => {
                 return (
                   <tr>
                     <td>
@@ -277,12 +547,71 @@ const Home = (): JSX.Element => {
                 );
               })}
         </Table>
+        <PaginationStyled>
+          <Pagination
+            pages={pages}
+            pg={pg}
+            setPg={setPg}
+            lastPage={pages}
+            total={bodyTable ? bodyTable.length : 0}
+          />
+        </PaginationStyled>
+        <ShowTickets>
+          <p>Mostrar boletos:</p>
+          <ButtonTicket onClick={() => handleFilterDate(7)}>
+            Últimos 7 dias
+          </ButtonTicket>
+          <ButtonTicket onClick={() => handleFilterDate(30)}>
+            Últimos 30 dias
+          </ButtonTicket>
+          <ButtonTicket onClick={() => handleFilterDate(90)}>
+            Últimos 3 meses
+          </ButtonTicket>
+          <ButtonTicket onClick={() => handleFilterDate(180)}>
+            Últimos 6 meses
+          </ButtonTicket>
+          <ButtonTicket>Escolher período</ButtonTicket>
+        </ShowTickets>
+        <CircularStyled>
+          <AlignContainer>
+            <p>Pagos</p>
+            <CircularProgress
+              size={150}
+              strokeWidth={10}
+              percentage={75}
+              color="#79C6C0"
+            />
+          </AlignContainer>
+          <AlignContainer>
+            <p>Pendentes</p>
+            <CircularProgress
+              size={150}
+              strokeWidth={10}
+              percentage={30}
+              color="#79C6C0"
+            />
+          </AlignContainer>
+          <AlignContainer>
+            <p>Total</p>
+            <CircularProgressBarBase
+              size={150}
+              strokeWidth={10}
+              percentage={100}
+              color="#79C6C0"
+            />
+          </AlignContainer>
+        </CircularStyled>
       </Container>
-    </>
+    </HomeStyled>
   );
 };
 
 export default Home;
+
+export const HomeStyled = styled.div`
+  background: #f5f5f5;
+  min-height: 100vh;
+`;
 
 export const Container = styled.div`
   max-width: 1312px;
@@ -447,20 +776,20 @@ const Table = styled.table`
 const CollumnContainer = styled.div`
   display: flex;
   flex-direction: column;
+  position: relative;
 `;
 
 const FilterContainer = styled.div<{ isOpen: boolean }>`
   visibility: ${(props) => (props.isOpen ? "visible" : "hidden")};
   opacity: ${(props) => (props.isOpen ? 1 : 0)};
   transition: all ease-in-out 0.3s;
-  max-width: 456px;
-  width: 100%;
+  width: 456px;
   height: 679px;
   background: #fff;
   border-radius: 16px;
   position: absolute;
-  right: 160px;
   margin-top: 20px;
+  right: 20px;
   box-shadow: 0px 8px 16px 2px rgba(97, 97, 97, 0.1),
     0px 16px 32px 2px rgba(97, 97, 97, 0.1);
 `;
@@ -474,7 +803,6 @@ const HeaderFilter = styled.div`
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #e0e0e0;
-
   p {
     font-family: "Poppins";
     font-style: normal;
@@ -495,15 +823,6 @@ const RadioButtonLabelOrder = styled.label`
 `;
 
 const RadioButtonLabelDate = styled.label`
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  border: 1px solid #bebebe;
-  margin-left: 40px;
-`;
-
-const RadioButtonLabelEfetuado = styled.label`
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -827,9 +1146,6 @@ const CalendarStyled = styled.div<{ isOpen: boolean }>`
     font-size: 0.75em;
     font-weight: bold;
   }
-  /* .react-calendar__month-view__days__day--weekend {
-    color: #d10000;
-  } */
   .react-calendar__month-view__days__day--neighboringMonth {
     color: #757575;
   }
@@ -917,4 +1233,81 @@ const ButtonFilterModal = styled.button`
   :hover {
     opacity: 0.8;
   }
+`;
+
+const PaginationStyled = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  margin-top: 40px;
+  border-bottom: 1px solid #e0e0e0;
+  max-width: 798px;
+  width: 100%;
+  margin: 0 auto;
+  padding-bottom: 20px;
+`;
+
+const ShowTickets = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 24px;
+  margin-bottom: 20px;
+  p {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 120%;
+    color: #000000;
+  }
+`;
+
+const ButtonTicket = styled.button`
+  padding: 8px 14px;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 120%;
+  color: #818181;
+  background: #e0e0e0;
+  border-radius: 43px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin-left: 24px;
+  :hover {
+    opacity: 0.8;
+    background: #39c6bb;
+    color: #fff;
+  }
+  :focus {
+    opacity: 0.8;
+    background: #39c6bb;
+    color: #fff;
+  }
+`;
+
+const CircularStyled = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  p {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 120%;
+    color: #095a54;
+    margin-bottom: 16px;
+    margin-top: 20px;
+  }
+`;
+
+const AlignContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 200px;
+  margin-bottom: 16px;
 `;

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import Logo from "../../assets/images/logo.svg";
 import PerfilVazio from "../../assets/images/perfil-vazio.svg";
-import { Container } from "../../pages/Home/Home";
+import { Container } from "../../pages/SideDish/SideDish";
 
 const Header = (): JSX.Element => {
   return (

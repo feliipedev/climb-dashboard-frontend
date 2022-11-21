@@ -13,6 +13,8 @@ import "react-circular-progressbar/dist/styles.css";
 import CircularProgress from "../../components/CircularProgress/CircularProgress";
 import CircularProgressBarBase from "../../components/CircularProgress/CircleProgressBarBase";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import ModalDetailsClient from "../../components/Modals/ModalDetailsClient/ModalDetailsClient";
 export interface Select {
   name: string;
   email: string;
@@ -22,7 +24,8 @@ export interface Select {
   status: "Pendente" | "Em atraso" | "Efetuado";
 }
 
-const Home = (): JSX.Element => {
+const SideDish = (): JSX.Element => {
+  const navigate = useNavigate();
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
   const [disabledFilter, setDisabledFilter] = useState<boolean>(false);
   const [selectOrder, setSelectOrder] = useState<boolean>(false);
@@ -36,6 +39,7 @@ const Home = (): JSX.Element => {
   const [openDateInitial, setOpenDateInitial] = useState(false);
   const [dateEnd, setDateEnd] = useState<any>();
   const [openDateEnd, setOpenDateEnd] = useState(false);
+  const [openModalDetails, setOpenModalDetails] = useState<boolean>(false);
   const [titleTable, setTitleTable] = useState<string[]>([
     "Cliente",
     "E-mail",
@@ -383,8 +387,10 @@ const Home = (): JSX.Element => {
       <Header />
       <Container>
         <FlexContainer>
-          <Title>Acompanhamento</Title>
-          <TitleTwo>Solicitações</TitleTwo>
+          <Title onClick={() => navigate("/")}>Acompanhamento</Title>
+          <TitleTwo onClick={() => navigate("/solicitacoes")}>
+            Solicitações
+          </TitleTwo>
         </FlexContainer>
       </Container>
       <Container>
@@ -517,14 +523,18 @@ const Home = (): JSX.Element => {
                   <tr>
                     <td>
                       <>{body.name}</>
-                      <img src={Eye} alt="olho" />
+                      <img
+                        src={Eye}
+                        alt="olho"
+                        onClick={() => setOpenModalDetails(true)}
+                      />
                     </td>
                     <td>{body.email}</td>
                     <td>{body.date}</td>
                     <td>{body.quantity}</td>
                     <td>{body.parcela}</td>
                     <td>
-                      <Select body={body} />
+                      <Select status={body.status} />
                     </td>
                   </tr>
                 );
@@ -534,14 +544,18 @@ const Home = (): JSX.Element => {
                   <tr>
                     <td>
                       <>{body.name}</>
-                      <img src={Eye} alt="olho" />
+                      <img
+                        src={Eye}
+                        alt="olho"
+                        onClick={() => setOpenModalDetails(true)}
+                      />
                     </td>
                     <td>{body.email}</td>
                     <td>{body.date}</td>
                     <td>{body.quantity}</td>
                     <td>{body.parcela}</td>
                     <td>
-                      <Select body={body} />
+                      <Select status={body.status} />
                     </td>
                   </tr>
                 );
@@ -602,11 +616,15 @@ const Home = (): JSX.Element => {
           </AlignContainer>
         </CircularStyled>
       </Container>
+      <ModalDetailsClient
+        isOpen={openModalDetails}
+        onClose={setOpenModalDetails}
+      />
     </HomeStyled>
   );
 };
 
-export default Home;
+export default SideDish;
 
 export const HomeStyled = styled.div`
   background: #f5f5f5;
@@ -631,6 +649,7 @@ const Title = styled.p`
   line-height: 120%;
   text-decoration: underline;
   margin-top: 43px;
+  cursor: pointer;
 `;
 
 const TitleTwo = styled.span`
@@ -642,6 +661,7 @@ const TitleTwo = styled.span`
   color: ${(props) => props.theme.colors.fontColor};
   margin-top: 43px;
   margin-left: 33px;
+  cursor: pointer;
 `;
 
 export const FlexContainer = styled.div`

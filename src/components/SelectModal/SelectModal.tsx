@@ -3,7 +3,7 @@ import styled from "styled-components";
 import ArrowDown from "../../assets/icons/arrow-down.svg";
 import { Select } from "../../pages/SideDish/SideDish";
 
-type Status = "Pendente" | "Em atraso" | "Efetuado";
+type Status = "Sim" | "Não";
 
 const SelectContainer = (status: { status: Status }): JSX.Element => {
   const [selectStatus, setSelectStatus] = useState<Status>(status.status);
@@ -15,9 +15,8 @@ const SelectContainer = (status: { status: Status }): JSX.Element => {
         value={selectStatus}
         onChange={(e) => setSelectStatus(e.target.value as Status)}
       >
-        <Option value="Em atraso">Em atraso</Option>
-        <Option value="Pendente">Pendente</Option>
-        <Option value="Efetuado">Efetuado</Option>
+        <Option value="Sim">Sim</Option>
+        <Option value="Não">Não</Option>
       </SelectContainerStyled>
     </>
   );
@@ -26,13 +25,12 @@ const SelectContainer = (status: { status: Status }): JSX.Element => {
 export default SelectContainer;
 
 const SelectContainerStyled = styled.select<{ value?: string }>`
-  width: 118px;
+  width: 67px;
   height: 35px;
   border: 1px solid #c4c4c4;
   border-radius: 4px;
-  color: ${(props) => props.value === "Em atraso" && "#b01d1d"};
-  color: ${(props) => props.value === "Pendente" && "#0C7028"};
-  color: ${(props) => props.value === "Efetuado" && "#EDB900"};
+  color: ${(props) => props.value === "Não" && "#b01d1d"};
+  color: ${(props) => props.value === "Sim" && "#0C7028"};
   padding: 8px;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -50,9 +48,8 @@ const SelectContainerStyled = styled.select<{ value?: string }>`
 `;
 
 const Option = styled.option<{ value?: string }>`
-  color: ${(props) => props.value === "Em atraso" && "#b01d1d"};
-  color: ${(props) => props.value === "Pendente" && "#0C7028"};
-  color: ${(props) => props.value === "Efetuado" && "#EDB900"};
+  color: ${(props) => props.value === "Não" && "#b01d1d"};
+  color: ${(props) => props.value === "Sim" && "#0C7028"};
   font-family: "Poppins";
   font-style: normal;
   font-weight: 500;

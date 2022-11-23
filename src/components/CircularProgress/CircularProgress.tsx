@@ -32,9 +32,18 @@ const CircularProgress = ({
           r={radius}
           strokeWidth={`${strokeWidth}px`}
         ></circle>
+        <defs>
+          <clipPath id="cut-off">
+            <rect x="0" y="50" width="100" height="100" />
+          </clipPath>
+          <linearGradient id="gradient">
+            <stop offset="0" stop-color="#6EAEA9"></stop>
+            <stop offset="100%" stop-color="#6EAEA9" stop-opacity="0"></stop>
+          </linearGradient>
+        </defs>
         <circle
           fill="none"
-          stroke={color}
+          stroke="url(#gradient)"
           cx={size / 2}
           cy={size / 2}
           r={radius}

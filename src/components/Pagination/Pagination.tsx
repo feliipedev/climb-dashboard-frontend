@@ -67,6 +67,7 @@ const Pagination = ({
                 value={index}
                 onClick={(e) => setPg(Number(e.currentTarget.value))}
                 isActive={index == pg}
+                key={index}
               >
                 {index + 1}
               </Paginate>

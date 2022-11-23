@@ -2,20 +2,17 @@ import Header from "../../components/Header/Header";
 import styled from "styled-components";
 import Search from "../../assets/icons/search.svg";
 import Filter from "../../assets/icons/filter.svg";
-import Eye from "../../assets/icons/eye.svg";
 import CloseFilter from "../../assets/icons/close-filter.svg";
 import { useEffect, useState } from "react";
 import Select from "../../components/Select/Select";
 import CalendarIcon from "../../assets/icons/calendar.svg";
-import Calendar from "react-calendar";
 import Pagination from "../../components/Pagination/Pagination";
-import "react-circular-progressbar/dist/styles.css";
 import CircularProgress from "../../components/CircularProgress/CircularProgress";
 import CircularProgressBarBase from "../../components/CircularProgress/CircleProgressBarBase";
-import moment from "moment";
 import ModalDetailsClient from "../../components/Modals/ModalDetailsClient/ModalDetailsClient";
 import { useNavigate } from "react-router-dom";
 import SelectModal from "../../components/SelectModal/SelectModal";
+
 export interface Select {
   name: string;
   cpf: string;
@@ -38,10 +35,7 @@ const Requests = (): JSX.Element => {
   const [pg, setPg] = useState<number>(0);
   const [pp, setPp] = useState<number>(8);
   const [search, setSearch] = useState<string>("");
-  const [dateInitial, setDateInitial] = useState<any>();
-  const [openDateInitial, setOpenDateInitial] = useState(false);
-  const [dateEnd, setDateEnd] = useState<any>();
-  const [openDateEnd, setOpenDateEnd] = useState(false);
+  const [openDateInitial, setOpenDateInitial] = useState<boolean>(false);
   const [openModalDetails, setOpenModalDetails] = useState<boolean>(false);
   const [titleTable, setTitleTable] = useState<string[]>([
     "Nome",
@@ -160,7 +154,7 @@ const Requests = (): JSX.Element => {
 
   useEffect(() => {
     if (selectOrder) {
-      setFilteredItems(
+      return setFilteredItems(
         bodyTable.sort((a, b) =>
           a.name.toLowerCase() > b.name.toLowerCase()
             ? 1
@@ -170,20 +164,21 @@ const Requests = (): JSX.Element => {
         )
       );
     }
-  }, [selectOrder, selectDate]);
-
-  useEffect(() => {
-    if (dateInitial && dateInitial.length === 2) {
-      setTimeout(() => {
-        setOpenDateInitial(false);
-      }, 1500);
+    if (selectPendente) {
+      if (filteredItems.length !== 0)
+        setFilteredItems(filteredItems.filter((item) => item.status === "Não"));
+      if (filteredItems.length === 0)
+        setFilteredItems(bodyTable.filter((item) => item.status === "Não"));
+      return setDisabledFilter(true);
     }
-    if (dateEnd && dateEnd.length === 2) {
-      setTimeout(() => {
-        setOpenDateEnd(false);
-      }, 1500);
+    if (selectEfetuado) {
+      if (filteredItems.length === 0)
+        setFilteredItems(bodyTable.filter((item) => item.status === "Sim"));
+      if (filteredItems.length !== 0)
+        setFilteredItems(filteredItems.filter((item) => item.status === "Sim"));
+      return setDisabledFilter(true);
     }
-  }, [dateInitial, dateEnd]);
+  }, [selectOrder, selectPendente, selectEfetuado]);
 
   useEffect(() => {
     if (search) {
@@ -268,61 +263,23 @@ const Requests = (): JSX.Element => {
                 <FlexContainer>
                   <RadioButtonPendente
                     type="radio"
-                    name="radioButtonPendente"
+                    name="radioButton"
                     value="radioButtonPendente"
                     checked={selectPendente}
                     onClick={() => setSelectPendente(!selectPendente)}
                   />
                   <RadioButtonLabelOrder />
-                  <span>Pendente</span>
+                  <span>Não</span>
                   <RadioButtonEfetuado
                     type="radio"
-                    name="radioButtonEfetuado"
+                    name="radioButton"
                     value="radioButtonEfetuado"
                     checked={selectEfetuado}
                     onClick={() => setSelectEfetuado(!selectEfetuado)}
                   />
                   <RadioButtonLabelDate />
-                  <span>Efetuado</span>
+                  <span>Sim</span>
                 </FlexContainer>
-
-                <SelectDate isOpen={selectDate}>
-                  <p>Selecionar período:</p>
-                  <FlexContainer>
-                    <CalendarDate onClick={() => setOpenDateInitial(true)}>
-                      <img src={CalendarIcon} alt="calendario" />
-                      <>De</>
-                    </CalendarDate>
-                    <CalendarContainer>
-                      <>01 mai, 2022</>
-                    </CalendarContainer>
-                  </FlexContainer>
-                  <CalendarStyled isOpen={openDateInitial}>
-                    <Calendar
-                      onChange={setDateInitial}
-                      value={dateInitial}
-                      selectRange={true}
-                      calendarType="US"
-                    />
-                  </CalendarStyled>
-                  <FlexContainer>
-                    <CalendarDate onClick={() => setOpenDateInitial(true)}>
-                      <img src={CalendarIcon} alt="calendario" />
-                      <span>Até</span>
-                    </CalendarDate>
-                    <CalendarContainer>
-                      <>01 mai, 2022</>
-                    </CalendarContainer>
-                  </FlexContainer>
-                  <CalendarStyled isOpen={openDateEnd}>
-                    <Calendar
-                      onChange={setDateEnd}
-                      value={dateEnd}
-                      selectRange={true}
-                      calendarType="US"
-                    />
-                  </CalendarStyled>
-                </SelectDate>
                 <FilterButtonStyled>
                   <ButtonFilterModal>Filtrar</ButtonFilterModal>
                 </FilterButtonStyled>
@@ -335,14 +292,14 @@ const Requests = (): JSX.Element => {
         <Table>
           <tr>
             {titleTable &&
-              titleTable.map((title: string) => {
-                return <th>{title}</th>;
+              titleTable.map((title: string, index: number) => {
+                return <th key={index}>{title}</th>;
               })}
           </tr>
           {search !== "" || disabledFilter
-            ? filteredItems.map((body: Select) => {
+            ? filteredItems.map((body: Select, index: number) => {
                 return (
-                  <tr>
+                  <tr key={index}>
                     <td>
                       <>{body.name}</>
                     </td>
@@ -358,9 +315,9 @@ const Requests = (): JSX.Element => {
                   </tr>
                 );
               })
-            : current.map((body: Select) => {
+            : current.map((body: Select, index: number) => {
                 return (
-                  <tr>
+                  <tr key={index}>
                     <td>
                       <>{body.name}</>
                     </td>
@@ -613,7 +570,7 @@ const FilterContainer = styled.div<{ isOpen: boolean }>`
   opacity: ${(props) => (props.isOpen ? 1 : 0)};
   transition: all ease-in-out 0.3s;
   width: 456px;
-  height: 679px;
+  padding-bottom: 40px;
   background: #fff;
   border-radius: 16px;
   position: absolute;
@@ -701,10 +658,9 @@ const RadioButtonPendente = styled.input`
   z-index: 1;
   width: 16px;
   height: 16px;
-  margin-right: 10px;
   cursor: pointer;
   position: absolute;
-  margin-left: -1px;
+  margin-left: 1px;
   &:hover ~ ${RadioButtonLabelOrder} {
     background: #bebebe;
     cursor: pointer;
@@ -776,7 +732,7 @@ const RadioButtonEfetuado = styled.input`
   height: 16px;
   margin-right: 10px;
   position: absolute;
-  margin-left: 147px;
+  margin-left: 104px;
   cursor: pointer;
   &:hover ~ ${RadioButtonLabelDate} {
     background: #bebebe;
@@ -863,6 +819,7 @@ const CalendarDate = styled.div`
   letter-spacing: 0.0168em;
   color: #6eaea9;
   cursor: pointer;
+  margin-bottom: 24px;
   span {
     margin-left: 8px;
     font-family: "Manrope", "Poppins";
@@ -873,25 +830,6 @@ const CalendarDate = styled.div`
     letter-spacing: 0.0168em;
     color: #6eaea9;
   }
-`;
-
-const CalendarContainer = styled.div`
-  width: 152px;
-  height: 48px;
-  background: #ffffff;
-  border: 1px solid #6eaea9;
-  border-radius: 0px 8px 8px 0px;
-  font-family: "Manrope", "Poppins";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 150%;
-  display: flex;
-  align-items: center;
-  letter-spacing: 0.0168em;
-  color: #2d2527;
-  padding-left: 12px;
-  margin-bottom: 24px;
 `;
 
 const SelectDate = styled.div<{ isOpen: boolean }>`
@@ -906,142 +844,13 @@ const CalendarStyled = styled.div<{ isOpen: boolean }>`
   opacity: ${(props) => (props.isOpen ? 1 : 0)};
   position: absolute;
   z-index: 2;
-  .react-calendar {
-    width: 478px;
-    max-width: 100%;
-    background: #ffffff;
-    box-shadow: 0px 8px 16px 2px rgba(97, 97, 97, 0.1),
-      0px 16px 32px 2px rgba(97, 97, 97, 0.1);
-    border-radius: 12px;
-    font-family: "Inter", "Poppins";
-    line-height: 132%;
-  }
-  .react-calendar--doubleView {
-    width: 700px;
-  }
-  .react-calendar--doubleView .react-calendar__viewContainer {
-    display: flex;
-    margin: -0.5em;
-  }
-  .react-calendar--doubleView .react-calendar__viewContainer > * {
-    width: 50%;
-    margin: 0.5em;
-  }
-  .react-calendar,
-  .react-calendar *,
-  .react-calendar *:before,
-  .react-calendar *:after {
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-  }
-  .react-calendar button {
-    margin: 0;
-    border: 0;
-    outline: none;
-  }
-  .react-calendar button:enabled:hover {
-    cursor: pointer;
-  }
-  .react-calendar__navigation {
-    display: flex;
-    height: 44px;
-    margin-bottom: 1em;
-  }
-  .react-calendar__navigation button {
-    min-width: 44px;
-    background: none;
-  }
-  .react-calendar__navigation button:disabled {
-    background-color: #f0f0f0;
-  }
-  .react-calendar__navigation button:enabled:hover,
-  .react-calendar__navigation button:enabled:focus {
-    background-color: #e6e6e6;
-  }
-  .react-calendar__month-view__weekdays {
-    text-align: center;
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: 0.75em;
-  }
-  .react-calendar__month-view__weekdays__weekday {
-    padding: 0.5em;
-  }
-  .react-calendar__month-view__weekNumbers .react-calendar__tile {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75em;
-    font-weight: bold;
-  }
-  .react-calendar__month-view__days__day--neighboringMonth {
-    color: #757575;
-  }
-  .react-calendar__year-view .react-calendar__tile,
-  .react-calendar__decade-view .react-calendar__tile,
-  .react-calendar__century-view .react-calendar__tile {
-    padding: 2em 0.5em;
-  }
-  .react-calendar__tile {
-    max-width: 100%;
-    padding: 10px 6.6667px;
-    background: none;
-    text-align: center;
-    line-height: 16px;
-  }
-  .react-calendar__tile:disabled {
-    background-color: #f0f0f0;
-  }
-  .react-calendar__tile:enabled:hover,
-  .react-calendar__tile:enabled:focus {
-    background-color: #e6e6e6;
-  }
-  .react-calendar__tile--now {
-    background: #ffff76;
-  }
-  .react-calendar__tile--now:enabled:hover,
-  .react-calendar__tile--now:enabled:focus {
-    background: #ffffa9;
-  }
-  .react-calendar__tile--hasActive {
-    background: #76baff;
-  }
-  .react-calendar__tile--hasActive:enabled:hover,
-  .react-calendar__tile--hasActive:enabled:focus {
-    background: #a9d4ff;
-  }
-  .react-calendar__tile--active {
-    background: rgba(121, 198, 192, 0.5);
-    border: 1.29957px solid rgba(121, 198, 192, 0.5);
-    border-radius: 50%;
-    font-family: "Manrope", "Poppins";
-    font-style: normal;
-    font-weight: 700;
-    font-size: 16px;
-    line-height: 150%;
-    text-align: center;
-    letter-spacing: 0.005em;
-    color: #095a54;
-    width: 42px;
-    height: 42px;
-  }
-  .react-calendar__tile--active:enabled:hover,
-  .react-calendar__tile--active:enabled:focus {
-    background: #1087ff;
-  }
-  .react-calendar--selectRange .react-calendar__tile--hover {
-    background-color: #e6e6e6;
-  }
-  span {
-    border: none !important;
-  }
 `;
 
 const FilterButtonStyled = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+  margin-top: 40px;
 `;
 
 const ButtonFilterModal = styled.button`

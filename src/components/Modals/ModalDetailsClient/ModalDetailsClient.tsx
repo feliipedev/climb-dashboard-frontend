@@ -97,13 +97,13 @@ const ModalDetailsClient = ({ isOpen, onClose }: Props): JSX.Element => {
           <Table>
             <tr>
               {titleTable &&
-                titleTable.map((title: string) => {
-                  return <th>{title}</th>;
+                titleTable.map((title: string, index: number) => {
+                  return <th key={index}>{title}</th>;
                 })}
             </tr>
-            {bodyTable.map((body: Select) => {
+            {bodyTable.map((body: Select, index: number) => {
               return (
-                <tr>
+                <tr key={index}>
                   <td>{body.date} </td>
                   <td>{body.valorParcela}</td>
                   <td>
@@ -169,7 +169,7 @@ const ContainerForm = styled.section`
   z-index: 2;
   margin: 0 auto;
   border-radius: 6px;
-  padding: 33px 26px 150px 24px;
+  padding: 33px 26px 40px 24px;
 `;
 
 const HeaderModal = styled.div`

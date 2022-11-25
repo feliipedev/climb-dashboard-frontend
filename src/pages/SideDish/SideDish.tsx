@@ -313,11 +313,12 @@ const SideDish = (): JSX.Element => {
       status: "Efetuado",
     },
   ]);
+  const [bodyTableAux, setBodyTableAux] = useState<Select[]>(bodyTable);
   const [filteredItems, setFilteredItems] = useState<Select[]>([]);
 
   useEffect(() => {
     if (selectOrdem) {
-      return setFilteredItems(
+      return setBodyTable(
         bodyTable.sort((a, b) =>
           a.name.toLowerCase() > b.name.toLowerCase()
             ? 1
@@ -328,27 +329,10 @@ const SideDish = (): JSX.Element => {
       );
     }
     if (selectPendente) {
-      if (filteredItems.length !== 0)
-        setFilteredItems(
-          filteredItems.filter((item) => item.status === "Pendente")
-        );
-      if (filteredItems.length === 0)
-        setFilteredItems(
-          bodyTable.filter((item) => item.status === "Pendente")
-        );
-      return setDisabledFilter(true);
+      setBodyTable(bodyTable.filter((item) => item.status === "Pendente"));
     }
     if (selectEfetuado) {
-      if (filteredItems.length === 0) {
-        setFilteredItems(
-          bodyTable.filter((item) => item.status === "Efetuado")
-        );
-      }
-      /* if (filteredItems.length !== 0)
-        setFilteredItems(
-          filteredItems.filter((item) => item.status === "Efetuado")
-        ); */
-      return setDisabledFilter(true);
+      setBodyTable(bodyTable.filter((item) => item.status === "Efetuado"));
     }
     if (dateInitial && dateEnd) {
       var dia = String(dateInitial.getDate()).padStart(2, "0");
@@ -359,7 +343,7 @@ const SideDish = (): JSX.Element => {
       var mesTwo = String(dateEnd.getMonth() + 1).padStart(2, "0");
       var anoTwo = dateEnd.getFullYear();
       const dataTwo = diaTwo + "/" + mesTwo + "/" + anoTwo;
-      setFilteredItems(
+      setBodyTable(
         bodyTable.filter((item) => {
           let date1 = moment(item.date, "DD/MM/YYYY").format("YYYYMMDD");
           let date2 = moment(dataI, "DD/MM/YYYY").format("YYYYMMDD");
@@ -367,9 +351,7 @@ const SideDish = (): JSX.Element => {
           return moment(date2).isBefore(date1) && moment(date3).isAfter(date1);
         })
       );
-      return setDisabledFilter(true);
     }
-    setDisabledFilter(false);
   }, [
     selectPendente,
     selectEfetuado,
@@ -379,19 +361,15 @@ const SideDish = (): JSX.Element => {
     dateEnd,
   ]);
 
-  console.log(filteredItems)
-
   useEffect(() => {
     if (search) {
-      let itemsFiltered = bodyTable.filter((item) =>
-        item.name.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())
+      setBodyTable(
+        bodyTable.filter((item) =>
+          item.name.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())
+        )
       );
-      if (itemsFiltered) {
-        setFilteredItems(itemsFiltered);
-      }
     } else {
-      setDisabledFilter(false);
-      setFilteredItems([]);
+      setBodyTable(bodyTableAux);
     }
   }, [search]);
 
@@ -402,14 +380,13 @@ const SideDish = (): JSX.Element => {
     var mes = String(dataUltimateDays.getMonth() + 1).padStart(2, "0");
     var ano = dataUltimateDays.getFullYear();
     const dataAtual = dia + "/" + mes + "/" + ano;
-    setFilteredItems(
+    setBodyTable(
       bodyTable.filter((item) => {
         let date1 = moment(item.date, "DD/MM/YYYY").format("YYYYMMDD");
         let date2 = moment(dataAtual, "DD/MM/YYYY").format("YYYYMMDD");
         return moment(date1).isAfter(date2);
       })
     );
-    setDisabledFilter(true);
   };
 
   const pages: number = Math.ceil(bodyTable ? bodyTable.length / pp : 0);
@@ -531,49 +508,27 @@ const SideDish = (): JSX.Element => {
                 return <th key={index}>{title}</th>;
               })}
           </tr>
-          {search !== "" || disabledFilter
-            ? filteredItems.map((body: Select, index: number) => {
-                return (
-                  <tr key={index}>
-                    <td>
-                      <>{body.name}</>
-                      <img
-                        src={Eye}
-                        alt="olho"
-                        onClick={() => setOpenModalDetails(true)}
-                      />
-                    </td>
-                    <td>{body.email}</td>
-                    <td>{body.date}</td>
-                    <td>{body.quantity}</td>
-                    <td>{body.parcela}</td>
-                    <td>
-                      <Select status={body.status} />
-                    </td>
-                  </tr>
-                );
-              })
-            : current.map((body: Select, index: number) => {
-                return (
-                  <tr key={index}>
-                    <td>
-                      <>{body.name}</>
-                      <img
-                        src={Eye}
-                        alt="olho"
-                        onClick={() => setOpenModalDetails(true)}
-                      />
-                    </td>
-                    <td>{body.email}</td>
-                    <td>{body.date}</td>
-                    <td>{body.quantity}</td>
-                    <td>{body.parcela}</td>
-                    <td>
-                      <Select status={body.status} />
-                    </td>
-                  </tr>
-                );
-              })}
+          {current.map((body: Select, index: number) => {
+            return (
+              <tr key={index}>
+                <td>
+                  <>{body.name}</>
+                  <img
+                    src={Eye}
+                    alt="olho"
+                    onClick={() => setOpenModalDetails(true)}
+                  />
+                </td>
+                <td>{body.email}</td>
+                <td>{body.date}</td>
+                <td>{body.quantity}</td>
+                <td>{body.parcela}</td>
+                <td>
+                  <Select status={body.status} />
+                </td>
+              </tr>
+            );
+          })}
         </Table>
         <PaginationStyled>
           <Pagination

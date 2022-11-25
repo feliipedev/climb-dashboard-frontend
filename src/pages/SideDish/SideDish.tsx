@@ -27,8 +27,8 @@ const SideDish = (): JSX.Element => {
   const navigate = useNavigate();
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
   const [disabledFilter, setDisabledFilter] = useState<boolean>(false);
-  const [selectOrder, setSelectOrder] = useState<boolean>(false);
-  const [selectDate, setSelectDate] = useState<boolean>(false);
+  const [selectOrdem, setSelectOrdem] = useState<boolean>(false);
+  const [selectData, setSelectData] = useState<boolean>(false);
   const [selectPendente, setSelectPendente] = useState<boolean>(false);
   const [selectEfetuado, setSelectEfetuado] = useState<boolean>(false);
   const [pg, setPg] = useState<number>(0);
@@ -314,10 +314,9 @@ const SideDish = (): JSX.Element => {
     },
   ]);
   const [filteredItems, setFilteredItems] = useState<Select[]>([]);
-  const [messageNotFound, setMessageNotFound] = useState<string>();
 
   useEffect(() => {
-    if (selectOrder) {
+    if (selectOrdem) {
       return setFilteredItems(
         bodyTable.sort((a, b) =>
           a.name.toLowerCase() > b.name.toLowerCase()
@@ -340,14 +339,15 @@ const SideDish = (): JSX.Element => {
       return setDisabledFilter(true);
     }
     if (selectEfetuado) {
-      if (filteredItems.length === 0)
+      if (filteredItems.length === 0) {
         setFilteredItems(
           bodyTable.filter((item) => item.status === "Efetuado")
         );
-      if (filteredItems.length !== 0)
+      }
+      /* if (filteredItems.length !== 0)
         setFilteredItems(
           filteredItems.filter((item) => item.status === "Efetuado")
-        );
+        ); */
       return setDisabledFilter(true);
     }
     if (dateInitial && dateEnd) {
@@ -370,7 +370,16 @@ const SideDish = (): JSX.Element => {
       return setDisabledFilter(true);
     }
     setDisabledFilter(false);
-  }, [selectOrder, selectPendente, selectEfetuado, dateInitial, dateEnd]);
+  }, [
+    selectPendente,
+    selectEfetuado,
+    selectData,
+    selectOrdem,
+    dateInitial,
+    dateEnd,
+  ]);
+
+  console.log(filteredItems)
 
   useEffect(() => {
     if (search) {
@@ -379,8 +388,6 @@ const SideDish = (): JSX.Element => {
       );
       if (itemsFiltered) {
         setFilteredItems(itemsFiltered);
-      } else {
-        setMessageNotFound("Nenhum item encontrado.");
       }
     } else {
       setDisabledFilter(false);
@@ -408,7 +415,7 @@ const SideDish = (): JSX.Element => {
   const pages: number = Math.ceil(bodyTable ? bodyTable.length / pp : 0);
   const startIndex = pg * pp;
   const endIndex = startIndex + pp;
-  const current: any | undefined = bodyTable?.slice(startIndex, endIndex);
+  const current: Select[] | undefined = bodyTable?.slice(startIndex, endIndex);
 
   return (
     <HomeStyled>
@@ -451,24 +458,15 @@ const SideDish = (): JSX.Element => {
               <BodyFilter>
                 <p>Ordenar por:</p>
                 <FlexContainer>
-                  <RadioButtonOrder
+                  <RadioButtonOrdem
                     type="radio"
-                    name="radioButton"
+                    name="radioButtonType"
                     value="radioButtonOrder"
-                    checked={selectOrder}
-                    onChange={() => setSelectOrder(!selectOrder)}
+                    checked={selectOrdem}
+                    onChange={() => setSelectOrdem(!selectOrdem)}
                   />
                   <RadioButtonLabelOrder />
                   <span>Ordem alfabética</span>
-                  <RadioButtonDate
-                    type="radio"
-                    name="radioButton"
-                    value="radioButtonDate"
-                    checked={selectDate}
-                    onChange={() => setSelectDate(!selectDate)}
-                  />
-                  <RadioButtonLabelDate />
-                  <span>Data</span>
                 </FlexContainer>
                 <p>Status de pagamento:</p>
                 <FlexContainer>
@@ -491,8 +489,7 @@ const SideDish = (): JSX.Element => {
                   <RadioButtonLabelDate />
                   <span>Efetuado</span>
                 </FlexContainer>
-
-                <SelectDate isOpen={selectDate}>
+                <SelectDate>
                   <p>Selecionar período:</p>
                   <FlexContainer>
                     <CalendarDate onClick={() => setOpenDateInitial(true)}>
@@ -517,7 +514,9 @@ const SideDish = (): JSX.Element => {
                   <CalendarStyled isOpen={openDateEnd}></CalendarStyled>
                 </SelectDate>
                 <FilterButtonStyled>
-                  <ButtonFilterModal>Filtrar</ButtonFilterModal>
+                  <ButtonFilterModal isOpen={selectData}>
+                    Filtrar
+                  </ButtonFilterModal>
                 </FilterButtonStyled>
               </BodyFilter>
             </FilterContainer>
@@ -819,11 +818,11 @@ const FilterContainer = styled.div<{ isOpen: boolean }>`
   opacity: ${(props) => (props.isOpen ? 1 : 0)};
   transition: all ease-in-out 0.3s;
   width: 456px;
-  height: 679px;
+  padding-bottom: 56px;
   background: #fff;
   border-radius: 16px;
   position: absolute;
-  margin-top: 20px;
+  margin-top: -151px;
   right: 20px;
   box-shadow: 0px 8px 16px 2px rgba(97, 97, 97, 0.1),
     0px 16px 32px 2px rgba(97, 97, 97, 0.1);
@@ -873,7 +872,7 @@ const RadioButtonOrder = styled.input`
   border-radius: 50%;
   width: 16px;
   height: 16px;
-  margin-right: 10px;
+  margin-left: -1px;
   cursor: pointer;
   position: absolute;
   &:hover ~ ${RadioButtonLabelOrder} {
@@ -919,6 +918,78 @@ const RadioButtonPendente = styled.input`
     props.checked &&
     ` 
     &:checked + ${RadioButtonLabelOrder} {
+      background: #fff;
+      border: 1px solid #6EAEA9;
+      border-radius: 50%;
+      &::after {
+        content: "";
+        display: block;
+        width: 10px;
+        border-radius: 50%;
+        height: 10px;
+        margin-top: 2px;
+        margin-left: 2px;
+        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
+        background: #6EAEA9;
+      }
+    }
+  `}
+`;
+
+const RadioButtonOrdem = styled.input`
+  opacity: 0;
+  margin-top: 1px;
+  z-index: 1;
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  cursor: pointer;
+  position: absolute;
+  margin-left: -1px;
+  &:hover ~ ${RadioButtonLabelOrder} {
+    background: #bebebe;
+    cursor: pointer;
+  }
+  ${(props) =>
+    props.checked &&
+    ` 
+    &:checked + ${RadioButtonLabelOrder} {
+      background: #fff;
+      border: 1px solid #6EAEA9;
+      border-radius: 50%;
+      &::after {
+        content: "";
+        display: block;
+        width: 10px;
+        border-radius: 50%;
+        height: 10px;
+        margin-top: 2px;
+        margin-left: 2px;
+        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
+        background: #6EAEA9;
+      }
+    }
+  `}
+`;
+
+const RadioButtonData = styled.input`
+  opacity: 0;
+  margin-top: 1px;
+  z-index: 1;
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  cursor: pointer;
+  position: absolute;
+  margin-left: 213px;
+  &:hover ~ ${RadioButtonLabelDate} {
+    background: #bebebe;
+    cursor: pointer;
+  }
+  ${(props) =>
+    props.checked &&
+    ` 
+    &:checked + ${RadioButtonLabelDate} {
       background: #fff;
       border: 1px solid #6EAEA9;
       border-radius: 50%;
@@ -1081,30 +1152,7 @@ const CalendarDate = styled.div`
   }
 `;
 
-const CalendarContainer = styled.div`
-  width: 152px;
-  height: 48px;
-  background: #ffffff;
-  border: 1px solid #6eaea9;
-  border-radius: 0px 8px 8px 0px;
-  font-family: "Manrope", "Poppins";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 150%;
-  display: flex;
-  align-items: center;
-  letter-spacing: 0.0168em;
-  color: #2d2527;
-  padding-left: 12px;
-  margin-bottom: 24px;
-`;
-
-const SelectDate = styled.div<{ isOpen: boolean }>`
-  visibility: ${(props) => (props.isOpen ? "visible" : "hidden")};
-  opacity: ${(props) => (props.isOpen ? 1 : 0)};
-  transition: all ease-in-out 0.3s;
-`;
+const SelectDate = styled.div``;
 
 const CalendarStyled = styled.div<{ isOpen: boolean }>`
   visibility: ${(props) => (props.isOpen ? "visible" : "hidden")};
@@ -1120,8 +1168,8 @@ const FilterButtonStyled = styled.div`
   justify-content: center;
 `;
 
-const ButtonFilterModal = styled.button`
-  margin-top: 16px;
+const ButtonFilterModal = styled.button<{ isOpen: boolean }>`
+  margin-top: ${(props) => (props.isOpen ? "16px" : "40px")};
   width: 195px;
   height: 49px;
   background: #39c6bb;

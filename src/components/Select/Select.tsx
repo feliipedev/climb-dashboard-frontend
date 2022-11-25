@@ -5,9 +5,10 @@ import { Select } from "../../pages/SideDish/SideDish";
 
 type Status = "Pendente" | "Em atraso" | "Efetuado";
 
-const SelectContainer = (status: { status: Status }): JSX.Element => {
-  const [selectStatus, setSelectStatus] = useState<Status>(status.status);
-
+const SelectContainer = ({
+  status
+}: any): JSX.Element => {
+  const [selectStatus, setSelectStatus] = useState<Status>(status);
   return (
     <>
       <SelectContainerStyled

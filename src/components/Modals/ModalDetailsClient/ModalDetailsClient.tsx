@@ -42,43 +42,9 @@ const ModalDetailsClient = ({ isOpen, onClose }: Props): JSX.Element => {
       comprovante: "comprovante03.jpg",
       status: "Efetuado",
     },
-    {
-      date: "21/11/2022",
-      valorParcela: "R$ 1.000",
-      comprovante: "comprovante02.jpg",
-      status: "Pendente",
-    },
-    {
-      date: "21/10/2022",
-      valorParcela: "R$ 2.000",
-      comprovante: "comprovante03.jpg",
-      status: "Em atraso",
-    },
-    {
-      date: "21/09/2022",
-      valorParcela: "R$ 3.000",
-      comprovante: "comprovante03.jpg",
-      status: "Efetuado",
-    },
-    {
-      date: "21/11/2022",
-      valorParcela: "R$ 1.000",
-      comprovante: "comprovante02.jpg",
-      status: "Pendente",
-    },
-    {
-      date: "21/10/2022",
-      valorParcela: "R$ 2.000",
-      comprovante: "comprovante03.jpg",
-      status: "Em atraso",
-    },
-    {
-      date: "21/09/2022",
-      valorParcela: "R$ 3.000",
-      comprovante: "comprovante03.jpg",
-      status: "Efetuado",
-    },
+
   ]);
+
   return (
     <ScreenContainer isVisible={isOpen}>
       <Container>
@@ -93,7 +59,6 @@ const ModalDetailsClient = ({ isOpen, onClose }: Props): JSX.Element => {
               <img src={CloseFilter} alt="fechar filtro" />
             </StyledCloseFilter>
           </HeaderModal>
-
           <Table>
             <tr>
               {titleTable &&

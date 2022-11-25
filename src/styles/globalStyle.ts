@@ -188,4 +188,5 @@ export default createGlobalStyle`
   .react-datepicker__navigation--next--with-time:not(.react-datepicker__navigation--next--with-today-button) {
     right: 26px;
   }
+  
 `;

@@ -249,15 +249,6 @@ const Requests = (): JSX.Element => {
                   />
                   <RadioButtonLabelOrder />
                   <span>Ordem alfabética</span>
-                  <RadioButtonDate
-                    type="radio"
-                    name="radioButtonDate"
-                    value="radioButtonDate"
-                    checked={selectDate}
-                    onClick={() => setSelectDate(!selectDate)}
-                  />
-                  <RadioButtonLabelDate />
-                  <span>Data</span>
                 </FlexContainer>
                 <p>Status de pagamento:</p>
                 <FlexContainer>
@@ -281,7 +272,9 @@ const Requests = (): JSX.Element => {
                   <span>Sim</span>
                 </FlexContainer>
                 <FilterButtonStyled>
-                  <ButtonFilterModal>Filtrar</ButtonFilterModal>
+                <ButtonFilterModal>
+                    Filtrar
+                  </ButtonFilterModal>
                 </FilterButtonStyled>
               </BodyFilter>
             </FilterContainer>
@@ -574,7 +567,7 @@ const FilterContainer = styled.div<{ isOpen: boolean }>`
   background: #fff;
   border-radius: 16px;
   position: absolute;
-  margin-top: 20px;
+  margin-top: -201px;
   right: 20px;
   box-shadow: 0px 8px 16px 2px rgba(97, 97, 97, 0.1),
     0px 16px 32px 2px rgba(97, 97, 97, 0.1);

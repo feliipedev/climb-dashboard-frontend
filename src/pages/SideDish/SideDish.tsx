@@ -381,7 +381,7 @@ const SideDish = (): JSX.Element => {
     var ano = dataUltimateDays.getFullYear();
     const dataAtual = dia + "/" + mes + "/" + ano;
     setBodyTable(
-      bodyTable.filter((item) => {
+      bodyTableAux.filter((item) => {
         let date1 = moment(item.date, "DD/MM/YYYY").format("YYYYMMDD");
         let date2 = moment(dataAtual, "DD/MM/YYYY").format("YYYYMMDD");
         return moment(date1).isAfter(date2);
@@ -393,6 +393,8 @@ const SideDish = (): JSX.Element => {
   const startIndex = pg * pp;
   const endIndex = startIndex + pp;
   const current: Select[] | undefined = bodyTable?.slice(startIndex, endIndex);
+
+  console.log(current)
 
   return (
     <HomeStyled>

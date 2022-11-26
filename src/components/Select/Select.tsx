@@ -5,10 +5,9 @@ import { Select } from "../../pages/SideDish/SideDish";
 
 type Status = "Pendente" | "Em atraso" | "Efetuado";
 
-const SelectContainer = ({
-  status
-}: any): JSX.Element => {
+const SelectContainer = ({ status }: any): JSX.Element => {
   const [selectStatus, setSelectStatus] = useState<Status>(status);
+
   return (
     <>
       <SelectContainerStyled
@@ -16,9 +15,15 @@ const SelectContainer = ({
         value={selectStatus}
         onChange={(e) => setSelectStatus(e.target.value as Status)}
       >
-        <Option value="Em atraso">Em atraso</Option>
-        <Option value="Pendente">Pendente</Option>
-        <Option value="Efetuado">Efetuado</Option>
+        <Option value="Em atraso" selected={status === "Em atraso" ? true : false}>
+          Em atraso
+        </Option>
+        <Option value="Pendente" selected={status === "Pendente"}>
+          Pendente
+        </Option>
+        <Option value="Efetuado" selected={status === "Efetuado"}>
+          Efetuado
+        </Option>
       </SelectContainerStyled>
     </>
   );

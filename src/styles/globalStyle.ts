@@ -213,4 +213,7 @@ export default createGlobalStyle`
   .iocJID p {
     margin-left: 24px;
   }
+  .kJCoWD p {
+    margin-left: 24px !important;
+  }
 `;

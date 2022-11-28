@@ -30,13 +30,14 @@ export interface Loan {
 const SideDish = (): JSX.Element => {
   const navigate = useNavigate();
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
-  const [selectData, setSelectData] = useState<boolean>(false);
-  const [select, setSelect] = useState<"Pendente" | "Efetuado" | "Order">();
+  const [select, setSelect] = useState<
+    "Pendente" | "Efetuado" | "Order" | "Clear"
+  >();
   const [pg, setPg] = useState<number>(0);
   const [pp, setPp] = useState<number>(8);
   const [search, setSearch] = useState<string>("");
-  const [dateInitial, setDateInitial] = useState<Date>();
   const [openDateInitial, setOpenDateInitial] = useState(false);
+  const [dateInitial, setDateInitial] = useState<Date>();
   const [dateEnd, setDateEnd] = useState<Date>();
   const [openModalDetails, setOpenModalDetails] = useState<boolean>(false);
   const [titleTable, setTitleTable] = useState<string[]>([
@@ -336,6 +337,13 @@ const SideDish = (): JSX.Element => {
       setOpenModalFilter(false);
     }
 
+    if (select === "Clear") {
+      setDateInitial(undefined);
+      setDateEnd(undefined);
+      setOpenModalFilter(false);
+      return setBodyTable(bodyTableAux);
+    }
+
     if (dateInitial && dateEnd) {
       var dia = String(dateInitial.getDate()).padStart(2, "0");
       var mes = String(dateInitial.getMonth() + 1).padStart(2, "0");
@@ -434,17 +442,21 @@ const SideDish = (): JSX.Element => {
                     aria-labelledby="demo-radio-buttons-group-label"
                     name="radio-buttons-group"
                   >
-                    <CollumnContainer>
-                    <p>Ordenar por:</p>
-
                     <FormControlLabel
-                      value="other"
+                      value="clear"
                       control={<Radio />}
-                      label="Ordem alfabética"
-                      onChange={() => setSelect("Order")}
+                      label="Limpar filtros"
+                      onChange={() => setSelect("Clear")}
                     />
+                    <CollumnContainer>
+                      <p>Ordenar por:</p>
+                      <FormControlLabel
+                        value="other"
+                        control={<Radio />}
+                        label="Ordem alfabética"
+                        onChange={() => setSelect("Order")}
+                      />
                     </CollumnContainer>
-                    
                     <p>Status de pagamento:</p>
                     <FlexContainer>
                       <FormControlLabel
@@ -465,7 +477,7 @@ const SideDish = (): JSX.Element => {
                 <SelectDate>
                   <p>Selecionar período:</p>
                   <FlexContainer>
-                    <CalendarDate onClick={() => setOpenDateInitial(true)}>
+                    <CalendarDate>
                       <img src={CalendarIcon} alt="calendario" />
                       <span>De</span>
                     </CalendarDate>
@@ -475,7 +487,7 @@ const SideDish = (): JSX.Element => {
                     />
                   </FlexContainer>
                   <FlexContainer>
-                    <CalendarDate onClick={() => setOpenDateInitial(true)}>
+                    <CalendarDate>
                       <img src={CalendarIcon} alt="calendario" />
                       <span>Até</span>
                     </CalendarDate>
@@ -536,7 +548,7 @@ const SideDish = (): JSX.Element => {
           />
         </PaginationStyled>
         <ShowTickets>
-          <p>Mostrar boletos:</p>
+          <p>Acompanhamento:</p>
           <ButtonTicket onClick={() => handleFilterDate(7)}>
             Últimos 7 dias
           </ButtonTicket>
@@ -646,6 +658,7 @@ const DateTitle = styled.p`
 const InputSearch = styled.input`
   border: none;
   border-bottom: 2px solid #39c6bb;
+  background: #f5f5f5;
   max-width: 272px;
   width: 100%;
   padding-left: 12px;
@@ -768,6 +781,7 @@ const HeaderFilter = styled.div`
   max-width: 408px;
   width: 100%;
   margin: 0 auto;
+  margin-bottom: 20px;
   padding: 32px 0 33px 0;
   display: flex;
   justify-content: space-between;
@@ -1089,14 +1103,17 @@ const CalendarDate = styled.div`
   }
 `;
 
-const SelectDate = styled.div``;
-
-const CalendarStyled = styled.div<{ isOpen: boolean }>`
-  visibility: ${(props) => (props.isOpen ? "visible" : "hidden")};
-  display: ${(props) => (props.isOpen ? "block" : "none")};
-  opacity: ${(props) => (props.isOpen ? 1 : 0)};
-  position: absolute;
-  z-index: 2;
+const SelectDate = styled.div`
+  p {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 120%;
+    margin-top: 32px;
+    color: #6eaea9;
+    margin-bottom: 24px;
+  }
 `;
 
 const FilterButtonStyled = styled.div`

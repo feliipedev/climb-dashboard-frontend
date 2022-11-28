@@ -222,4 +222,7 @@ export default createGlobalStyle`
   .MuiFormControlLabel-root{
     margin-left: -23px;
   }
+  .jTclCn p{
+    margin-left: 24px !important;
+  }
 `;

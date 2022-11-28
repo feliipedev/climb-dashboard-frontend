@@ -216,4 +216,10 @@ export default createGlobalStyle`
   .kJCoWD p {
     margin-left: 24px !important;
   }
+  .bhKvDX p{
+    margin-left: 24px !important;
+  }
+  .MuiFormControlLabel-root{
+    margin-left: -23px;
+  }
 `;

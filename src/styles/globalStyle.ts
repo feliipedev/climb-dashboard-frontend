@@ -188,5 +188,22 @@ export default createGlobalStyle`
   .react-datepicker__navigation--next--with-time:not(.react-datepicker__navigation--next--with-today-button) {
     right: 26px;
   }
-  
+  .MuiFormGroup-root{
+    flex-direction: row !important;
+    margin-left: -26px;
+  }
+  .MuiFormGroup-root :hover{
+   background: none;
+  }
+  .MuiSvgIcon-root {
+    fill : #6EAEA9 !important;
+    width: 16px;
+  }
+  .MuiSvgIcon-root:hover {
+    fill : #6EAEA9 !important;
+    background: none;
+  }
+  .MuiFormControlLabel-root:nth-child(0){
+    margin-left: -16px;
+  }
 `;

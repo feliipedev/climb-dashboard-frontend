@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
+interface Props {
+  percentage: number;
+}
 
-const CircularProgress = ({
-  size,
-  strokeWidth,
-  percentage,
-  color,
-}: any): JSX.Element => {
+const CircularProgress = ({ percentage }: Props): JSX.Element => {
   const [progress, setProgress] = useState(0);
-  const viewBox = `0 0 ${size} ${size}`;
-  const radius = (size - strokeWidth) / 2;
+  const viewBox = `0 0 ${150} ${150}`;
+  const radius = (150 - 10) / 2;
   const circumference = radius * Math.PI * 2;
   const dash = (progress * circumference) / 100;
 
@@ -19,18 +17,18 @@ const CircularProgress = ({
   return (
     <>
       <svg
-        width={size}
-        height={size}
+        width={150}
+        height={150}
         viewBox={viewBox}
         style={{ marginTop: 20, marginBottom: 60 }}
       >
         <circle
           fill="#F5F5F5"
           stroke="#F0FAFA"
-          cx={size / 2}
-          cy={size / 2}
+          cx={150 / 2}
+          cy={150 / 2}
           r={radius}
-          strokeWidth={`${strokeWidth}px`}
+          strokeWidth={`${10}px`}
         ></circle>
         <defs>
           <clipPath id="cut-off">
@@ -44,11 +42,11 @@ const CircularProgress = ({
         <circle
           fill="none"
           stroke="url(#gradient)"
-          cx={size / 2}
-          cy={size / 2}
+          cx={150 / 2}
+          cy={150 / 2}
           r={radius}
-          strokeWidth={`${strokeWidth}px`}
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          strokeWidth={`${10}px`}
+          transform={`rotate(-90 ${150 / 2} ${150 / 2})`}
           strokeDasharray={[dash, circumference - dash] as any}
           strokeLinecap="round"
           style={{
@@ -56,7 +54,7 @@ const CircularProgress = ({
           }}
         ></circle>
         <text
-          fill={color}
+          fill="#6EAEA9"
           fontSize="32px"
           fontFamily="Inter"
           fontStyle="normal"

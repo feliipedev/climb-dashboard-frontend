@@ -4,16 +4,17 @@ import Search from "../../assets/icons/search.svg";
 import Filter from "../../assets/icons/filter.svg";
 import CloseFilter from "../../assets/icons/close-filter.svg";
 import { useEffect, useState } from "react";
-import Select from "../../components/Select/Select";
-import CalendarIcon from "../../assets/icons/calendar.svg";
 import Pagination from "../../components/Pagination/Pagination";
 import CircularProgress from "../../components/CircularProgress/CircularProgress";
 import CircularProgressBarBase from "../../components/CircularProgress/CircleProgressBarBase";
 import ModalDetailsClient from "../../components/Modals/ModalDetailsClient/ModalDetailsClient";
 import { useNavigate } from "react-router-dom";
 import SelectModal from "../../components/SelectModal/SelectModal";
-
-export interface Select {
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+export interface Loan {
   name: string;
   cpf: string;
   email: string;
@@ -27,15 +28,10 @@ export interface Select {
 const Requests = (): JSX.Element => {
   const navigate = useNavigate();
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
-  const [disabledFilter, setDisabledFilter] = useState<boolean>(false);
-  const [selectOrder, setSelectOrder] = useState<boolean>(false);
-  const [selectDate, setSelectDate] = useState<boolean>(false);
-  const [selectPendente, setSelectPendente] = useState<boolean>(false);
-  const [selectEfetuado, setSelectEfetuado] = useState<boolean>(false);
+  const [select, setSelect] = useState<"Sim" | "Não" | "Order">();
   const [pg, setPg] = useState<number>(0);
   const [pp, setPp] = useState<number>(8);
   const [search, setSearch] = useState<string>("");
-  const [openDateInitial, setOpenDateInitial] = useState<boolean>(false);
   const [openModalDetails, setOpenModalDetails] = useState<boolean>(false);
   const [titleTable, setTitleTable] = useState<string[]>([
     "Nome",
@@ -47,7 +43,7 @@ const Requests = (): JSX.Element => {
     "V. Parcela",
     "Status",
   ]);
-  const [bodyTable, setBodyTable] = useState<Select[]>([
+  const [bodyTable, setBodyTable] = useState<Loan[]>([
     {
       name: "Ivete Prado Guimarães",
       cpf: "000.000.000-00",
@@ -149,12 +145,11 @@ const Requests = (): JSX.Element => {
       status: "Sim",
     },
   ]);
-  const [filteredItems, setFilteredItems] = useState<Select[]>([]);
-  const [messageNotFound, setMessageNotFound] = useState<string>();
+  const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
 
   useEffect(() => {
-    if (selectOrder) {
-      return setFilteredItems(
+    if (select === "Order") {
+      return setBodyTable(
         bodyTable.sort((a, b) =>
           a.name.toLowerCase() > b.name.toLowerCase()
             ? 1
@@ -164,42 +159,27 @@ const Requests = (): JSX.Element => {
         )
       );
     }
-    if (selectPendente) {
-      if (filteredItems.length !== 0)
-        setFilteredItems(filteredItems.filter((item) => item.status === "Não"));
-      if (filteredItems.length === 0)
-        setFilteredItems(bodyTable.filter((item) => item.status === "Não"));
-      return setDisabledFilter(true);
-    }
-    if (selectEfetuado) {
-      if (filteredItems.length === 0)
-        setFilteredItems(bodyTable.filter((item) => item.status === "Sim"));
-      if (filteredItems.length !== 0)
-        setFilteredItems(filteredItems.filter((item) => item.status === "Sim"));
-      return setDisabledFilter(true);
-    }
-  }, [selectOrder, selectPendente, selectEfetuado]);
+    if (select === "Não")
+      return setBodyTable(bodyTableAux.filter((item) => item.status === "Não"));
+
+    if (select === "Sim")
+      return setBodyTable(bodyTableAux.filter((item) => item.status === "Sim"));
+  }, [select]);
 
   useEffect(() => {
     if (search) {
-      let itemsFiltered = bodyTable.filter((item) =>
-        item.name.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())
+      setBodyTable(
+        bodyTable.filter((item) =>
+          item.name.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())
+        )
       );
-      if (itemsFiltered) {
-        setFilteredItems(itemsFiltered);
-      } else {
-        setMessageNotFound("Nenhum item encontrado.");
-      }
-    } else {
-      setDisabledFilter(false);
-      setFilteredItems([]);
     }
   }, [search]);
 
   const pages: number = Math.ceil(bodyTable ? bodyTable.length / pp : 0);
   const startIndex = pg * pp;
   const endIndex = startIndex + pp;
-  const current: any | undefined = bodyTable?.slice(startIndex, endIndex);
+  const current: Loan[] | undefined = bodyTable?.slice(startIndex, endIndex);
 
   return (
     <HomeStyled>
@@ -239,42 +219,41 @@ const Requests = (): JSX.Element => {
               </HeaderFilter>
               <BodyFilter>
                 <p>Ordenar por:</p>
-                <FlexContainer>
-                  <RadioButtonOrder
-                    type="radio"
-                    name="radioButtonOrder"
-                    value="radioButtonOrder"
-                    checked={selectOrder}
-                    onClick={() => setSelectOrder(!selectOrder)}
-                  />
-                  <RadioButtonLabelOrder />
-                  <span>Ordem alfabética</span>
-                </FlexContainer>
+                <FormControl>
+                  <RadioGroup
+                    aria-labelledby="demo-radio-buttons-group-label"
+                    name="radio-buttons-group"
+                  >
+                    <FormControlLabel
+                      value="order"
+                      control={<Radio />}
+                      label="Ordem alfabética"
+                      onChange={() => setSelect("Order")}
+                    />
+                  </RadioGroup>
+                </FormControl>
                 <p>Status de pagamento:</p>
-                <FlexContainer>
-                  <RadioButtonPendente
-                    type="radio"
-                    name="radioButton"
-                    value="radioButtonPendente"
-                    checked={selectPendente}
-                    onClick={() => setSelectPendente(!selectPendente)}
-                  />
-                  <RadioButtonLabelOrder />
-                  <span>Não</span>
-                  <RadioButtonEfetuado
-                    type="radio"
-                    name="radioButton"
-                    value="radioButtonEfetuado"
-                    checked={selectEfetuado}
-                    onClick={() => setSelectEfetuado(!selectEfetuado)}
-                  />
-                  <RadioButtonLabelDate />
-                  <span>Sim</span>
-                </FlexContainer>
+                <FormControl>
+                  <RadioGroup
+                    aria-labelledby="demo-radio-buttons-group-label"
+                    name="radio-buttons-group"
+                  >
+                    <FormControlLabel
+                      value="female"
+                      control={<Radio />}
+                      label="Sim"
+                      onChange={() => setSelect("Sim")}
+                    />
+                    <FormControlLabel
+                      value="male"
+                      control={<Radio />}
+                      label="Não"
+                      onChange={() => setSelect("Não")}
+                    />
+                  </RadioGroup>
+                </FormControl>
                 <FilterButtonStyled>
-                <ButtonFilterModal>
-                    Filtrar
-                  </ButtonFilterModal>
+                  <ButtonFilterModal>Filtrar</ButtonFilterModal>
                 </FilterButtonStyled>
               </BodyFilter>
             </FilterContainer>
@@ -289,44 +268,25 @@ const Requests = (): JSX.Element => {
                 return <th key={index}>{title}</th>;
               })}
           </tr>
-          {search !== "" || disabledFilter
-            ? filteredItems.map((body: Select, index: number) => {
-                return (
-                  <tr key={index}>
-                    <td>
-                      <>{body.name}</>
-                    </td>
-                    <td>{body.cpf}</td>
-                    <td>{body.email}</td>
-                    <td>{body.rendaMensal}</td>
-                    <td>{body.score}</td>
-                    <td>{body.emprestimo}</td>
-                    <td>{body.valorParcela}</td>
-                    <td>
-                      <SelectModal status={body.status} />
-                    </td>
-                  </tr>
-                );
-              })
-            : current.map((body: Select, index: number) => {
-                return (
-                  <tr key={index}>
-                    <td>
-                      <>{body.name}</>
-                    </td>
-                    <td>{body.cpf}</td>
-                    <td>{body.email}</td>
-                    <td>{body.rendaMensal}</td>
-                    <td>{body.score}</td>
-                    <td>{body.emprestimo}</td>
-                    <td>{body.valorParcela}</td>
-                    <td>
-                      {" "}
-                      <SelectModal status={body.status} />
-                    </td>
-                  </tr>
-                );
-              })}
+          {current.map((body: Loan, index: number) => {
+            return (
+              <tr key={index}>
+                <td>
+                  <>{body.name}</>
+                </td>
+                <td>{body.cpf}</td>
+                <td>{body.email}</td>
+                <td>{body.rendaMensal}</td>
+                <td>{body.score}</td>
+                <td>{body.emprestimo}</td>
+                <td>{body.valorParcela}</td>
+                <td>
+                  {" "}
+                  <SelectModal status={body.status} />
+                </td>
+              </tr>
+            );
+          })}
         </Table>
         <PaginationStyled>
           <Pagination
@@ -348,30 +308,15 @@ const Requests = (): JSX.Element => {
         <CircularStyled>
           <AlignContainer>
             <p>Pagos</p>
-            <CircularProgress
-              size={150}
-              strokeWidth={10}
-              percentage={75}
-              color="#79C6C0"
-            />
+            <CircularProgress percentage={75} />
           </AlignContainer>
           <AlignContainer>
             <p>Pendentes</p>
-            <CircularProgress
-              size={150}
-              strokeWidth={10}
-              percentage={30}
-              color="#79C6C0"
-            />
+            <CircularProgress percentage={30} />
           </AlignContainer>
           <AlignContainer>
             <p>Total</p>
-            <CircularProgressBarBase
-              size={150}
-              strokeWidth={10}
-              percentage={100}
-              color="#79C6C0"
-            />
+            <CircularProgressBarBase percentage={100} />
           </AlignContainer>
         </CircularStyled>
       </Container>
@@ -680,42 +625,6 @@ const RadioButtonPendente = styled.input`
   `}
 `;
 
-const RadioButtonDate = styled.input`
-  opacity: 0;
-  margin-top: 1px;
-  z-index: 1;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
-  position: absolute;
-  margin-left: 213px;
-  cursor: pointer;
-  &:hover ~ ${RadioButtonLabelDate} {
-    background: #bebebe;
-    cursor: pointer;
-  }
-  ${(props) =>
-    props.checked &&
-    ` 
-    &:checked + ${RadioButtonLabelDate} {
-      background: #fff;
-      border: 1px solid #6EAEA9;
-      &::after {
-        content: "";
-        display: block;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin-top: 2px;
-        margin-left: 2px;
-        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
-        background: #6EAEA9;
-      }
-    }
-  `}
-`;
-
 const RadioButtonEfetuado = styled.input`
   opacity: 0;
   margin-top: 1px;
@@ -791,52 +700,6 @@ const StyledCloseFilter = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-
-const CalendarDate = styled.div`
-  width: 88px;
-  height: 48px;
-  border-radius: 8px 0px 0px 8px;
-  backdrop-filter: blur(20px);
-  background: rgba(110, 174, 169, 0.2);
-  border: 1px solid #6eaea9;
-  padding: 15px 18px 15px 21px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: "Manrope", "Poppins";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 150%;
-  letter-spacing: 0.0168em;
-  color: #6eaea9;
-  cursor: pointer;
-  margin-bottom: 24px;
-  span {
-    margin-left: 8px;
-    font-family: "Manrope", "Poppins";
-    font-style: normal;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 150%;
-    letter-spacing: 0.0168em;
-    color: #6eaea9;
-  }
-`;
-
-const SelectDate = styled.div<{ isOpen: boolean }>`
-  visibility: ${(props) => (props.isOpen ? "visible" : "hidden")};
-  opacity: ${(props) => (props.isOpen ? 1 : 0)};
-  transition: all ease-in-out 0.3s;
-`;
-
-const CalendarStyled = styled.div<{ isOpen: boolean }>`
-  visibility: ${(props) => (props.isOpen ? "visible" : "hidden")};
-  display: ${(props) => (props.isOpen ? "block" : "none")};
-  opacity: ${(props) => (props.isOpen ? 1 : 0)};
-  position: absolute;
-  z-index: 2;
 `;
 
 const FilterButtonStyled = styled.div`

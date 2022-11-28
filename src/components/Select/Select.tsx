@@ -1,29 +1,24 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import ArrowDown from "../../assets/icons/arrow-down.svg";
-import { Select } from "../../pages/SideDish/SideDish";
+interface Status {
+  status: "Pendente" | "Em atraso" | "Efetuado";
+}
 
-type Status = "Pendente" | "Em atraso" | "Efetuado";
-
-const SelectContainer = ({ status }: any): JSX.Element => {
-  const [selectStatus, setSelectStatus] = useState<Status>(status);
+const SelectContainer = ({ status }: Status): JSX.Element => {
+  const [selectStatus, setSelectStatus] = useState<string | undefined>();
 
   return (
     <>
       <SelectContainerStyled
         name="status"
-        value={selectStatus}
-        onChange={(e) => setSelectStatus(e.target.value as Status)}
+        value={status}
+        onChange={(e) => setSelectStatus(e.target.value)}
+        defaultValue={status}
       >
-        <Option value="Em atraso" selected={status === "Em atraso" ? true : false}>
-          Em atraso
-        </Option>
-        <Option value="Pendente" selected={status === "Pendente"}>
-          Pendente
-        </Option>
-        <Option value="Efetuado" selected={status === "Efetuado"}>
-          Efetuado
-        </Option>
+        <Option value="Em atraso">Em atraso</Option>
+        <Option value="Pendente">Pendente</Option>
+        <Option value="Efetuado">Efetuado</Option>
       </SelectContainerStyled>
     </>
   );

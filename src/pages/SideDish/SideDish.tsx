@@ -14,7 +14,11 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import ModalDetailsClient from "../../components/Modals/ModalDetailsClient/ModalDetailsClient";
 import FilterComponent from "../../components/Filter/Filter";
-export interface Select {
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+export interface Loan {
   name: string;
   email: string;
   date: string;
@@ -26,18 +30,14 @@ export interface Select {
 const SideDish = (): JSX.Element => {
   const navigate = useNavigate();
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
-  const [disabledFilter, setDisabledFilter] = useState<boolean>(false);
-  const [selectOrdem, setSelectOrdem] = useState<boolean>(false);
   const [selectData, setSelectData] = useState<boolean>(false);
-  const [selectPendente, setSelectPendente] = useState<boolean>(false);
-  const [selectEfetuado, setSelectEfetuado] = useState<boolean>(false);
+  const [select, setSelect] = useState<"Pendente" | "Efetuado" | "Order">();
   const [pg, setPg] = useState<number>(0);
   const [pp, setPp] = useState<number>(8);
   const [search, setSearch] = useState<string>("");
   const [dateInitial, setDateInitial] = useState<Date>();
   const [openDateInitial, setOpenDateInitial] = useState(false);
   const [dateEnd, setDateEnd] = useState<Date>();
-  const [openDateEnd, setOpenDateEnd] = useState(false);
   const [openModalDetails, setOpenModalDetails] = useState<boolean>(false);
   const [titleTable, setTitleTable] = useState<string[]>([
     "Cliente",
@@ -47,7 +47,7 @@ const SideDish = (): JSX.Element => {
     "Parcela",
     "Status de pagamento",
   ]);
-  const [bodyTable, setBodyTable] = useState<Select[]>([
+  const [bodyTable, setBodyTable] = useState<Loan[]>([
     {
       name: "Amanda Gomes Rocha",
       email: "amandarocha@email.com",
@@ -313,27 +313,26 @@ const SideDish = (): JSX.Element => {
       status: "Efetuado",
     },
   ]);
-  const [bodyTableAux, setBodyTableAux] = useState<Select[]>(bodyTable);
-  const [filteredItems, setFilteredItems] = useState<Select[]>([]);
+  const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
 
   useEffect(() => {
-    if (selectOrdem) {
-      return setBodyTable(
-        bodyTable.sort((a, b) =>
-          a.name.toLowerCase() > b.name.toLowerCase()
-            ? 1
-            : b.name.toLowerCase() > a.name.toLowerCase()
-            ? -1
-            : 0
-        )
+    console.log(select);
+    if (select === "Order") {
+      let teste = bodyTable.sort((a, b) =>
+        a.name.toLowerCase() > b.name.toLowerCase()
+          ? 1
+          : b.name.toLowerCase() > a.name.toLowerCase()
+          ? -1
+          : 0
       );
+      setBodyTable(teste);
     }
-    if (selectPendente) {
-      setBodyTable(bodyTable.filter((item) => item.status === "Pendente"));
-    }
-    if (selectEfetuado) {
-      setBodyTable(bodyTable.filter((item) => item.status === "Efetuado"));
-    }
+    if (select === "Pendente")
+      setBodyTable(bodyTableAux.filter((item) => item.status === "Pendente"));
+
+    if (select === "Efetuado")
+      setBodyTable(bodyTableAux.filter((item) => item.status === "Efetuado"));
+
     if (dateInitial && dateEnd) {
       var dia = String(dateInitial.getDate()).padStart(2, "0");
       var mes = String(dateInitial.getMonth() + 1).padStart(2, "0");
@@ -352,14 +351,7 @@ const SideDish = (): JSX.Element => {
         })
       );
     }
-  }, [
-    selectPendente,
-    selectEfetuado,
-    selectData,
-    selectOrdem,
-    dateInitial,
-    dateEnd,
-  ]);
+  }, [select, dateInitial, dateEnd]);
 
   useEffect(() => {
     if (search) {
@@ -392,9 +384,7 @@ const SideDish = (): JSX.Element => {
   const pages: number = Math.ceil(bodyTable ? bodyTable.length / pp : 0);
   const startIndex = pg * pp;
   const endIndex = startIndex + pp;
-  const current: Select[] | undefined = bodyTable?.slice(startIndex, endIndex);
-
-  console.log(current)
+  const current: Loan[] | undefined = bodyTable?.slice(startIndex, endIndex);
 
   return (
     <HomeStyled>
@@ -436,38 +426,39 @@ const SideDish = (): JSX.Element => {
               </HeaderFilter>
               <BodyFilter>
                 <p>Ordenar por:</p>
-                <FlexContainer>
-                  <RadioButtonOrdem
-                    type="radio"
-                    name="radioButtonType"
-                    value="radioButtonOrder"
-                    checked={selectOrdem}
-                    onChange={() => setSelectOrdem(!selectOrdem)}
-                  />
-                  <RadioButtonLabelOrder />
-                  <span>Ordem alfabética</span>
-                </FlexContainer>
+                <FormControl>
+                  <RadioGroup
+                    aria-labelledby="demo-radio-buttons-group-label"
+                    name="radio-buttons-group"
+                  >
+                    <FormControlLabel
+                      value="other"
+                      control={<Radio />}
+                      label="Ordem alfabética"
+                      onChange={() => setSelect("Order")}
+                    />
+                  </RadioGroup>
+                </FormControl>
                 <p>Status de pagamento:</p>
-                <FlexContainer>
-                  <RadioButtonPendente
-                    type="radio"
-                    name="radioButtonStatus"
-                    value="radioButtonPendente"
-                    checked={selectPendente}
-                    onChange={() => setSelectPendente(!selectPendente)}
-                  />
-                  <RadioButtonLabelOrder />
-                  <span>Pendente</span>
-                  <RadioButtonEfetuado
-                    type="radio"
-                    name="radioButtonStatus"
-                    value="radioButtonEfetuado"
-                    checked={selectEfetuado}
-                    onChange={() => setSelectEfetuado(!selectEfetuado)}
-                  />
-                  <RadioButtonLabelDate />
-                  <span>Efetuado</span>
-                </FlexContainer>
+                <FormControl>
+                  <RadioGroup
+                    aria-labelledby="demo-radio-buttons-group-label"
+                    name="radio-buttons-group"
+                  >
+                    <FormControlLabel
+                      value="female"
+                      control={<Radio />}
+                      label="Efetuado"
+                      onChange={() => setSelect("Efetuado")}
+                    />
+                    <FormControlLabel
+                      value="male"
+                      control={<Radio />}
+                      label="Pendente"
+                      onChange={() => setSelect("Pendente")}
+                    />
+                  </RadioGroup>
+                </FormControl>
                 <SelectDate>
                   <p>Selecionar período:</p>
                   <FlexContainer>
@@ -490,7 +481,6 @@ const SideDish = (): JSX.Element => {
                       setDate={setDateEnd}
                     />
                   </FlexContainer>
-                  <CalendarStyled isOpen={openDateEnd}></CalendarStyled>
                 </SelectDate>
                 <FilterButtonStyled>
                   <ButtonFilterModal isOpen={selectData}>
@@ -510,7 +500,7 @@ const SideDish = (): JSX.Element => {
                 return <th key={index}>{title}</th>;
               })}
           </tr>
-          {current.map((body: Select, index: number) => {
+          {current.map((body: Loan, index: number) => {
             return (
               <tr key={index}>
                 <td>
@@ -560,30 +550,15 @@ const SideDish = (): JSX.Element => {
         <CircularStyled>
           <AlignContainer>
             <p>Pagos</p>
-            <CircularProgress
-              size={150}
-              strokeWidth={10}
-              percentage={75}
-              color="#79C6C0"
-            />
+            <CircularProgress percentage={75} />
           </AlignContainer>
           <AlignContainer>
             <p>Pendentes</p>
-            <CircularProgress
-              size={150}
-              strokeWidth={10}
-              percentage={30}
-              color="#79C6C0"
-            />
+            <CircularProgress percentage={30} />
           </AlignContainer>
           <AlignContainer>
             <p>Total</p>
-            <CircularProgressBarBase
-              size={150}
-              strokeWidth={10}
-              percentage={100}
-              color="#79C6C0"
-            />
+            <CircularProgressBarBase percentage={100} />
           </AlignContainer>
         </CircularStyled>
       </Container>

@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import ArrowDown from "../../assets/icons/arrow-down.svg";
-import { Select } from "../../pages/SideDish/SideDish";
+interface Status {
+  status: "Sim" | "Não";
+}
 
-type Status = "Sim" | "Não";
-
-const SelectContainer = (status: { status: Status }): JSX.Element => {
-  const [selectStatus, setSelectStatus] = useState<Status>(status.status);
+const SelectContainer = ({ status }: Status): JSX.Element => {
+  const [selectStatus, setSelectStatus] = useState<string | undefined>();
 
   return (
     <>
       <SelectContainerStyled
         name="status"
-        value={selectStatus}
-        onChange={(e) => setSelectStatus(e.target.value as Status)}
+        value={status}
+        onChange={(e) => setSelectStatus(e.target.value)}
       >
         <Option value="Sim">Sim</Option>
         <Option value="Não">Não</Option>

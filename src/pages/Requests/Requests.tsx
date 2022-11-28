@@ -55,7 +55,7 @@ const Requests = (): JSX.Element => {
       status: "Não",
     },
     {
-      name: "Ivete Prado Guimarães",
+      name: "avete Prado Guimarães",
       cpf: "000.000.000-00",
       email: "ivete@gmail.com",
       rendaMensal: "R$ 10000,00",
@@ -65,7 +65,7 @@ const Requests = (): JSX.Element => {
       status: "Sim",
     },
     {
-      name: "Ivete Prado Guimarães",
+      name: "bvete Prado Guimarães",
       cpf: "000.000.000-00",
       email: "ivete@gmail.com",
       rendaMensal: "R$ 10000,00",
@@ -75,7 +75,7 @@ const Requests = (): JSX.Element => {
       status: "Não",
     },
     {
-      name: "Ivete Prado Guimarães",
+      name: "cvete Prado Guimarães",
       cpf: "000.000.000-00",
       email: "ivete@gmail.com",
       rendaMensal: "R$ 10000,00",
@@ -85,7 +85,7 @@ const Requests = (): JSX.Element => {
       status: "Sim",
     },
     {
-      name: "Ivete Prado Guimarães",
+      name: "dvete Prado Guimarães",
       cpf: "000.000.000-00",
       email: "ivete@gmail.com",
       rendaMensal: "R$ 10000,00",
@@ -95,7 +95,7 @@ const Requests = (): JSX.Element => {
       status: "Não",
     },
     {
-      name: "Ivete Prado Guimarães",
+      name: "evete Prado Guimarães",
       cpf: "000.000.000-00",
       email: "ivete@gmail.com",
       rendaMensal: "R$ 10000,00",
@@ -147,24 +147,27 @@ const Requests = (): JSX.Element => {
   ]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
 
-  useEffect(() => {
+  const handleFilter = () => {
     if (select === "Order") {
-      return setBodyTable(
-        bodyTable.sort((a, b) =>
-          a.name.toLowerCase() > b.name.toLowerCase()
-            ? 1
-            : b.name.toLowerCase() > a.name.toLowerCase()
-            ? -1
-            : 0
-        )
+      bodyTable.sort((a, b) =>
+        a.name.toLowerCase() > b.name.toLowerCase()
+          ? 1
+          : b.name.toLowerCase() > a.name.toLowerCase()
+          ? -1
+          : 0
       );
+      setOpenModalFilter(false);
     }
-    if (select === "Não")
-      return setBodyTable(bodyTableAux.filter((item) => item.status === "Não"));
+    if (select === "Não") {
+      setBodyTable(bodyTableAux.filter((item) => item.status === "Não"));
+      setOpenModalFilter(false);
+    }
 
-    if (select === "Sim")
-      return setBodyTable(bodyTableAux.filter((item) => item.status === "Sim"));
-  }, [select]);
+    if (select === "Sim") {
+      setBodyTable(bodyTableAux.filter((item) => item.status === "Sim"));
+      setOpenModalFilter(false);
+    } 
+  };
 
   useEffect(() => {
     if (search) {
@@ -173,6 +176,8 @@ const Requests = (): JSX.Element => {
           item.name.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())
         )
       );
+    } else {
+      setBodyTable(bodyTableAux);
     }
   }, [search]);
 
@@ -217,45 +222,43 @@ const Requests = (): JSX.Element => {
                   <img src={CloseFilter} alt="fechar filtro" />
                 </StyledCloseFilter>
               </HeaderFilter>
-              <BodyFilter>
-                <p>Ordenar por:</p>
-                <FormControl>
-                  <RadioGroup
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    name="radio-buttons-group"
-                  >
+              <FormControl>
+                <RadioGroup
+                  row={true}
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                >
+                  <BodyFilter>
+                    <p>Ordenar por:</p>
                     <FormControlLabel
                       value="order"
                       control={<Radio />}
                       label="Ordem alfabética"
                       onChange={() => setSelect("Order")}
                     />
-                  </RadioGroup>
-                </FormControl>
-                <p>Status de pagamento:</p>
-                <FormControl>
-                  <RadioGroup
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    name="radio-buttons-group"
-                  >
-                    <FormControlLabel
-                      value="female"
-                      control={<Radio />}
-                      label="Sim"
-                      onChange={() => setSelect("Sim")}
-                    />
-                    <FormControlLabel
-                      value="male"
-                      control={<Radio />}
-                      label="Não"
-                      onChange={() => setSelect("Não")}
-                    />
-                  </RadioGroup>
-                </FormControl>
-                <FilterButtonStyled>
-                  <ButtonFilterModal>Filtrar</ButtonFilterModal>
-                </FilterButtonStyled>
-              </BodyFilter>
+                    <p>Status de pagamento:</p>
+                    <FlexContainer>
+                      <FormControlLabel
+                        value="female"
+                        control={<Radio />}
+                        label="Sim"
+                        onChange={() => setSelect("Sim")}
+                      />
+                      <FormControlLabel
+                        value="male"
+                        control={<Radio />}
+                        label="Não"
+                        onChange={() => setSelect("Não")}
+                      />
+                    </FlexContainer>
+                  </BodyFilter>
+                </RadioGroup>
+              </FormControl>
+              <FilterButtonStyled>
+                <ButtonFilterModal onClick={() => handleFilter()}>
+                  Filtrar
+                </ButtonFilterModal>
+              </FilterButtonStyled>
             </FilterContainer>
           </CollumnContainer>
         </TitleStyled>

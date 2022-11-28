@@ -315,23 +315,26 @@ const SideDish = (): JSX.Element => {
   ]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
 
-  useEffect(() => {
-    console.log(select);
+  const handleFilter = () => {
     if (select === "Order") {
-      let teste = bodyTable.sort((a, b) =>
+      bodyTable.sort((a, b) =>
         a.name.toLowerCase() > b.name.toLowerCase()
           ? 1
           : b.name.toLowerCase() > a.name.toLowerCase()
           ? -1
           : 0
       );
-      setBodyTable(teste);
+      setOpenModalFilter(false);
     }
-    if (select === "Pendente")
+    if (select === "Pendente") {
       setBodyTable(bodyTableAux.filter((item) => item.status === "Pendente"));
+      setOpenModalFilter(false);
+    }
 
-    if (select === "Efetuado")
+    if (select === "Efetuado") {
       setBodyTable(bodyTableAux.filter((item) => item.status === "Efetuado"));
+      setOpenModalFilter(false);
+    }
 
     if (dateInitial && dateEnd) {
       var dia = String(dateInitial.getDate()).padStart(2, "0");
@@ -350,8 +353,9 @@ const SideDish = (): JSX.Element => {
           return moment(date2).isBefore(date1) && moment(date3).isAfter(date1);
         })
       );
+      setOpenModalFilter(false);
     }
-  }, [select, dateInitial, dateEnd]);
+  };
 
   useEffect(() => {
     if (search) {
@@ -425,40 +429,39 @@ const SideDish = (): JSX.Element => {
                 </StyledCloseFilter>
               </HeaderFilter>
               <BodyFilter>
-                <p>Ordenar por:</p>
                 <FormControl>
                   <RadioGroup
                     aria-labelledby="demo-radio-buttons-group-label"
                     name="radio-buttons-group"
                   >
+                    <CollumnContainer>
+                    <p>Ordenar por:</p>
+
                     <FormControlLabel
                       value="other"
                       control={<Radio />}
                       label="Ordem alfabética"
                       onChange={() => setSelect("Order")}
                     />
+                    </CollumnContainer>
+                    
+                    <p>Status de pagamento:</p>
+                    <FlexContainer>
+                      <FormControlLabel
+                        value="female"
+                        control={<Radio />}
+                        label="Efetuado"
+                        onChange={() => setSelect("Efetuado")}
+                      />
+                      <FormControlLabel
+                        value="male"
+                        control={<Radio />}
+                        label="Pendente"
+                        onChange={() => setSelect("Pendente")}
+                      />
+                    </FlexContainer>
                   </RadioGroup>
-                </FormControl>
-                <p>Status de pagamento:</p>
-                <FormControl>
-                  <RadioGroup
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    name="radio-buttons-group"
-                  >
-                    <FormControlLabel
-                      value="female"
-                      control={<Radio />}
-                      label="Efetuado"
-                      onChange={() => setSelect("Efetuado")}
-                    />
-                    <FormControlLabel
-                      value="male"
-                      control={<Radio />}
-                      label="Pendente"
-                      onChange={() => setSelect("Pendente")}
-                    />
-                  </RadioGroup>
-                </FormControl>
+                </FormControl>{" "}
                 <SelectDate>
                   <p>Selecionar período:</p>
                   <FlexContainer>
@@ -482,12 +485,13 @@ const SideDish = (): JSX.Element => {
                     />
                   </FlexContainer>
                 </SelectDate>
-                <FilterButtonStyled>
-                  <ButtonFilterModal isOpen={selectData}>
-                    Filtrar
-                  </ButtonFilterModal>
-                </FilterButtonStyled>
               </BodyFilter>
+
+              <FilterButtonStyled>
+                <ButtonFilterModal onClick={() => handleFilter()}>
+                  Filtrar
+                </ButtonFilterModal>
+              </FilterButtonStyled>
             </FilterContainer>
           </CollumnContainer>
         </TitleStyled>
@@ -1072,6 +1076,7 @@ const CalendarDate = styled.div`
   letter-spacing: 0.0168em;
   color: #6eaea9;
   cursor: pointer;
+  margin-left: 24px;
   span {
     margin-left: 8px;
     font-family: "Manrope", "Poppins";
@@ -1100,8 +1105,8 @@ const FilterButtonStyled = styled.div`
   justify-content: center;
 `;
 
-const ButtonFilterModal = styled.button<{ isOpen: boolean }>`
-  margin-top: ${(props) => (props.isOpen ? "16px" : "40px")};
+const ButtonFilterModal = styled.button`
+  margin-top: 16px;
   width: 195px;
   height: 49px;
   background: #39c6bb;

@@ -225,4 +225,7 @@ export default createGlobalStyle`
   .jTclCn p{
     margin-left: 24px !important;
   }
+  .glnTBh p{
+    margin-left: 24px !important;
+  }
 `;

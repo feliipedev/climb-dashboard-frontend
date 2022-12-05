@@ -18,6 +18,10 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
+import { toast } from "react-toastify";
+import { getLoans } from "../../services/loan";
+import Spinner from "../../components/Spinner/Spinner";
+
 export interface Loan {
   name: string;
   email: string;
@@ -48,273 +52,9 @@ const SideDish = (): JSX.Element => {
     "Parcela",
     "Status de pagamento",
   ]);
-  const [bodyTable, setBodyTable] = useState<Loan[]>([
-    {
-      name: "Amanda Gomes Rocha",
-      email: "amandarocha@email.com",
-      date: "21/11/2022",
-      quantity: "R$ 15000,00",
-      parcela: "2/24",
-      status: "Pendente",
-    },
-    {
-      name: "Rafael Silva Mateus",
-      email: "rafael@email.com",
-      date: "21/10/2022",
-      quantity: "R$ 18000,00",
-      parcela: "6/24",
-      status: "Em atraso",
-    },
-    {
-      name: "Conh MackBook",
-      email: "jonh@email.com",
-      date: "21/08/2022",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Donh MackBook",
-      email: "jonh@email.com",
-      date: "14/06/2022",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Eonh MackBook",
-      email: "jonh@email.com",
-      date: "14/05/2001",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Fonh MackBook",
-      email: "jonh@email.com",
-      date: "14/04/2006",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Amanda Gomes Rocha",
-      email: "amandarocha@email.com",
-      date: "10/05/2022",
-      quantity: "R$ 15000,00",
-      parcela: "2/24",
-      status: "Pendente",
-    },
-    {
-      name: "Amanda Gomes Rocha",
-      email: "amandarocha@email.com",
-      date: "10/05/2022",
-      quantity: "R$ 15000,00",
-      parcela: "2/24",
-      status: "Pendente",
-    },
-    {
-      name: "Amanda Gomes Rocha",
-      email: "amandarocha@email.com",
-      date: "10/05/2022",
-      quantity: "R$ 15000,00",
-      parcela: "2/24",
-      status: "Pendente",
-    },
-    {
-      name: "Amanda Gomes Rocha",
-      email: "amandarocha@email.com",
-      date: "10/05/2022",
-      quantity: "R$ 15000,00",
-      parcela: "2/24",
-      status: "Pendente",
-    },
-    {
-      name: "Rafael Silva Mateus",
-      email: "rafael@email.com",
-      date: "30/08/1970",
-      quantity: "R$ 18000,00",
-      parcela: "6/24",
-      status: "Em atraso",
-    },
-    {
-      name: "Conh MackBook",
-      email: "jonh@email.com",
-      date: "14/06/1999",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Donh MackBook",
-      email: "jonh@email.com",
-      date: "14/06/2000",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Eonh MackBook",
-      email: "jonh@email.com",
-      date: "14/05/2001",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Fonh MackBook",
-      email: "jonh@email.com",
-      date: "14/04/2006",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Amanda Gomes Rocha",
-      email: "amandarocha@email.com",
-      date: "10/05/2022",
-      quantity: "R$ 15000,00",
-      parcela: "2/24",
-      status: "Pendente",
-    },
-    {
-      name: "Rafael Silva Mateus",
-      email: "rafael@email.com",
-      date: "30/08/1970",
-      quantity: "R$ 18000,00",
-      parcela: "6/24",
-      status: "Em atraso",
-    },
-    {
-      name: "Conh MackBook",
-      email: "jonh@email.com",
-      date: "14/06/1999",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Donh MackBook",
-      email: "jonh@email.com",
-      date: "14/06/2000",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Eonh MackBook",
-      email: "jonh@email.com",
-      date: "14/05/2001",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Fonh MackBook",
-      email: "jonh@email.com",
-      date: "14/04/2006",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Amanda Gomes Rocha",
-      email: "amandarocha@email.com",
-      date: "10/05/2022",
-      quantity: "R$ 15000,00",
-      parcela: "2/24",
-      status: "Pendente",
-    },
-    {
-      name: "Rafael Silva Mateus",
-      email: "rafael@email.com",
-      date: "30/08/1970",
-      quantity: "R$ 18000,00",
-      parcela: "6/24",
-      status: "Em atraso",
-    },
-    {
-      name: "Conh MackBook",
-      email: "jonh@email.com",
-      date: "14/06/2021",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Donh MackBook",
-      email: "jonh@email.com",
-      date: "14/06/2000",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Eonh MackBook",
-      email: "jonh@email.com",
-      date: "14/05/2001",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Fonh MackBook",
-      email: "jonh@email.com",
-      date: "14/04/2006",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Amanda Gomes Rocha",
-      email: "amandarocha@email.com",
-      date: "10/05/2022",
-      quantity: "R$ 15000,00",
-      parcela: "2/24",
-      status: "Pendente",
-    },
-    {
-      name: "Rafael Silva Mateus",
-      email: "rafael@email.com",
-      date: "30/08/1970",
-      quantity: "R$ 18000,00",
-      parcela: "6/24",
-      status: "Em atraso",
-    },
-    {
-      name: "Conh MackBook",
-      email: "jonh@email.com",
-      date: "14/06/1999",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Donh MackBook",
-      email: "jonh@email.com",
-      date: "14/06/2000",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Eonh MackBook",
-      email: "jonh@email.com",
-      date: "14/05/2001",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-    {
-      name: "Fonh MackBook",
-      email: "jonh@email.com",
-      date: "14/04/2006",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-  ]);
+  const [bodyTable, setBodyTable] = useState<Loan[]>([]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -398,186 +138,225 @@ const SideDish = (): JSX.Element => {
   const endIndex = startIndex + pp;
   const current: Loan[] | undefined = bodyTable?.slice(startIndex, endIndex);
 
+  useEffect(() => {
+    handleRequest();
+  }, []);
+
+  const handleRequest = async () => {
+    setLoading(true);
+
+    await getLoans().then((res) => {
+      if (res.internal_code === 200) {
+        setTimeout(() => {
+          res.result.map((res: any, index: number) => {
+            let loan: Loan = {
+              name: "Jonh MackBook" + index,
+              email: `teste${index}@gmail.com`,
+              date: moment(res.vencimento).format("DD/MM/YYYY") ,
+              quantity: res.numero_parcela,
+              status: res.status === "A Pagar" ? "Pendente" : "Efetuado",
+              parcela: "2/24",
+            };
+            setBodyTable((current) => [...current, loan]);
+          });
+          setLoading(false);
+        }, 2000);
+      } else {
+        toast.error("Falha ao conectar com o servidor...");
+      }
+    });
+  };
+
   return (
     <HomeStyled>
       <Header />
-      <Container>
-        <FlexContainer>
-          <Title onClick={() => navigate("/")}>Acompanhamento</Title>
-          <TitleTwo onClick={() => navigate("/solicitacoes")}>
-            Solicitações
-          </TitleTwo>
-        </FlexContainer>
-      </Container>
-      <Container>
-        <TitleStyled>
-          <SubTitle>Mostrando perído:</SubTitle>
-          <DateTitle>01 de maio de 2022</DateTitle>
-          <SubTitle>a</SubTitle>
-          <DateTitle>25 de maio de 2022</DateTitle>
-          <InputStyled>
-            <InputSearch
-              placeholder="Buscar por nome"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <img src={Search} alt="search" />
-          </InputStyled>
-          <CollumnContainer>
-            <ButtonFilter onClick={() => setOpenModalFilter(true)}>
-              <>Filtro</>
-              <img src={Filter} alt="filtro icon" />
-            </ButtonFilter>
-            <FilterContainer isOpen={openModalFilter}>
-              <HeaderFilter>
-                <div></div>
-                <p>Filtro</p>
-                <StyledCloseFilter onClick={() => setOpenModalFilter(false)}>
-                  <img src={CloseFilter} alt="fechar filtro" />
-                </StyledCloseFilter>
-              </HeaderFilter>
-              <BodyFilter>
-                <FormControl>
-                  <RadioGroup
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    name="radio-buttons-group"
-                  >
-                    <FormControlLabel
-                      value="clear"
-                      control={<Radio />}
-                      label="Limpar filtros"
-                      onChange={() => setSelect("Clear")}
-                    />
-                    <CollumnContainer>
-                      <p>Ordenar por:</p>
-                      <FormControlLabel
-                        value="other"
-                        control={<Radio />}
-                        label="Ordem alfabética"
-                        onChange={() => setSelect("Order")}
-                      />
-                    </CollumnContainer>
-                    <p>Status de pagamento:</p>
-                    <FlexContainer>
-                      <FormControlLabel
-                        value="female"
-                        control={<Radio />}
-                        label="Efetuado"
-                        onChange={() => setSelect("Efetuado")}
-                      />
-                      <FormControlLabel
-                        value="male"
-                        control={<Radio />}
-                        label="Pendente"
-                        onChange={() => setSelect("Pendente")}
-                      />
-                    </FlexContainer>
-                  </RadioGroup>
-                </FormControl>{" "}
-                <SelectDate>
-                  <p>Selecionar período:</p>
-                  <FlexContainer>
-                    <CalendarDate>
-                      <img src={CalendarIcon} alt="calendario" />
-                      <span>De</span>
-                    </CalendarDate>
-                    <FilterComponent
-                      date={dateInitial as Date}
-                      setDate={setDateInitial}
-                    />
-                  </FlexContainer>
-                  <FlexContainer>
-                    <CalendarDate>
-                      <img src={CalendarIcon} alt="calendario" />
-                      <span>Até</span>
-                    </CalendarDate>
-                    <FilterComponent
-                      date={dateEnd as Date}
-                      setDate={setDateEnd}
-                    />
-                  </FlexContainer>
-                </SelectDate>
-              </BodyFilter>
+      {loading ? (
+        <StyledLoading>
+          <Spinner />
+        </StyledLoading>
+      ) : (
+        <>
+          <Container>
+            <FlexContainer>
+              <Title onClick={() => navigate("/")}>Acompanhamento</Title>
+              <TitleTwo onClick={() => navigate("/solicitacoes")}>
+                Solicitações
+              </TitleTwo>
+            </FlexContainer>
+          </Container>
+          <Container>
+            <TitleStyled>
+              <SubTitle>Mostrando perído:</SubTitle>
+              <DateTitle>01 de maio de 2022</DateTitle>
+              <SubTitle>a</SubTitle>
+              <DateTitle>25 de maio de 2022</DateTitle>
+              <InputStyled>
+                <InputSearch
+                  placeholder="Buscar por nome"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <img src={Search} alt="search" />
+              </InputStyled>
+              <CollumnContainer>
+                <ButtonFilter onClick={() => setOpenModalFilter(true)}>
+                  <>Filtro</>
+                  <img src={Filter} alt="filtro icon" />
+                </ButtonFilter>
+                <FilterContainer isOpen={openModalFilter}>
+                  <HeaderFilter>
+                    <div></div>
+                    <p>Filtro</p>
+                    <StyledCloseFilter
+                      onClick={() => setOpenModalFilter(false)}
+                    >
+                      <img src={CloseFilter} alt="fechar filtro" />
+                    </StyledCloseFilter>
+                  </HeaderFilter>
+                  <BodyFilter>
+                    <FormControl>
+                      <RadioGroup
+                        aria-labelledby="demo-radio-buttons-group-label"
+                        name="radio-buttons-group"
+                      >
+                        <FormControlLabel
+                          value="clear"
+                          control={<Radio />}
+                          label="Limpar filtros"
+                          onChange={() => setSelect("Clear")}
+                        />
+                        <CollumnContainer>
+                          <p>Ordenar por:</p>
+                          <FormControlLabel
+                            value="other"
+                            control={<Radio />}
+                            label="Ordem alfabética"
+                            onChange={() => setSelect("Order")}
+                          />
+                        </CollumnContainer>
+                        <p>Status de pagamento:</p>
+                        <FlexContainer>
+                          <FormControlLabel
+                            value="female"
+                            control={<Radio />}
+                            label="Efetuado"
+                            onChange={() => setSelect("Efetuado")}
+                          />
+                          <FormControlLabel
+                            value="male"
+                            control={<Radio />}
+                            label="Pendente"
+                            onChange={() => setSelect("Pendente")}
+                          />
+                        </FlexContainer>
+                      </RadioGroup>
+                    </FormControl>{" "}
+                    <SelectDate>
+                      <p>Selecionar período:</p>
+                      <FlexContainer>
+                        <CalendarDate>
+                          <img src={CalendarIcon} alt="calendario" />
+                          <span>De</span>
+                        </CalendarDate>
+                        <FilterComponent
+                          date={dateInitial as Date}
+                          setDate={setDateInitial}
+                        />
+                      </FlexContainer>
+                      <FlexContainer>
+                        <CalendarDate>
+                          <img src={CalendarIcon} alt="calendario" />
+                          <span>Até</span>
+                        </CalendarDate>
+                        <FilterComponent
+                          date={dateEnd as Date}
+                          setDate={setDateEnd}
+                        />
+                      </FlexContainer>
+                    </SelectDate>
+                  </BodyFilter>
 
-              <FilterButtonStyled>
-                <ButtonFilterModal onClick={() => handleFilter()}>
-                  Filtrar
-                </ButtonFilterModal>
-              </FilterButtonStyled>
-            </FilterContainer>
-          </CollumnContainer>
-        </TitleStyled>
-      </Container>
-      <Container>
-        <Table>
-          <tr>
-            {titleTable &&
-              titleTable.map((title: string, index: number) => {
-                return <th key={index}>{title}</th>;
-              })}
-          </tr>
-          {current.map((body: Loan, index: number) => {
-            return (
-              <tr key={index}>
-                <td>
-                  <>{body.name}</>
-                  <img
-                    src={Eye}
-                    alt="olho"
-                    onClick={() => setOpenModalDetails(true)}
-                  />
-                </td>
-                <td>{body.email}</td>
-                <td>{body.date}</td>
-                <td>{body.quantity}</td>
-                <td>{body.parcela}</td>
-                <td>
-                  <Select status={body.status} />
-                </td>
+                  <FilterButtonStyled>
+                    <ButtonFilterModal onClick={() => handleFilter()}>
+                      Filtrar
+                    </ButtonFilterModal>
+                  </FilterButtonStyled>
+                </FilterContainer>
+              </CollumnContainer>
+            </TitleStyled>
+          </Container>
+          <Container>
+            <Table>
+              <tr>
+                {titleTable &&
+                  titleTable.map((title: string, index: number) => {
+                    return <th key={index}>{title}</th>;
+                  })}
               </tr>
-            );
-          })}
-        </Table>
-        <PaginationStyled>
-          <Pagination
-            pages={pages}
-            pg={pg}
-            setPg={setPg}
-            lastPage={pages}
-            total={bodyTable ? bodyTable.length : 0}
-          />
-        </PaginationStyled>
-        <ShowTickets>
-          <p>Acompanhamento:</p>
-          <ButtonTicket onClick={() => handleFilterDate(7)}>
-            Últimos 7 dias
-          </ButtonTicket>
-          <ButtonTicket onClick={() => handleFilterDate(30)}>
-            Últimos 30 dias
-          </ButtonTicket>
-          <ButtonTicket onClick={() => handleFilterDate(90)}>
-            Últimos 3 meses
-          </ButtonTicket>
-          <ButtonTicket onClick={() => handleFilterDate(180)}>
-            Últimos 6 meses
-          </ButtonTicket>
-          <ButtonTicket>Escolher período</ButtonTicket>
-        </ShowTickets>
-        <CircularStyled>
-          <AlignContainer>
-            <p>Pagos</p>
-            <CircularProgress percentage={75} />
-          </AlignContainer>
-          <AlignContainer>
-            <p>Pendentes</p>
-            <CircularProgress percentage={30} />
-          </AlignContainer>
-          <AlignContainer>
-            <p>Total</p>
-            <CircularProgressBarBase percentage={100} />
-          </AlignContainer>
-        </CircularStyled>
-      </Container>
+              {current.map((body: Loan, index: number) => {
+                return (
+                  <tr key={index}>
+                    <td>
+                      <>{body.name}</>
+                      <img
+                        src={Eye}
+                        alt="olho"
+                        onClick={() => setOpenModalDetails(true)}
+                      />
+                    </td>
+                    <td>{body.email}</td>
+                    <td>{body.date}</td>
+                    <td>{body.quantity}</td>
+                    <td>{body.parcela}</td>
+                    <td>
+                      <Select status={body.status} />
+                    </td>
+                  </tr>
+                );
+              })}
+            </Table>
+            <PaginationStyled>
+              <Pagination
+                pages={pages}
+                pg={pg}
+                setPg={setPg}
+                lastPage={pages}
+                total={bodyTable ? bodyTable.length : 0}
+              />
+            </PaginationStyled>
+            <ShowTickets>
+              <p>Acompanhamento:</p>
+              <ButtonTicket onClick={() => handleFilterDate(7)}>
+                Últimos 7 dias
+              </ButtonTicket>
+              <ButtonTicket onClick={() => handleFilterDate(30)}>
+                Últimos 30 dias
+              </ButtonTicket>
+              <ButtonTicket onClick={() => handleFilterDate(90)}>
+                Últimos 3 meses
+              </ButtonTicket>
+              <ButtonTicket onClick={() => handleFilterDate(180)}>
+                Últimos 6 meses
+              </ButtonTicket>
+              <ButtonTicket>Escolher período</ButtonTicket>
+            </ShowTickets>
+            <CircularStyled>
+              <AlignContainer>
+                <p>Pagos</p>
+                <CircularProgress percentage={75} />
+              </AlignContainer>
+              <AlignContainer>
+                <p>Pendentes</p>
+                <CircularProgress percentage={30} />
+              </AlignContainer>
+              <AlignContainer>
+                <p>Total</p>
+                <CircularProgressBarBase percentage={100} />
+              </AlignContainer>
+            </CircularStyled>
+          </Container>
+        </>
+      )}
       <ModalDetailsClient
         isOpen={openModalDetails}
         onClose={setOpenModalDetails}
@@ -1217,4 +996,12 @@ const AlignContainer = styled.div`
   align-items: center;
   max-width: 200px;
   margin-bottom: 16px;
+`;
+
+const StyledLoading = styled.div`
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

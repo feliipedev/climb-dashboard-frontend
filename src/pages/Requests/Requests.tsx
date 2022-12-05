@@ -185,8 +185,8 @@ const Requests = (): JSX.Element => {
       setOpenModalFilter(false);
     }
     if (select === "Clear") {
-      setDateInitial(undefined)
-      setDateEnd(undefined)
+      setDateInitial(undefined);
+      setDateEnd(undefined);
       setOpenModalFilter(false);
       return setBodyTable(bodyTableAux);
     }
@@ -499,7 +499,7 @@ const DateTitle = styled.p`
 const InputSearch = styled.input`
   border: none;
   border-bottom: 2px solid #39c6bb;
-  background: #F5F5F5;
+  background: #f5f5f5;
   max-width: 272px;
   width: 100%;
   padding-left: 12px;
@@ -589,10 +589,24 @@ const Table = styled.table`
     }
     &:first-child {
       position: relative;
-      width: 295px;
+      width: 222px;
+      @media screen and (max-width: 1300px) {
+        width: 122px;
+      }
     }
     &:last-child {
       text-align: center;
+    }
+    &:nth-child(2) {
+      min-width: 120px;
+    }
+    @media screen and (max-width: 1300px) {
+      font-size: 14px;
+      line-height: 18px;
+    }
+    @media screen and (max-width: 1250px) {
+      font-size: 12px;
+      line-height: 16px;
     }
   }
 `;
@@ -777,6 +791,7 @@ const BodyFilter = styled.div`
     margin-top: 32px;
     color: #6eaea9;
     margin-bottom: 24px;
+    margin-left: 24px;
   }
   span {
     font-family: "Poppins";

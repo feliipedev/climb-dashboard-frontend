@@ -1,19 +1,32 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import ArrowDown from "../../assets/icons/arrow-down.svg";
-interface Status {
-  status: "Sim" | "Não";
+import { Loan } from "../../pages/Requests/Requests";
+
+interface Props {
+  loan: Loan;
+  loans: Loan[];
+  setLoans: any;
+  i: number;
 }
 
-const SelectContainer = ({ status }: Status): JSX.Element => {
-  const [selectStatus, setSelectStatus] = useState<string | undefined>();
+const SelectContainer = ({ loan, loans, setLoans, i }: Props): JSX.Element => {
+  const handleSetSelectStatus = (value: string) => {
+    let aux = loans.map((item, index: number) => {
+      if (index === i) {
+        return { ...item, status: value };
+      }
+      return item;
+    });
+    setLoans(aux);
+  };
 
   return (
     <>
       <SelectContainerStyled
         name="status"
-        value={status}
-        onChange={(e) => setSelectStatus(e.target.value)}
+        value={loan.status}
+        onChange={(e) => handleSetSelectStatus(e.target.value)}
       >
         <Option value="Sim">Sim</Option>
         <Option value="Não">Não</Option>

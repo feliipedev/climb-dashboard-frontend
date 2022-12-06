@@ -1,20 +1,33 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import ArrowDown from "../../assets/icons/arrow-down.svg";
-interface Status {
-  status: "Pendente" | "Em atraso" | "Efetuado";
+import { Loan } from "../../pages/SideDish/SideDish";
+
+interface Props {
+  loan: Loan;
+  loans: Loan[];
+  setLoans: any;
+  i: number;
 }
 
-const SelectContainer = ({ status }: Status): JSX.Element => {
-  const [selectStatus, setSelectStatus] = useState<string | undefined>();
+const SelectContainer = ({ loan, loans, setLoans, i }: Props): JSX.Element => {
+  const handleSetSelectStatus = (value: string) => {
+    let aux = loans.map((item, index: number) => {
+      if (index === i) {
+        return { ...item, status: value };
+      }
+      return item;
+    });
+    setLoans(aux);
+  };
 
   return (
     <>
       <SelectContainerStyled
         name="status"
-        value={status}
-        onChange={(e) => setSelectStatus(e.target.value)}
-        defaultValue={status}
+        value={loan.status}
+        defaultValue={loan.status}
+        onChange={(e) => handleSetSelectStatus(e.target.value)}
       >
         <Option value="Em atraso">Em atraso</Option>
         <Option value="Pendente">Pendente</Option>
@@ -32,8 +45,8 @@ const SelectContainerStyled = styled.select<{ value?: string }>`
   border: 1px solid #c4c4c4;
   border-radius: 4px;
   color: ${(props) => props.value === "Em atraso" && "#b01d1d"};
-  color: ${(props) => props.value === "Pendente" && "#0C7028"};
-  color: ${(props) => props.value === "Efetuado" && "#EDB900"};
+  color: ${(props) => props.value === "Pendente" && "#EDB900"};
+  color: ${(props) => props.value === "Efetuado" && "#0C7028"};
   padding: 8px;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -52,8 +65,8 @@ const SelectContainerStyled = styled.select<{ value?: string }>`
 
 const Option = styled.option<{ value?: string }>`
   color: ${(props) => props.value === "Em atraso" && "#b01d1d"};
-  color: ${(props) => props.value === "Pendente" && "#0C7028"};
-  color: ${(props) => props.value === "Efetuado" && "#EDB900"};
+  color: ${(props) => props.value === "Pendente" && "#EDB900"};
+  color: ${(props) => props.value === "Efetuado" && "#0C7028"};
   font-family: "Poppins";
   font-style: normal;
   font-weight: 500;

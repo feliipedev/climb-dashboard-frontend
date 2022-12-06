@@ -96,9 +96,11 @@ export default createGlobalStyle`
   }
   .react-datepicker__navigation--next {
     right: 18px;
+    top: -250px;
   }
   .react-datepicker__navigation--previous {
     left: 18px;
+    top: -250px;
   }
   .react-datepicker__day-names{
     border-top: 1.29957px solid #E0E0E0;
@@ -118,6 +120,9 @@ export default createGlobalStyle`
     line-height: 143%;
     letter-spacing: 0.018em;
     color: #818181;
+  }
+  .react-datepicker__month-container{
+    margin-top: -250px;
   }
   .react-datepicker__input-container{
     input{width: 152px;
@@ -190,7 +195,6 @@ export default createGlobalStyle`
   }
   .MuiFormGroup-root{
     flex-direction: row !important;
-    margin-left: -26px;
   }
   .MuiFormGroup-root :hover{
    background: none;
@@ -203,7 +207,25 @@ export default createGlobalStyle`
     fill : #6EAEA9 !important;
     background: none;
   }
-  .MuiFormControlLabel-root:nth-child(0){
-    margin-left: -16px;
+  .fkCLRm p {
+    margin-left: 24px;
+  }
+  .iocJID p {
+    margin-left: 24px;
+  }
+  .kJCoWD p {
+    margin-left: 24px !important;
+  }
+  .bhKvDX p{
+    margin-left: 24px !important;
+  }
+  .MuiFormControlLabel-root{
+    margin-left: -23px;
+  }
+  .jTclCn p{
+    margin-left: 24px !important;
+  }
+  .glnTBh p{
+    margin-left: 24px !important;
   }
 `;

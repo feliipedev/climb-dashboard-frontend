@@ -14,6 +14,10 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
+import moment from "moment";
+import CalendarIcon from "../../assets/icons/calendar.svg";
+import FilterComponent from "../../components/Filter/Filter";
+
 export interface Loan {
   name: string;
   cpf: string;
@@ -22,17 +26,20 @@ export interface Loan {
   score: string;
   emprestimo: string;
   valorParcela: string;
+  datPag: string;
   status: "Sim" | "Não";
 }
 
 const Requests = (): JSX.Element => {
   const navigate = useNavigate();
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
-  const [select, setSelect] = useState<"Sim" | "Não" | "Order">();
+  const [select, setSelect] = useState<"Sim" | "Não" | "Order" | "Clear">();
   const [pg, setPg] = useState<number>(0);
   const [pp, setPp] = useState<number>(8);
   const [search, setSearch] = useState<string>("");
   const [openModalDetails, setOpenModalDetails] = useState<boolean>(false);
+  const [dateInitial, setDateInitial] = useState<Date>();
+  const [dateEnd, setDateEnd] = useState<Date>();
   const [titleTable, setTitleTable] = useState<string[]>([
     "Nome",
     "CPF",
@@ -41,7 +48,8 @@ const Requests = (): JSX.Element => {
     "Score",
     "Empréstimo",
     "V. Parcela",
-    "Status",
+    "Data Pag",
+    "Aprovação",
   ]);
   const [bodyTable, setBodyTable] = useState<Loan[]>([
     {
@@ -52,16 +60,62 @@ const Requests = (): JSX.Element => {
       score: "160",
       emprestimo: "R$ 100.000,00",
       valorParcela: "R$ 10.000,00",
+      datPag: "28/11/2022",
       status: "Não",
     },
     {
-      name: "Ivete Prado Guimarães",
+      name: "avete Prado Guimarães",
       cpf: "000.000.000-00",
       email: "ivete@gmail.com",
       rendaMensal: "R$ 10000,00",
       score: "160",
       emprestimo: "",
       valorParcela: "",
+      datPag: "28/10/2022",
+      status: "Sim",
+    },
+    {
+      name: "bvete Prado Guimarães",
+      cpf: "000.000.000-00",
+      email: "ivete@gmail.com",
+      rendaMensal: "R$ 10000,00",
+      score: "160",
+      emprestimo: "R$ 100.000,00",
+      valorParcela: "R$ 10.000,00",
+      datPag: "28/09/2022",
+      status: "Não",
+    },
+    {
+      name: "cvete Prado Guimarães",
+      cpf: "000.000.000-00",
+      email: "ivete@gmail.com",
+      rendaMensal: "R$ 10000,00",
+      score: "160",
+      emprestimo: "",
+      valorParcela: "",
+      datPag: "28/08/2022",
+      status: "Sim",
+    },
+    {
+      name: "dvete Prado Guimarães",
+      cpf: "000.000.000-00",
+      email: "ivete@gmail.com",
+      rendaMensal: "R$ 10000,00",
+      score: "160",
+      emprestimo: "R$ 100.000,00",
+      valorParcela: "R$ 10.000,00",
+      datPag: "28/07/2022",
+      status: "Não",
+    },
+    {
+      name: "evete Prado Guimarães",
+      cpf: "000.000.000-00",
+      email: "ivete@gmail.com",
+      rendaMensal: "R$ 10000,00",
+      score: "160",
+      emprestimo: "",
+      valorParcela: "",
+      datPag: "28/06/2022",
       status: "Sim",
     },
     {
@@ -72,6 +126,7 @@ const Requests = (): JSX.Element => {
       score: "160",
       emprestimo: "R$ 100.000,00",
       valorParcela: "R$ 10.000,00",
+      datPag: "28/05/2022",
       status: "Não",
     },
     {
@@ -82,6 +137,7 @@ const Requests = (): JSX.Element => {
       score: "160",
       emprestimo: "",
       valorParcela: "",
+      datPag: "28/04/2022",
       status: "Sim",
     },
     {
@@ -92,6 +148,7 @@ const Requests = (): JSX.Element => {
       score: "160",
       emprestimo: "R$ 100.000,00",
       valorParcela: "R$ 10.000,00",
+      datPag: "28/03/2022",
       status: "Não",
     },
     {
@@ -102,69 +159,57 @@ const Requests = (): JSX.Element => {
       score: "160",
       emprestimo: "",
       valorParcela: "",
-      status: "Sim",
-    },
-    {
-      name: "Ivete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "R$ 100.000,00",
-      valorParcela: "R$ 10.000,00",
-      status: "Não",
-    },
-    {
-      name: "Ivete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "",
-      valorParcela: "",
-      status: "Sim",
-    },
-    {
-      name: "Ivete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "R$ 100.000,00",
-      valorParcela: "R$ 10.000,00",
-      status: "Não",
-    },
-    {
-      name: "Ivete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "",
-      valorParcela: "",
+      datPag: "28/02/2022",
       status: "Sim",
     },
   ]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
 
-  useEffect(() => {
+  const handleFilter = () => {
     if (select === "Order") {
-      return setBodyTable(
-        bodyTable.sort((a, b) =>
-          a.name.toLowerCase() > b.name.toLowerCase()
-            ? 1
-            : b.name.toLowerCase() > a.name.toLowerCase()
-            ? -1
-            : 0
-        )
+      bodyTable.sort((a, b) =>
+        a.name.toLowerCase() > b.name.toLowerCase()
+          ? 1
+          : b.name.toLowerCase() > a.name.toLowerCase()
+          ? -1
+          : 0
       );
+      setOpenModalFilter(false);
     }
-    if (select === "Não")
-      return setBodyTable(bodyTableAux.filter((item) => item.status === "Não"));
-
-    if (select === "Sim")
-      return setBodyTable(bodyTableAux.filter((item) => item.status === "Sim"));
-  }, [select]);
+    if (select === "Não") {
+      setBodyTable(bodyTableAux.filter((item) => item.status === "Não"));
+      setOpenModalFilter(false);
+    }
+    if (select === "Sim") {
+      setBodyTable(bodyTableAux.filter((item) => item.status === "Sim"));
+      setOpenModalFilter(false);
+    }
+    if (select === "Clear") {
+      setDateInitial(undefined);
+      setDateEnd(undefined);
+      setOpenModalFilter(false);
+      return setBodyTable(bodyTableAux);
+    }
+    if (dateInitial && dateEnd) {
+      var dia = String(dateInitial.getDate()).padStart(2, "0");
+      var mes = String(dateInitial.getMonth() + 1).padStart(2, "0");
+      var ano = dateInitial.getFullYear();
+      const dataI = dia + "/" + mes + "/" + ano;
+      var diaTwo = String(dateEnd.getDate()).padStart(2, "0");
+      var mesTwo = String(dateEnd.getMonth() + 1).padStart(2, "0");
+      var anoTwo = dateEnd.getFullYear();
+      const dataTwo = diaTwo + "/" + mesTwo + "/" + anoTwo;
+      setBodyTable(
+        bodyTableAux.filter((item) => {
+          let date1 = moment(item.datPag, "DD/MM/YYYY").format("YYYYMMDD");
+          let date2 = moment(dataI, "DD/MM/YYYY").format("YYYYMMDD");
+          let date3 = moment(dataTwo, "DD/MM/YYYY").format("YYYYMMDD");
+          return moment(date2).isBefore(date1) && moment(date3).isAfter(date1);
+        })
+      );
+      setOpenModalFilter(false);
+    }
+  };
 
   useEffect(() => {
     if (search) {
@@ -173,8 +218,26 @@ const Requests = (): JSX.Element => {
           item.name.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())
         )
       );
+    } else {
+      setBodyTable(bodyTableAux);
     }
   }, [search]);
+
+  const handleFilterDate = (ultimateDate: number) => {
+    var dataUltimateDays = new Date();
+    dataUltimateDays.setDate(dataUltimateDays.getDate() - ultimateDate);
+    var dia = String(dataUltimateDays.getDate()).padStart(2, "0");
+    var mes = String(dataUltimateDays.getMonth() + 1).padStart(2, "0");
+    var ano = dataUltimateDays.getFullYear();
+    const dataAtual = dia + "/" + mes + "/" + ano;
+    setBodyTable(
+      bodyTable.filter((item) => {
+        let date1 = moment(item.datPag, "DD/MM/YYYY").format("YYYYMMDD");
+        let date2 = moment(dataAtual, "DD/MM/YYYY").format("YYYYMMDD");
+        return moment(date1).isAfter(date2);
+      })
+    );
+  };
 
   const pages: number = Math.ceil(bodyTable ? bodyTable.length / pp : 0);
   const startIndex = pg * pp;
@@ -217,45 +280,72 @@ const Requests = (): JSX.Element => {
                   <img src={CloseFilter} alt="fechar filtro" />
                 </StyledCloseFilter>
               </HeaderFilter>
-              <BodyFilter>
-                <p>Ordenar por:</p>
-                <FormControl>
-                  <RadioGroup
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    name="radio-buttons-group"
-                  >
+              <FormControl>
+                <RadioGroup
+                  row={true}
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                >
+                  <BodyFilter>
+                    <FormControlLabel
+                      value="clear"
+                      control={<Radio />}
+                      label="Limpar filtros"
+                      onChange={() => setSelect("Clear")}
+                    />
+                    <p>Ordenar por:</p>
                     <FormControlLabel
                       value="order"
                       control={<Radio />}
                       label="Ordem alfabética"
                       onChange={() => setSelect("Order")}
                     />
-                  </RadioGroup>
-                </FormControl>
-                <p>Status de pagamento:</p>
-                <FormControl>
-                  <RadioGroup
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    name="radio-buttons-group"
-                  >
-                    <FormControlLabel
-                      value="female"
-                      control={<Radio />}
-                      label="Sim"
-                      onChange={() => setSelect("Sim")}
-                    />
-                    <FormControlLabel
-                      value="male"
-                      control={<Radio />}
-                      label="Não"
-                      onChange={() => setSelect("Não")}
-                    />
-                  </RadioGroup>
-                </FormControl>
-                <FilterButtonStyled>
-                  <ButtonFilterModal>Filtrar</ButtonFilterModal>
-                </FilterButtonStyled>
-              </BodyFilter>
+                    <p>Status de pagamento:</p>
+                    <FlexContainer>
+                      <FormControlLabel
+                        value="female"
+                        control={<Radio />}
+                        label="Sim"
+                        onChange={() => setSelect("Sim")}
+                      />
+                      <FormControlLabel
+                        value="male"
+                        control={<Radio />}
+                        label="Não"
+                        onChange={() => setSelect("Não")}
+                      />
+                    </FlexContainer>
+                  </BodyFilter>
+                </RadioGroup>
+              </FormControl>
+              <SelectDate>
+                <P>Selecionar período:</P>
+                <FlexContainer>
+                  <CalendarDate>
+                    <img src={CalendarIcon} alt="calendario" />
+                    <span>De</span>
+                  </CalendarDate>
+                  <FilterComponent
+                    date={dateInitial as Date}
+                    setDate={setDateInitial}
+                  />
+                </FlexContainer>
+                <FlexContainer>
+                  <CalendarDate>
+                    <img src={CalendarIcon} alt="calendario" />
+                    <span>Até</span>
+                  </CalendarDate>
+                  <FilterComponent
+                    date={dateEnd as Date}
+                    setDate={setDateEnd}
+                  />
+                </FlexContainer>
+              </SelectDate>
+              <FilterButtonStyled>
+                <ButtonFilterModal onClick={() => handleFilter()}>
+                  Filtrar
+                </ButtonFilterModal>
+              </FilterButtonStyled>
             </FilterContainer>
           </CollumnContainer>
         </TitleStyled>
@@ -280,9 +370,10 @@ const Requests = (): JSX.Element => {
                 <td>{body.score}</td>
                 <td>{body.emprestimo}</td>
                 <td>{body.valorParcela}</td>
+                <td>{body.datPag}</td>
                 <td>
                   {" "}
-                  <SelectModal status={body.status} />
+                  <SelectModal loan={body} loans={bodyTable} setLoans={setBodyTable} i={index} />
                 </td>
               </tr>
             );
@@ -298,11 +389,19 @@ const Requests = (): JSX.Element => {
           />
         </PaginationStyled>
         <ShowTickets>
-          <p>Mostrar boletos:</p>
-          <ButtonTicket>Últimos 7 dias</ButtonTicket>
-          <ButtonTicket>Últimos 30 dias</ButtonTicket>
-          <ButtonTicket>Últimos 3 meses</ButtonTicket>
-          <ButtonTicket>Últimos 6 meses</ButtonTicket>
+          <p>Acompanhamento:</p>
+          <ButtonTicket onClick={() => handleFilterDate(7)}>
+            Últimos 7 dias
+          </ButtonTicket>
+          <ButtonTicket onClick={() => handleFilterDate(30)}>
+            Últimos 30 dias
+          </ButtonTicket>
+          <ButtonTicket onClick={() => handleFilterDate(90)}>
+            Últimos 3 meses
+          </ButtonTicket>
+          <ButtonTicket onClick={() => handleFilterDate(180)}>
+            Últimos 6 meses
+          </ButtonTicket>
           <ButtonTicket>Escolher período</ButtonTicket>
         </ShowTickets>
         <CircularStyled>
@@ -400,6 +499,7 @@ const DateTitle = styled.p`
 const InputSearch = styled.input`
   border: none;
   border-bottom: 2px solid #39c6bb;
+  background: #f5f5f5;
   max-width: 272px;
   width: 100%;
   padding-left: 12px;
@@ -489,10 +589,24 @@ const Table = styled.table`
     }
     &:first-child {
       position: relative;
-      width: 295px;
+      width: 222px;
+      @media screen and (max-width: 1300px) {
+        width: 122px;
+      }
     }
     &:last-child {
       text-align: center;
+    }
+    &:nth-child(2) {
+      min-width: 120px;
+    }
+    @media screen and (max-width: 1300px) {
+      font-size: 14px;
+      line-height: 18px;
+    }
+    @media screen and (max-width: 1250px) {
+      font-size: 12px;
+      line-height: 16px;
     }
   }
 `;
@@ -527,6 +641,7 @@ const HeaderFilter = styled.div`
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 20px;
   p {
     font-family: "Poppins";
     font-style: normal;
@@ -676,6 +791,7 @@ const BodyFilter = styled.div`
     margin-top: 32px;
     color: #6eaea9;
     margin-bottom: 24px;
+    margin-left: 24px;
   }
   span {
     font-family: "Poppins";
@@ -804,4 +920,50 @@ const AlignContainer = styled.div`
   align-items: center;
   max-width: 200px;
   margin-bottom: 16px;
+`;
+
+const CalendarDate = styled.div`
+  width: 88px;
+  height: 48px;
+  border-radius: 8px 0px 0px 8px;
+  backdrop-filter: blur(20px);
+  background: rgba(110, 174, 169, 0.2);
+  border: 1px solid #6eaea9;
+  padding: 15px 18px 15px 21px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Manrope", "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0.0168em;
+  color: #6eaea9;
+  cursor: pointer;
+  margin-left: 24px;
+  span {
+    margin-left: 8px;
+    font-family: "Manrope", "Poppins";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 150%;
+    letter-spacing: 0.0168em;
+    color: #6eaea9;
+  }
+`;
+
+const SelectDate = styled.div``;
+
+const P = styled.div`
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 120%;
+  color: #6eaea9;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 24px;
 `;

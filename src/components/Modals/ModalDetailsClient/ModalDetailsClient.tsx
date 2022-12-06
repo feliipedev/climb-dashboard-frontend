@@ -1,20 +1,14 @@
 import styled from "styled-components";
 import React, { SetStateAction, useState } from "react";
 import CloseFilter from "../../../assets/icons/close-filter.svg";
-import Select from "../../Select/Select";
+import Select from "../../../components/Select/Select";
 import EyeModal from "../../../assets/icons/eye-modal.svg";
+import { Loan } from "../../../pages/SideDish/SideDish";
 
 type Props = {
   isOpen: boolean;
   onClose: React.Dispatch<SetStateAction<boolean>>;
 };
-
-export interface Select {
-  date: string;
-  valorParcela: string;
-  comprovante: string;
-  status: "Pendente" | "Em atraso" | "Efetuado";
-}
 
 const ModalDetailsClient = ({ isOpen, onClose }: Props): JSX.Element => {
   const [titleTable, setTitleTable] = useState<string[]>([
@@ -23,26 +17,31 @@ const ModalDetailsClient = ({ isOpen, onClose }: Props): JSX.Element => {
     "Comprovante de Pagamento",
     "Status",
   ]);
-  const [bodyTable, setBodyTable] = useState<Select[]>([
+  const [bodyTable, setBodyTable] = useState<Loan[]>([
     {
+      name: "Amanda Gomes Rocha",
+      email: "amandarocha@email.com",
       date: "21/11/2022",
-      valorParcela: "R$ 1.000",
-      comprovante: "comprovante02.jpg",
+      quantity: "R$ 15000,00",
+      parcela: "2/24",
       status: "Pendente",
     },
     {
+      name: "Rafael Silva Mateus",
+      email: "rafael@email.com",
       date: "21/10/2022",
-      valorParcela: "R$ 2.000",
-      comprovante: "comprovante03.jpg",
+      quantity: "R$ 18000,00",
+      parcela: "6/24",
       status: "Em atraso",
     },
     {
-      date: "21/09/2022",
-      valorParcela: "R$ 3.000",
-      comprovante: "comprovante03.jpg",
+      name: "Conh MackBook",
+      email: "jonh@email.com",
+      date: "21/08/2022",
+      quantity: "R$ 22000,00",
+      parcela: "19/24",
       status: "Efetuado",
     },
-
   ]);
 
   return (
@@ -66,16 +65,21 @@ const ModalDetailsClient = ({ isOpen, onClose }: Props): JSX.Element => {
                   return <th key={index}>{title}</th>;
                 })}
             </tr>
-            {bodyTable.map((body: Select, index: number) => {
+            {bodyTable.map((body: Loan, index: number) => {
               return (
                 <tr key={index}>
                   <td>{body.date} </td>
-                  <td>{body.valorParcela}</td>
+                  <td>{body.parcela}</td>
                   <td>
                     {body.comprovante} <img src={EyeModal} alt="olho" />
                   </td>
                   <td>
-                    <Select status={body.status} />
+                    <Select
+                      loan={body}
+                      loans={bodyTable}
+                      setLoans={setBodyTable}
+                      i={index}
+                    />
                   </td>
                 </tr>
               );

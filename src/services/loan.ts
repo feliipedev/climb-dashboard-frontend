@@ -1,7 +1,6 @@
-import api from "./api";
 import axios from "axios";
 
 export const getLoans = async () => {
-  const res = await api.get("/installment/list?emprestimo_id=1");
+  const res = await axios.get(process.env.REACT_APP_API_URL + "/installment/list?emprestimo_id=1");
   return res.data;
 };

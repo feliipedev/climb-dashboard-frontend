@@ -18,6 +18,7 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
+import { getLoans } from "../../services/loan";
 export interface Loan {
   name: string;
   email: string;
@@ -318,14 +319,15 @@ const SideDish = (): JSX.Element => {
   useEffect(() => {
     console.log(select);
     if (select === "Order") {
-      let teste = bodyTable.sort((a, b) =>
-        a.name.toLowerCase() > b.name.toLowerCase()
-          ? 1
-          : b.name.toLowerCase() > a.name.toLowerCase()
-          ? -1
-          : 0
+      setBodyTable(
+        bodyTable.sort((a, b) =>
+          a.name.toLowerCase() > b.name.toLowerCase()
+            ? 1
+            : b.name.toLowerCase() > a.name.toLowerCase()
+            ? -1
+            : 0
+        )
       );
-      setBodyTable(teste);
     }
     if (select === "Pendente")
       setBodyTable(bodyTableAux.filter((item) => item.status === "Pendente"));
@@ -364,6 +366,15 @@ const SideDish = (): JSX.Element => {
       setBodyTable(bodyTableAux);
     }
   }, [search]);
+
+  useEffect(() => {
+    handleGetLoans();
+  }, []);
+
+  const handleGetLoans = async () => {
+    let teste = await getLoans();
+    console.log(teste);
+  };
 
   const handleFilterDate = (ultimateDate: number) => {
     var dataUltimateDays = new Date();

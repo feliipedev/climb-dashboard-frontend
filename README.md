@@ -23,7 +23,7 @@
 ### LINK HOMOLOGATION
 
 ```
-    https://climb-dashboard-homologation.surge.sh
+    https://climbe-dashboard.netlify.app/
 ```
 
 

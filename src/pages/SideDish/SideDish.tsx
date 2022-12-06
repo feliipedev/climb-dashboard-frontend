@@ -29,6 +29,7 @@ export interface Loan {
   quantity: string;
   parcela: string;
   status: "Pendente" | "Em atraso" | "Efetuado";
+  comprovante?: string;
 }
 
 const SideDish = (): JSX.Element => {
@@ -50,7 +51,7 @@ const SideDish = (): JSX.Element => {
     "Último Pagam.",
     "Valor Total",
     "Parcela",
-    "Status de pagamento",
+    "Aprovação",
   ]);
   const [bodyTable, setBodyTable] = useState<Loan[]>([]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
@@ -309,7 +310,7 @@ const SideDish = (): JSX.Element => {
                     <td>{body.quantity}</td>
                     <td>{body.parcela}</td>
                     <td>
-                      <Select status={body.status} />
+                      <Select loan={body} loans={bodyTable} setLoans={setBodyTable} i={index}/>
                     </td>
                   </tr>
                 );

@@ -49,7 +49,7 @@ const Requests = (): JSX.Element => {
     "Empréstimo",
     "V. Parcela",
     "Data Pag",
-    "Status",
+    "Aprovação",
   ]);
   const [bodyTable, setBodyTable] = useState<Loan[]>([
     {
@@ -373,7 +373,7 @@ const Requests = (): JSX.Element => {
                 <td>{body.datPag}</td>
                 <td>
                   {" "}
-                  <SelectModal status={body.status} />
+                  <SelectModal loan={body} loans={bodyTable} setLoans={setBodyTable} i={index} />
                 </td>
               </tr>
             );

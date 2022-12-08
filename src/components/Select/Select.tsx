@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import ArrowDown from "../../assets/icons/arrow-down.svg";
 import { Loan } from "../../pages/SideDish/SideDish";
+import { updateStatusLoans } from "../../services/loan";
 
 interface Props {
   loan: Loan;
@@ -14,6 +15,7 @@ const SelectContainer = ({ loan, loans, setLoans, i }: Props): JSX.Element => {
   const handleSetSelectStatus = (value: string) => {
     let aux = loans.map((item, index: number) => {
       if (index === i) {
+        /* await updateStatusLoans(loan.emprestimo_id, ) */
         return { ...item, status: value };
       }
       return item;

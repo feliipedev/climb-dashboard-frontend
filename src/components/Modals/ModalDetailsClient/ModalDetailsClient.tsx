@@ -1,48 +1,72 @@
 import styled from "styled-components";
-import React, { SetStateAction, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import CloseFilter from "../../../assets/icons/close-filter.svg";
 import Select from "../../../components/Select/Select";
 import EyeModal from "../../../assets/icons/eye-modal.svg";
 import { Loan } from "../../../pages/SideDish/SideDish";
+import { getLoans } from "../../../services/loan";
+import Spinner from "../../Spinner/Spinner";
+import { toast } from "react-toastify";
+import moment from "moment";
+import Pagination from "../../Pagination/Pagination";
 
 type Props = {
   isOpen: boolean;
   onClose: React.Dispatch<SetStateAction<boolean>>;
+  id: number;
 };
 
-const ModalDetailsClient = ({ isOpen, onClose }: Props): JSX.Element => {
+const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
   const [titleTable, setTitleTable] = useState<string[]>([
     "Data de Vencimento",
     "Valor da Parcela",
     "Comprovante de Pagamento",
-    "Status",
+    "Aprovação",
   ]);
-  const [bodyTable, setBodyTable] = useState<Loan[]>([
-    {
-      name: "Amanda Gomes Rocha",
-      email: "amandarocha@email.com",
-      date: "21/11/2022",
-      quantity: "R$ 15000,00",
-      parcela: "2/24",
-      status: "Pendente",
-    },
-    {
-      name: "Rafael Silva Mateus",
-      email: "rafael@email.com",
-      date: "21/10/2022",
-      quantity: "R$ 18000,00",
-      parcela: "6/24",
-      status: "Em atraso",
-    },
-    {
-      name: "Conh MackBook",
-      email: "jonh@email.com",
-      date: "21/08/2022",
-      quantity: "R$ 22000,00",
-      parcela: "19/24",
-      status: "Efetuado",
-    },
-  ]);
+  const [bodyTable, setBodyTable] = useState<Loan[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [pg, setPg] = useState<number>(0);
+  const [pp, setPp] = useState<number>(4);
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      handleRequest();
+    }, 2000);
+  }, []);
+
+  const handleRequest = async () => {
+    setLoading(true);
+    await getLoans(id).then((res) => {
+      if (res.internal_code === 200) {
+        setTimeout(() => {
+          setBodyTable(
+            res.result.map((res: any, index: number) => {
+              const loan: Loan = {
+                name: "Jonh MackBook" + index,
+                email: `teste${index}@gmail.com`,
+                date: moment(res.vencimento).format("DD/MM/YYYY"),
+                quantity: res.valor,
+                status: res.status === "A Pagar" ? "Pendente" : res.status,
+                parcela: "2/24",
+                comprovante: "comprovante.jpg",
+                emprestimo_id: res.emprestimo_id,
+              };
+              return loan;
+            })
+          );
+          setLoading(false);
+        }, 2000);
+      } else {
+        toast.error("Falha ao conectar com o servidor...");
+      }
+    });
+  };
+
+  const pages: number = Math.ceil(bodyTable ? bodyTable.length / pp : 0);
+  const startIndex = pg * pp;
+  const endIndex = startIndex + pp;
+  const current: Loan[] | undefined = bodyTable?.slice(startIndex, endIndex);
 
   return (
     <ScreenContainer isVisible={isOpen}>
@@ -58,33 +82,55 @@ const ModalDetailsClient = ({ isOpen, onClose }: Props): JSX.Element => {
               <img src={CloseFilter} alt="fechar filtro" />
             </StyledCloseFilter>
           </HeaderModal>
-          <Table>
-            <tr>
-              {titleTable &&
-                titleTable.map((title: string, index: number) => {
-                  return <th key={index}>{title}</th>;
-                })}
-            </tr>
-            {bodyTable.map((body: Loan, index: number) => {
-              return (
-                <tr key={index}>
-                  <td>{body.date} </td>
-                  <td>{body.parcela}</td>
-                  <td>
-                    {body.comprovante} <img src={EyeModal} alt="olho" />
-                  </td>
-                  <td>
-                    <Select
-                      loan={body}
-                      loans={bodyTable}
-                      setLoans={setBodyTable}
-                      i={index}
-                    />
-                  </td>
+          {loading ? (
+            <StyledLoading>
+              <Spinner />
+            </StyledLoading>
+          ) : (
+            <>
+              <Table>
+                <tr>
+                  {titleTable &&
+                    titleTable.map((title: string, index: number) => {
+                      return <th key={index}>{title}</th>;
+                    })}
                 </tr>
-              );
-            })}
-          </Table>
+                {current.map((body: Loan, index: number) => {
+                  return (
+                    <tr key={index}>
+                      <td>{body.date} </td>
+                      <td>
+                        {body.quantity.toLocaleString("pt-br", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </td>
+                      <td>
+                        {body.comprovante} <img src={EyeModal} alt="olho" />
+                      </td>
+                      <td>
+                        <Select
+                          loan={body}
+                          loans={bodyTable}
+                          setLoans={setBodyTable}
+                          i={index}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </Table>
+              <PaginationStyled>
+                <Pagination
+                  pages={pages}
+                  pg={pg}
+                  setPg={setPg}
+                  lastPage={pages}
+                  total={bodyTable ? bodyTable.length : 0}
+                />
+              </PaginationStyled>
+            </>
+          )}
         </ContainerForm>
       </Container>
     </ScreenContainer>
@@ -237,4 +283,24 @@ const Table = styled.table`
       border-right: none;
     }
   }
+`;
+
+const StyledLoading = styled.div`
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const PaginationStyled = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  margin-top: 40px;
+  border-bottom: 1px solid #e0e0e0;
+  max-width: 798px;
+  width: 100%;
+  margin: 0 auto;
+  padding-bottom: 20px;
 `;

@@ -249,8 +249,10 @@ const Requests = (): JSX.Element => {
       <Header />
       <Container>
         <FlexContainer>
-          <Title onClick={() => navigate("/solicitacoes")}>Solicitações</Title>
-          <TitleTwo onClick={() => navigate("/")}>Acompanhamento</TitleTwo>
+          <Title onClick={() => navigate("/")}>Acompanhamento</Title>
+          <TitleTwo onClick={() => navigate("/solicitacoes")}>
+            Solicitações
+          </TitleTwo>
         </FlexContainer>
       </Container>
       <Container>
@@ -373,7 +375,12 @@ const Requests = (): JSX.Element => {
                 <td>{body.datPag}</td>
                 <td>
                   {" "}
-                  <SelectModal loan={body} loans={bodyTable} setLoans={setBodyTable} i={index} />
+                  <SelectModal
+                    loan={body}
+                    loans={bodyTable}
+                    setLoans={setBodyTable}
+                    i={index}
+                  />
                 </td>
               </tr>
             );
@@ -422,6 +429,7 @@ const Requests = (): JSX.Element => {
       <ModalDetailsClient
         isOpen={openModalDetails}
         onClose={setOpenModalDetails}
+        id={1}
       />
     </HomeStyled>
   );
@@ -444,6 +452,17 @@ export const Container = styled.div`
 `;
 
 const Title = styled.p`
+  cursor: pointer;
+  margin-top: 43px;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 120%;
+  color: ${(props) => props.theme.colors.fontColor};
+`;
+
+const TitleTwo = styled.span`
   color: ${(props) => props.theme.colors.title};
   font-family: "Poppins";
   font-style: normal;
@@ -451,20 +470,9 @@ const Title = styled.p`
   font-size: 30px;
   line-height: 120%;
   text-decoration: underline;
-  margin-top: 43px;
   cursor: pointer;
-`;
-
-const TitleTwo = styled.span`
-  font-family: "Poppins";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 30px;
-  line-height: 120%;
-  color: ${(props) => props.theme.colors.fontColor};
   margin-top: 43px;
   margin-left: 33px;
-  cursor: pointer;
 `;
 
 export const FlexContainer = styled.div`

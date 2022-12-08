@@ -23,10 +23,11 @@ import { getLoans } from "../../services/loan";
 import Spinner from "../../components/Spinner/Spinner";
 
 export interface Loan {
+  emprestimo_id: number,
   name: string;
   email: string;
   date: string;
-  quantity: string;
+  quantity: number;
   parcela: string;
   status: "Pendente" | "Em atraso" | "Efetuado";
   comprovante?: string;
@@ -53,9 +54,73 @@ const SideDish = (): JSX.Element => {
     "Parcela",
     "Aprovação",
   ]);
-  const [bodyTable, setBodyTable] = useState<Loan[]>([]);
+  const [bodyTable, setBodyTable] = useState<Loan[]>([
+    {
+      name: "Amanda Gomes Rocha",
+      email: "amandarocha@email.com",
+      date: "21/11/2022",
+      quantity: 1000,
+      parcela: "2/24",
+      status: "Pendente",
+      emprestimo_id: 1,
+    },
+    {
+      name: "Rafael Silva Mateus",
+      email: "rafael@email.com",
+      date: "21/10/2022",
+      quantity: 1000,
+      parcela: "6/24",
+      status: "Em atraso",
+      emprestimo_id: 1,
+    },
+    {
+      name: "Conh MackBook",
+      email: "jonh@email.com",
+      date: "21/08/2022",
+      quantity: 1000,
+      parcela: "19/24",
+      status: "Efetuado",
+      emprestimo_id: 1,
+    },
+    {
+      name: "Donh MackBook",
+      email: "jonh@email.com",
+      date: "14/06/2022",
+      quantity: 1000,
+      parcela: "19/24",
+      status: "Efetuado",
+      emprestimo_id: 1,
+    },
+    {
+      name: "Eonh MackBook",
+      email: "jonh@email.com",
+      date: "14/05/2001",
+      quantity: 1000,
+      parcela: "19/24",
+      status: "Efetuado",
+      emprestimo_id: 1,
+    },
+    {
+      name: "Fonh MackBook",
+      email: "jonh@email.com",
+      date: "14/04/2006",
+      quantity: 1000,
+      parcela: "19/24",
+      status: "Efetuado",
+      emprestimo_id: 1,
+    },
+    {
+      name: "Amanda Gomes Rocha",
+      email: "amandarocha@email.com",
+      date: "10/05/2022",
+      quantity: 1000,
+      parcela: "2/24",
+      status: "Pendente",
+      emprestimo_id: 1,
+    },
+  ]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -118,15 +183,6 @@ const SideDish = (): JSX.Element => {
     }
   }, [search]);
 
-  useEffect(() => {
-    handleGetLoans();
-  }, []);
-
-  const handleGetLoans = async () => {
-    let teste = await getLoans();
-    console.log(teste);
-  };
-
   const handleFilterDate = (ultimateDate: number) => {
     var dataUltimateDays = new Date();
     dataUltimateDays.setDate(dataUltimateDays.getDate() - ultimateDate);
@@ -149,51 +205,29 @@ const SideDish = (): JSX.Element => {
   const current: Loan[] | undefined = bodyTable?.slice(startIndex, endIndex);
 
   useEffect(() => {
-    handleRequest();
-  }, []);
-
-  const handleRequest = async () => {
     setLoading(true);
-
-    await getLoans().then((res) => {
-      if (res.internal_code === 200) {
-        setTimeout(() => {
-          res.result.map((res: any, index: number) => {
-            let loan: Loan = {
-              name: "Jonh MackBook" + index,
-              email: `teste${index}@gmail.com`,
-              date: moment(res.vencimento).format("DD/MM/YYYY") ,
-              quantity: res.numero_parcela,
-              status: res.status === "A Pagar" ? "Pendente" : "Efetuado",
-              parcela: "2/24",
-            };
-            setBodyTable((current) => [...current, loan]);
-          });
-          setLoading(false);
-        }, 2000);
-      } else {
-        toast.error("Falha ao conectar com o servidor...");
-      }
-    });
-  };
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
 
   return (
     <HomeStyled>
       <Header />
+      <Container>
+        <FlexContainer>
+          <Title onClick={() => navigate("/")}>Acompanhamento</Title>
+          <TitleTwo onClick={() => navigate("/solicitacoes")}>
+            Solicitações
+          </TitleTwo>
+        </FlexContainer>
+      </Container>
       {loading ? (
         <StyledLoading>
           <Spinner />
         </StyledLoading>
       ) : (
         <>
-          <Container>
-            <FlexContainer>
-              <Title onClick={() => navigate("/")}>Acompanhamento</Title>
-              <TitleTwo onClick={() => navigate("/solicitacoes")}>
-                Solicitações
-              </TitleTwo>
-            </FlexContainer>
-          </Container>
           <Container>
             <TitleStyled>
               <SubTitle>Mostrando perído:</SubTitle>
@@ -316,10 +350,20 @@ const SideDish = (): JSX.Element => {
                     </td>
                     <td>{body.email}</td>
                     <td>{body.date}</td>
-                    <td>{body.quantity}</td>
+                    <td>
+                      {body.quantity.toLocaleString("pt-br", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </td>
                     <td>{body.parcela}</td>
                     <td>
-                      <Select loan={body} loans={bodyTable} setLoans={setBodyTable} i={index}/>
+                      <Select
+                        loan={body}
+                        loans={bodyTable}
+                        setLoans={setBodyTable}
+                        i={index}
+                      />
                     </td>
                   </tr>
                 );
@@ -370,6 +414,7 @@ const SideDish = (): JSX.Element => {
       <ModalDetailsClient
         isOpen={openModalDetails}
         onClose={setOpenModalDetails}
+        id={1}
       />
     </HomeStyled>
   );

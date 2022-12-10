@@ -17,6 +17,7 @@ import FormControl from "@material-ui/core/FormControl";
 import moment from "moment";
 import CalendarIcon from "../../assets/icons/calendar.svg";
 import FilterComponent from "../../components/Filter/Filter";
+import { useLocation } from "react-router-dom";
 
 export interface Loan {
   name: string;
@@ -32,6 +33,7 @@ export interface Loan {
 
 const Requests = (): JSX.Element => {
   const navigate = useNavigate();
+  const params = useLocation();
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
   const [select, setSelect] = useState<"Sim" | "Não" | "Order" | "Clear">();
   const [pg, setPg] = useState<number>(0);
@@ -164,6 +166,16 @@ const Requests = (): JSX.Element => {
     },
   ]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
+  const [notificationNumberOne, setNotificationNumberOne] = useState(
+    params.state.notificationNumberOne
+  );
+  const [notificationNumberTwo, setNotificationNumberTwo] = useState(
+    params.state.notificationNumberTwo
+  );
+  const [notificationDisabledOne, setNotificationDisabledOne] = useState(true);
+  const [notificationDisabledTwo, setNotificationDisabledTwo] = useState(false);
+
+  console.log(params.state.notificationNumber);
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -244,14 +256,41 @@ const Requests = (): JSX.Element => {
   const endIndex = startIndex + pp;
   const current: Loan[] | undefined = bodyTable?.slice(startIndex, endIndex);
 
+  const handleTitleOne = () => {
+    setNotificationDisabledOne(true);
+    setNotificationNumberOne(0);
+    setNotificationDisabledTwo(true);
+    setNotificationNumberTwo(0);
+    navigate("/");
+  };
+
+  const handleTitleTwo = () => {
+    setNotificationDisabledTwo(true);
+    setNotificationNumberTwo(0);
+    navigate("/solicitacoes", {
+      state: {
+        notificationNumberOne,
+        notificationNumberTwo,
+      },
+    });
+  };
+
   return (
     <HomeStyled>
       <Header />
       <Container>
         <FlexContainer>
-          <Title onClick={() => navigate("/")}>Acompanhamento</Title>
-          <TitleTwo onClick={() => navigate("/solicitacoes")}>
+          <Title onClick={() => handleTitleOne()}>
+            Acompanhamento
+            {!notificationDisabledOne && (
+              <NotificationStyled>{notificationNumberOne}</NotificationStyled>
+            )}
+          </Title>
+          <TitleTwo onClick={() => handleTitleTwo()}>
             Solicitações
+            {!notificationDisabledTwo && (
+              <NotificationStyled>{notificationNumberTwo}</NotificationStyled>
+            )}
           </TitleTwo>
         </FlexContainer>
       </Container>
@@ -460,6 +499,7 @@ const Title = styled.p`
   font-size: 30px;
   line-height: 120%;
   color: ${(props) => props.theme.colors.fontColor};
+  position: relative;
 `;
 
 const TitleTwo = styled.span`
@@ -974,4 +1014,20 @@ const P = styled.div`
   margin-top: 20px;
   margin-bottom: 20px;
   margin-left: 24px;
+`;
+
+const NotificationStyled = styled.div`
+  width: 16px;
+  height: 16px;
+  color: black;
+  border-radius: 50%;
+  background: #edb900;
+  font-size: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: -1px;
+  right: -10px;
+  font-weight: 600;
 `;

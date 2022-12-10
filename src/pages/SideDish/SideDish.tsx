@@ -23,7 +23,7 @@ import { getLoans } from "../../services/loan";
 import Spinner from "../../components/Spinner/Spinner";
 
 export interface Loan {
-  emprestimo_id: number,
+  emprestimo_id: number;
   name: string;
   email: string;
   date: string;
@@ -121,6 +121,10 @@ const SideDish = (): JSX.Element => {
   ]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
   const [loading, setLoading] = useState<boolean>(true);
+  const [notificationDisabledOne, setNotificationDisabledOne] = useState(true);
+  const [notificationDisabledTwo, setNotificationDisabledTwo] = useState(false);
+  const [notificationNumberOne, setNotificationNumberOne] = useState(0);
+  const [notificationNumberTwo, setNotificationNumberTwo] = useState(1);
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -211,14 +215,39 @@ const SideDish = (): JSX.Element => {
     }, 2000);
   }, []);
 
+  const handleTitleOne = () => {
+    setNotificationDisabledOne(true);
+    setNotificationNumberOne(0);
+    navigate("/");
+  };
+
+  const handleTitleTwo = () => {
+    setNotificationDisabledOne(true);
+    setNotificationNumberOne(0);
+    navigate("/solicitacoes", {
+      state: {
+        notificationNumberOne,
+        notificationNumberTwo,
+      },
+    });
+  };
+
   return (
     <HomeStyled>
       <Header />
       <Container>
         <FlexContainer>
-          <Title onClick={() => navigate("/")}>Acompanhamento</Title>
-          <TitleTwo onClick={() => navigate("/solicitacoes")}>
+          <Title onClick={() => handleTitleOne()}>
+            Acompanhamento
+            {!notificationDisabledOne && (
+              <NotificationStyled>{notificationNumberOne}</NotificationStyled>
+            )}
+          </Title>
+          <TitleTwo onClick={() => handleTitleTwo()}>
             Solicitações
+            {!notificationDisabledTwo && (
+              <NotificationStyled>{notificationNumberTwo}</NotificationStyled>
+            )}
           </TitleTwo>
         </FlexContainer>
       </Container>
@@ -446,6 +475,7 @@ const Title = styled.p`
   text-decoration: underline;
   margin-top: 43px;
   cursor: pointer;
+  position: relative;
 `;
 
 const TitleTwo = styled.span`
@@ -458,6 +488,7 @@ const TitleTwo = styled.span`
   margin-top: 43px;
   margin-left: 33px;
   cursor: pointer;
+  position: relative;
 `;
 
 export const FlexContainer = styled.div`
@@ -1059,4 +1090,20 @@ const StyledLoading = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const NotificationStyled = styled.div`
+  width: 16px;
+  height: 16px;
+  color: black;
+  border-radius: 50%;
+  background: #edb900;
+  font-size: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: -1px;
+  right: -10px;
+  font-weight: 600;
 `;

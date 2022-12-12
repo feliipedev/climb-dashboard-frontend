@@ -2,11 +2,12 @@ import axios, { AxiosResponse, AxiosError } from "axios";
 import fns from "./sessionStorage";
 
 const headers = {
-  Accept: "application/json",
   "Content-Type": "application/json",
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token",
+  "Access-Control-Allow-Credentials": true,
+  "Access-Control-Allow-Methods": "POST, PUT, PATCH, GET, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "Origin, X-Api-Key, X-Requested-With, Content-Type, Accept, Authorization",
 };
 
 const api = axios.create({

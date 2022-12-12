@@ -51,6 +51,7 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
                 parcela: "2/24",
                 comprovante: "comprovante.jpg",
                 emprestimo_id: res.emprestimo_id,
+                numero_parcela: res.numero_parcela
               };
               return loan;
             })

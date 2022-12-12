@@ -31,6 +31,7 @@ export interface Loan {
   parcela: string;
   status: "Pendente" | "Em atraso" | "Efetuado";
   comprovante?: string;
+  numero_parcela: number;
 }
 
 const SideDish = (): JSX.Element => {
@@ -63,6 +64,7 @@ const SideDish = (): JSX.Element => {
       parcela: "2/24",
       status: "Pendente",
       emprestimo_id: 1,
+      numero_parcela: 1,
     },
     {
       name: "Rafael Silva Mateus",
@@ -72,6 +74,7 @@ const SideDish = (): JSX.Element => {
       parcela: "6/24",
       status: "Em atraso",
       emprestimo_id: 1,
+      numero_parcela: 1,
     },
     {
       name: "Conh MackBook",
@@ -81,6 +84,7 @@ const SideDish = (): JSX.Element => {
       parcela: "19/24",
       status: "Efetuado",
       emprestimo_id: 1,
+      numero_parcela: 1,
     },
     {
       name: "Donh MackBook",
@@ -90,6 +94,7 @@ const SideDish = (): JSX.Element => {
       parcela: "19/24",
       status: "Efetuado",
       emprestimo_id: 1,
+      numero_parcela: 1,
     },
     {
       name: "Eonh MackBook",
@@ -99,6 +104,7 @@ const SideDish = (): JSX.Element => {
       parcela: "19/24",
       status: "Efetuado",
       emprestimo_id: 1,
+      numero_parcela: 1,
     },
     {
       name: "Fonh MackBook",
@@ -108,6 +114,7 @@ const SideDish = (): JSX.Element => {
       parcela: "19/24",
       status: "Efetuado",
       emprestimo_id: 1,
+      numero_parcela: 1,
     },
     {
       name: "Amanda Gomes Rocha",
@@ -117,6 +124,7 @@ const SideDish = (): JSX.Element => {
       parcela: "2/24",
       status: "Pendente",
       emprestimo_id: 1,
+      numero_parcela: 1,
     },
   ]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);

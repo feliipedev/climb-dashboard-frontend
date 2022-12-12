@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ArrowDown from "../../assets/icons/arrow-down.svg";
 import { Loan } from "../../pages/SideDish/SideDish";
@@ -12,10 +12,17 @@ interface Props {
 }
 
 const SelectContainer = ({ loan, loans, setLoans, i }: Props): JSX.Element => {
+  const [status, setStatus] = useState<string>();
+
   const handleSetSelectStatus = (value: string) => {
-    let aux = loans.map((item, index: number) => {
+    setStatus(value);
+    let aux = loans.map(async (item, index: number) => {
       if (index === i) {
-        /* await updateStatusLoans(loan.emprestimo_id, ) */
+        await updateStatusLoans(item, value)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => console.error(err));
         return { ...item, status: value };
       }
       return item;

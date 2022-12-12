@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Loan } from "../pages/SideDish/SideDish";
 
 export const getLoans = async (id: number) => {
   const res = await axios.get(
@@ -7,13 +8,26 @@ export const getLoans = async (id: number) => {
   return res.data;
 };
 
-export const updateStatusLoans = async (id: number, status: string) => {
-  const res = await axios.patch(
-    process.env.REACT_APP_API_URL + `/loan?emprestimo_id=${id}`,
+export const updateStatusLoans = async (item: Loan, field: string) => {
+  let numberField = 0;
+  switch (field) {
+    case "Pendente":
+      numberField = 1;
+      break;
+    case "Efetuado":
+      numberField = 2;
+      break;
+    case "Em atraso":
+      numberField = 3;
+      break;
+  }
+  const res = await axios.put(
+    process.env.REACT_APP_API_URL + `/installment`,
     {
-      emprestimo_id: id,
-      field_to_update: "status",
-      value_to_update: status,
+      emprestimo_id: Number(item.emprestimo_id),
+      field_to_update: "status_id",
+      numero_parcela: Number(item.numero_parcela),
+      value_to_update: numberField,
     }
   );
   return res.data;

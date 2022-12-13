@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Loan } from "../pages/SideDish/SideDish";
+import api from "./api";
 
 export const getLoans = async (id: number) => {
   const res = await axios.get(
@@ -21,8 +22,8 @@ export const updateStatusLoans = async (item: Loan, field: string) => {
       numberField = 3;
       break;
   }
-  const res = await axios.put(
-    process.env.REACT_APP_API_URL + `/installment`,
+  const res = await api.put(
+    `/installment`,
     {
       emprestimo_id: Number(item.emprestimo_id),
       field_to_update: "status_id",

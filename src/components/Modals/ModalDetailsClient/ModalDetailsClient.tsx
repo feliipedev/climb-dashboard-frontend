@@ -1,14 +1,16 @@
 import styled from "styled-components";
-import React, { SetStateAction, useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useRef, useState } from "react";
 import CloseFilter from "../../../assets/icons/close-filter.svg";
 import Select from "../../../components/Select/Select";
 import EyeModal from "../../../assets/icons/eye-modal.svg";
-import { Loan } from "../../../pages/SideDish/SideDish";
+import { FlexContainer, Loan } from "../../../pages/SideDish/SideDish";
 import { getLoans } from "../../../services/loan";
 import Spinner from "../../Spinner/Spinner";
-import { toast } from "react-toastify";
 import moment from "moment";
 import Pagination from "../../Pagination/Pagination";
+import UploadIcon from "../../../assets/icons/upload.png";
+import ModalHandleImage from "../ModalHandleImage/ModalHandleImage";
+import { toast } from "react-toastify";
 
 type Props = {
   isOpen: boolean;
@@ -16,7 +18,14 @@ type Props = {
   id: number;
 };
 
+interface Upload {
+  name: string;
+  image: string;
+}
+
 const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
+  const hiddenFileInput = useRef<HTMLInputElement>(null);
+  const hiddenIndex = useRef<HTMLInputElement>(null);
   const [titleTable, setTitleTable] = useState<string[]>([
     "Data de Vencimento",
     "Valor da Parcela",
@@ -27,6 +36,13 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(true);
   const [pg, setPg] = useState<number>(0);
   const [pp, setPp] = useState<number>(4);
+  const [upload, setUpload] = useState<Upload[]>([]);
+  const [data, setData] = useState<File[]>([]);
+  const [image, setImage] = useState<string>("");
+  const [modalImage, setModalImage] = useState<boolean>(false);
+  const [openMessageUpload, setOpenMessageUpload] = useState<number>();
+  const [openMessageUploadSuccess, setOpenMessageUploadSuccess] =
+    useState<boolean>(false);
 
   useEffect(() => {
     setLoading(true);
@@ -34,6 +50,35 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
       handleRequest();
     }, 2000);
   }, []);
+
+  const handleClick = () => {
+    if (hiddenFileInput.current) {
+      hiddenFileInput.current.click();
+    }
+  };
+
+  const handleFileChange = (e: any) => {
+    if (e.target.files) {
+      Array.from(e.target.files).map((selectedFile: any) => {
+        if (selectedFile) {
+          const reader = new FileReader();
+          reader.readAsDataURL(selectedFile);
+          reader.onloadend = (e) => {
+            if (e.target?.result) {
+              setUpload((prev) => [
+                ...prev,
+                {
+                  name: selectedFile.name,
+                  image: e.target?.result?.toString() ?? "",
+                },
+              ]);
+              setData((prev) => [...prev, selectedFile]);
+            }
+          };
+        }
+      });
+    }
+  };
 
   const handleRequest = async () => {
     setLoading(true);
@@ -47,11 +92,14 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
                 email: `teste${index}@gmail.com`,
                 date: moment(res.vencimento).format("DD/MM/YYYY"),
                 quantity: res.valor,
-                status: res.status === "A Pagar" ? "Pendente" : res.status,
+                status_descricao:
+                  res.status_descricao === "A Pagar"
+                    ? "Pendente"
+                    : res.status_descricao,
                 parcela: "2/24",
                 comprovante: "comprovante.jpg",
                 emprestimo_id: res.emprestimo_id,
-                numero_parcela: res.numero_parcela
+                numero_parcela: res.numero_parcela,
               };
               return loan;
             })
@@ -69,8 +117,34 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
   const endIndex = startIndex + pp;
   const current: Loan[] | undefined = bodyTable?.slice(startIndex, endIndex);
 
+  const handleOpenModal = (index: number) => {
+    if (upload.length > 0) {
+      setImage(upload[0].image);
+      setModalImage(true);
+    } else {
+      setOpenMessageUpload(index);
+      setTimeout(() => {
+        setOpenMessageUpload(undefined);
+      }, 3000);
+    }
+  };
+
+  useEffect(() => {
+    if (data.length > 0) {
+      setOpenMessageUploadSuccess(true);
+      setTimeout(() => {
+        setOpenMessageUploadSuccess(false);
+      }, 3000);
+    }
+  }, [data]);
+
   return (
     <ScreenContainer isVisible={isOpen}>
+      <ModalHandleImage
+        image={image}
+        isOpen={modalImage}
+        onClose={() => setModalImage(false)}
+      />
       <Container>
         <ContainerForm>
           <HeaderModal>
@@ -96,30 +170,53 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
                       return <th key={index}>{title}</th>;
                     })}
                 </tr>
-                {current.map((body: Loan, index: number) => {
-                  return (
-                    <tr key={index}>
-                      <td>{body.date} </td>
-                      <td>
-                        {body.quantity.toLocaleString("pt-br", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </td>
-                      <td>
-                        {body.comprovante} <img src={EyeModal} alt="olho" />
-                      </td>
-                      <td>
-                        <Select
-                          loan={body}
-                          loans={bodyTable}
-                          setLoans={setBodyTable}
-                          i={index}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
+                {current &&
+                  current.map((body: Loan, index: number) => {
+                    return (
+                      <tr key={index}>
+                        <td>{body.date} </td>
+                        <td>{body.quantity}</td>
+                        <td>
+                          <CollumnContainer>
+                            <FlexContainer>
+                              {body.comprovante}{" "}
+                              <img
+                                src={EyeModal}
+                                alt="olho"
+                                onClick={() => handleOpenModal(index)}
+                              />{" "}
+                              <input
+                                type={"file"}
+                                accept="image/*"
+                                multiple
+                                ref={hiddenFileInput}
+                                onChange={handleFileChange}
+                                style={{ display: "none" }}
+                              />
+                              <UploadImg
+                                src={UploadIcon}
+                                alt="upload"
+                                onClick={() => handleClick()}
+                              />
+                            </FlexContainer>
+                            <MessaUploadStyled
+                              open={openMessageUpload === index}
+                            >
+                              Faça o upload de algum comprovante para
+                              visualizar.
+                            </MessaUploadStyled>
+                          </CollumnContainer>
+                        </td>
+                        <td>
+                          <Select
+                            loan={body}
+                            setLoans={setBodyTable}
+                            i={index}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
               </Table>
               <PaginationStyled>
                 <Pagination
@@ -130,6 +227,9 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
                   total={bodyTable ? bodyTable.length : 0}
                 />
               </PaginationStyled>
+              <MessaUploadStyledSuccess open={openMessageUploadSuccess}>
+                Upload realizado.
+              </MessaUploadStyledSuccess>
             </>
           )}
         </ContainerForm>
@@ -152,6 +252,7 @@ const ScreenContainer = styled.div<{ isVisible: boolean }>`
   justify-content: center;
   opacity: ${(props) => (props.isVisible ? 1 : 0)};
   pointer-events: ${(props) => (props.isVisible ? "auto" : "none")};
+  z-index: 10;
 `;
 
 const Container = styled.div`
@@ -288,7 +389,7 @@ const Table = styled.table`
 
 const StyledLoading = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 50vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -304,4 +405,55 @@ const PaginationStyled = styled.div`
   width: 100%;
   margin: 0 auto;
   padding-bottom: 20px;
+`;
+
+const UploadImg = styled.img`
+  object-fit: contain;
+  width: 16px;
+  margin-bottom: -2px;
+  cursor: pointer;
+`;
+
+const MessaUploadStyled = styled.div<{ open: boolean }>`
+  transition: all 0.5s ease-in-out;
+  opacity: ${(props) => (props.open ? 1 : 0)};
+  font-size: 12px;
+  color: red;
+  line-height: 16px;
+  font-weight: 400;
+  position: absolute;
+  margin-top: 22px;
+`;
+
+const MessaUploadStyledSuccess = styled.div<{ open: boolean }>`
+  transition: all 0.5s ease-in-out;
+  opacity: ${(props) => (props.open ? 1 : 0)};
+  font-size: 12px;
+  color: green;
+  line-height: 16px;
+  font-weight: 400;
+  position: absolute;
+  margin-top: 0px;
+  right: 40px;
+  bottom: 60px;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 120%;
+  width: 220px;
+  height: 46px;
+  border-bottom: 2px solid green;
+  animation-name: description;
+  animation-duration: 1.5s;
+  animation-fill-mode: forwards;
+  position: relative;
+  @keyframes description {
+    from {
+      right: 30px;
+    }
+    to {
+      right: 0px;
+    }
+  }
 `;

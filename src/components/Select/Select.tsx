@@ -1,41 +1,39 @@
-import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ArrowDown from "../../assets/icons/arrow-down.svg";
 import { Loan } from "../../pages/SideDish/SideDish";
 import { updateStatusLoans } from "../../services/loan";
+import { toast } from "react-toastify";
 
 interface Props {
   loan: Loan;
-  loans: Loan[];
   setLoans: any;
   i: number;
 }
 
-const SelectContainer = ({ loan, loans, setLoans, i }: Props): JSX.Element => {
-  const [status, setStatus] = useState<string>();
+const SelectContainer = ({ loan, setLoans, i }: Props): JSX.Element => {
 
-  const handleSetSelectStatus = (value: string) => {
-    setStatus(value);
-    let aux = loans.map(async (item, index: number) => {
-      if (index === i) {
-        await updateStatusLoans(item, value)
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => console.error(err));
-        return { ...item, status: value };
-      }
-      return item;
-    });
-    setLoans(aux);
+  const handleSetSelectStatus = async (value: string) => {
+    await updateStatusLoans(loan, value)
+      .then(() => {
+        setLoans((current: Loan[]) => {
+          return current.map((obj, index) => {
+            if (index === i) {
+              return { ...obj, status_descricao: value };
+            }
+            return obj;
+          });
+        });
+        /* toast.success("Status da parcela alterado com sucesso."); */
+      })
+      .catch(() => toast.error("Falha ao atualizar status da parcela."));
   };
 
   return (
     <>
       <SelectContainerStyled
-        name="status"
-        value={loan.status}
-        defaultValue={loan.status}
+        name="status_descricao"
+        value={loan.status_descricao}
+        defaultValue={loan.status_descricao}
         onChange={(e) => handleSetSelectStatus(e.target.value)}
       >
         <Option value="Em atraso">Em atraso</Option>

@@ -22,8 +22,8 @@ export const updateStatusLoans = async (item: Loan, field: string) => {
       numberField = 3;
       break;
   }
-  const res = await api.put(
-    `/installment`,
+  const res = await axios.put(
+    process.env.REACT_APP_API_URL + `/installment`,
     {
       emprestimo_id: Number(item.emprestimo_id),
       field_to_update: "status_id",

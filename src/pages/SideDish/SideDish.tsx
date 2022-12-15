@@ -29,7 +29,7 @@ export interface Loan {
   date: string;
   quantity: number;
   parcela: string;
-  status: "Pendente" | "Em atraso" | "Efetuado";
+  status_descricao: "Pendente" | "Em atraso" | "Efetuado";
   comprovante?: string;
   numero_parcela: number;
 }
@@ -62,7 +62,7 @@ const SideDish = (): JSX.Element => {
       date: "21/11/2022",
       quantity: 1000,
       parcela: "2/24",
-      status: "Pendente",
+      status_descricao: "Pendente",
       emprestimo_id: 1,
       numero_parcela: 1,
     },
@@ -72,7 +72,7 @@ const SideDish = (): JSX.Element => {
       date: "21/10/2022",
       quantity: 1000,
       parcela: "6/24",
-      status: "Em atraso",
+      status_descricao: "Em atraso",
       emprestimo_id: 1,
       numero_parcela: 1,
     },
@@ -82,7 +82,7 @@ const SideDish = (): JSX.Element => {
       date: "21/08/2022",
       quantity: 1000,
       parcela: "19/24",
-      status: "Efetuado",
+      status_descricao: "Efetuado",
       emprestimo_id: 1,
       numero_parcela: 1,
     },
@@ -92,7 +92,7 @@ const SideDish = (): JSX.Element => {
       date: "14/06/2022",
       quantity: 1000,
       parcela: "19/24",
-      status: "Efetuado",
+      status_descricao: "Efetuado",
       emprestimo_id: 1,
       numero_parcela: 1,
     },
@@ -102,7 +102,7 @@ const SideDish = (): JSX.Element => {
       date: "14/05/2001",
       quantity: 1000,
       parcela: "19/24",
-      status: "Efetuado",
+      status_descricao: "Efetuado",
       emprestimo_id: 1,
       numero_parcela: 1,
     },
@@ -112,7 +112,7 @@ const SideDish = (): JSX.Element => {
       date: "14/04/2006",
       quantity: 1000,
       parcela: "19/24",
-      status: "Efetuado",
+      status_descricao: "Efetuado",
       emprestimo_id: 1,
       numero_parcela: 1,
     },
@@ -122,7 +122,7 @@ const SideDish = (): JSX.Element => {
       date: "10/05/2022",
       quantity: 1000,
       parcela: "2/24",
-      status: "Pendente",
+      status_descricao: "Pendente",
       emprestimo_id: 1,
       numero_parcela: 1,
     },
@@ -146,12 +146,12 @@ const SideDish = (): JSX.Element => {
       setOpenModalFilter(false);
     }
     if (select === "Pendente") {
-      setBodyTable(bodyTableAux.filter((item) => item.status === "Pendente"));
+      setBodyTable(bodyTableAux.filter((item) => item.status_descricao === "Pendente"));
       setOpenModalFilter(false);
     }
 
     if (select === "Efetuado") {
-      setBodyTable(bodyTableAux.filter((item) => item.status === "Efetuado"));
+      setBodyTable(bodyTableAux.filter((item) => item.status_descricao === "Efetuado"));
       setOpenModalFilter(false);
     }
 
@@ -395,9 +395,8 @@ const SideDish = (): JSX.Element => {
                     </td>
                     <td>{body.parcela}</td>
                     <td>
-                      <Select
+                       <Select
                         loan={body}
-                        loans={bodyTable}
                         setLoans={setBodyTable}
                         i={index}
                       />

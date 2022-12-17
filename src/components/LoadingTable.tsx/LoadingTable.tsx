@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-const Spinner: React.FC = () => (
+const LoadingTable: React.FC = () => (
   <StyledSpinner viewBox="0 0 50 50">
     <circle
       className="path"
@@ -17,13 +17,13 @@ const Spinner: React.FC = () => (
 
 const StyledSpinner = styled.svg`
   animation: rotate 2s linear infinite;
-  width: 25px;
-  height: 25px;
-  margin-top: 20px;
+  width: 45px;
+  height: 45px;
+  margin-top: -59px;
   margin-bottom: 30px;
   margin-right: 20px;
   & .path {
-    stroke: #fff;
+    stroke: #14423e;
     stroke-linecap: round;
     animation: dash 1.5s ease-in-out infinite;
   }
@@ -49,4 +49,4 @@ const StyledSpinner = styled.svg`
   }
 `;
 
-export default Spinner;
+export default LoadingTable;

@@ -20,7 +20,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import { toast } from "react-toastify";
 import { getLoans } from "../../services/loan";
-import Spinner from "../../components/Spinner/Spinner";
+import Spinner from "../../components/LoadingTable.tsx/LoadingTable";
+import useProtectedPage from "../../hooks/useProtectedPage";
 
 export interface Loan {
   emprestimo_id: number;
@@ -35,6 +36,7 @@ export interface Loan {
 }
 
 const SideDish = (): JSX.Element => {
+  useProtectedPage();
   const navigate = useNavigate();
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
   const [select, setSelect] = useState<
@@ -146,12 +148,16 @@ const SideDish = (): JSX.Element => {
       setOpenModalFilter(false);
     }
     if (select === "Pendente") {
-      setBodyTable(bodyTableAux.filter((item) => item.status_descricao === "Pendente"));
+      setBodyTable(
+        bodyTableAux.filter((item) => item.status_descricao === "Pendente")
+      );
       setOpenModalFilter(false);
     }
 
     if (select === "Efetuado") {
-      setBodyTable(bodyTableAux.filter((item) => item.status_descricao === "Efetuado"));
+      setBodyTable(
+        bodyTableAux.filter((item) => item.status_descricao === "Efetuado")
+      );
       setOpenModalFilter(false);
     }
 
@@ -395,11 +401,7 @@ const SideDish = (): JSX.Element => {
                     </td>
                     <td>{body.parcela}</td>
                     <td>
-                       <Select
-                        loan={body}
-                        setLoans={setBodyTable}
-                        i={index}
-                      />
+                      <Select loan={body} setLoans={setBodyTable} i={index} />
                     </td>
                   </tr>
                 );

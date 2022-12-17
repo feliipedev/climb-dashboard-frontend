@@ -175,8 +175,6 @@ const Requests = (): JSX.Element => {
   const [notificationDisabledOne, setNotificationDisabledOne] = useState(true);
   const [notificationDisabledTwo, setNotificationDisabledTwo] = useState(false);
 
-  console.log(params.state.notificationNumber);
-
   const handleFilter = () => {
     if (select === "Order") {
       bodyTable.sort((a, b) =>

@@ -4,6 +4,7 @@ import { ThemeProvider } from "styled-components";
 import GlobalStyle from "./styles/globalStyle";
 import { lightTheme } from "./styles/theme";
 import Router from "./routes/Router";
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = (): JSX.Element => {
   const theme = lightTheme;

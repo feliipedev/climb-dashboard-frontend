@@ -47,8 +47,8 @@ const Image = styled.div<{ src: string }>`
   background-image: url(${(props) => props.src});
   background-size: cover;
   background-position: center;
-  width: 400px;
-  height: 400px;
+  width: 300px;
+  height: 300px;
   border-radius: 6px;
   margin: 10px;
   animation-name: fade;

@@ -1,16 +1,15 @@
 import styled from "styled-components";
 import React, { SetStateAction, useEffect, useRef, useState } from "react";
 import CloseFilter from "../../../assets/icons/close-filter.svg";
-import Select from "../../../components/Select/Select";
-import EyeModal from "../../../assets/icons/eye-modal.svg";
+
 import { FlexContainer, Loan } from "../../../pages/SideDish/SideDish";
 import { getLoans } from "../../../services/loan";
-import Spinner from "../../Spinner/Spinner";
+import Spinner from "../../LoadingTable.tsx/LoadingTable";
 import moment from "moment";
 import Pagination from "../../Pagination/Pagination";
-import UploadIcon from "../../../assets/icons/upload.png";
 import ModalHandleImage from "../ModalHandleImage/ModalHandleImage";
 import { toast } from "react-toastify";
+import TableModalDetailClient from "../../TableModalDetailsClient/TableModalDetailsClient";
 
 type Props = {
   isOpen: boolean;
@@ -18,14 +17,7 @@ type Props = {
   id: number;
 };
 
-interface Upload {
-  name: string;
-  image: string;
-}
-
 const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
-  const hiddenFileInput = useRef<HTMLInputElement>(null);
-  const hiddenIndex = useRef<HTMLInputElement>(null);
   const [titleTable, setTitleTable] = useState<string[]>([
     "Data de Vencimento",
     "Valor da Parcela",
@@ -36,11 +28,10 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(true);
   const [pg, setPg] = useState<number>(0);
   const [pp, setPp] = useState<number>(4);
-  const [upload, setUpload] = useState<Upload[]>([]);
+
   const [data, setData] = useState<File[]>([]);
   const [image, setImage] = useState<string>("");
   const [modalImage, setModalImage] = useState<boolean>(false);
-  const [openMessageUpload, setOpenMessageUpload] = useState<number>();
   const [openMessageUploadSuccess, setOpenMessageUploadSuccess] =
     useState<boolean>(false);
 
@@ -50,35 +41,6 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
       handleRequest();
     }, 2000);
   }, []);
-
-  const handleClick = () => {
-    if (hiddenFileInput.current) {
-      hiddenFileInput.current.click();
-    }
-  };
-
-  const handleFileChange = (e: any) => {
-    if (e.target.files) {
-      Array.from(e.target.files).map((selectedFile: any) => {
-        if (selectedFile) {
-          const reader = new FileReader();
-          reader.readAsDataURL(selectedFile);
-          reader.onloadend = (e) => {
-            if (e.target?.result) {
-              setUpload((prev) => [
-                ...prev,
-                {
-                  name: selectedFile.name,
-                  image: e.target?.result?.toString() ?? "",
-                },
-              ]);
-              setData((prev) => [...prev, selectedFile]);
-            }
-          };
-        }
-      });
-    }
-  };
 
   const handleRequest = async () => {
     setLoading(true);
@@ -115,36 +77,20 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
   const pages: number = Math.ceil(bodyTable ? bodyTable.length / pp : 0);
   const startIndex = pg * pp;
   const endIndex = startIndex + pp;
-  const current: Loan[] | undefined = bodyTable?.slice(startIndex, endIndex);
+  const current: Loan[] = bodyTable?.slice(startIndex, endIndex);
 
-  const handleOpenModal = (index: number) => {
-    if (upload.length > 0) {
-      setImage(upload[0].image);
-      setModalImage(true);
-    } else {
-      setOpenMessageUpload(index);
-      setTimeout(() => {
-        setOpenMessageUpload(undefined);
-      }, 3000);
-    }
-  };
-
-  useEffect(() => {
+  /* useEffect(() => {
     if (data.length > 0) {
       setOpenMessageUploadSuccess(true);
       setTimeout(() => {
         setOpenMessageUploadSuccess(false);
       }, 3000);
     }
-  }, [data]);
+  }, [data]); */
+  
 
   return (
     <ScreenContainer isVisible={isOpen}>
-      <ModalHandleImage
-        image={image}
-        isOpen={modalImage}
-        onClose={() => setModalImage(false)}
-      />
       <Container>
         <ContainerForm>
           <HeaderModal>
@@ -164,6 +110,11 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
           ) : (
             <>
               <Table>
+                <ModalHandleImage
+                  image={image}
+                  isOpen={modalImage}
+                  onClose={() => setModalImage(false)}
+                />
                 <tr>
                   {titleTable &&
                     titleTable.map((title: string, index: number) => {
@@ -173,48 +124,11 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
                 {current &&
                   current.map((body: Loan, index: number) => {
                     return (
-                      <tr key={index}>
-                        <td>{body.date} </td>
-                        <td>{body.quantity}</td>
-                        <td>
-                          <CollumnContainer>
-                            <FlexContainer>
-                              {body.comprovante}{" "}
-                              <img
-                                src={EyeModal}
-                                alt="olho"
-                                onClick={() => handleOpenModal(index)}
-                              />{" "}
-                              <input
-                                type={"file"}
-                                accept="image/*"
-                                multiple
-                                ref={hiddenFileInput}
-                                onChange={handleFileChange}
-                                style={{ display: "none" }}
-                              />
-                              <UploadImg
-                                src={UploadIcon}
-                                alt="upload"
-                                onClick={() => handleClick()}
-                              />
-                            </FlexContainer>
-                            <MessaUploadStyled
-                              open={openMessageUpload === index}
-                            >
-                              Faça o upload de algum comprovante para
-                              visualizar.
-                            </MessaUploadStyled>
-                          </CollumnContainer>
-                        </td>
-                        <td>
-                          <Select
-                            loan={body}
-                            setLoans={setBodyTable}
-                            i={index}
-                          />
-                        </td>
-                      </tr>
+                      <TableModalDetailClient
+                        setBodyTable={setBodyTable}
+                        index={index}
+                        body={body}
+                      />
                     );
                   })}
               </Table>
@@ -286,7 +200,7 @@ const ContainerForm = styled.section`
   z-index: 2;
   margin: 0 auto;
   border-radius: 6px;
-  padding: 33px 26px 40px 24px;
+  padding: 33px 26px  0px 24px;
 `;
 
 const HeaderModal = styled.div`
@@ -344,6 +258,59 @@ const Email = styled.div`
   color: #151f1e;
 `;
 
+const StyledLoading = styled.div`
+  width: 100%;
+  height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const PaginationStyled = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  margin-top: 40px;
+  border-bottom: 1px solid #e0e0e0;
+  max-width: 798px;
+  width: 100%;
+  margin: 0 auto;
+  padding-bottom: 20px;
+`;
+
+const MessaUploadStyledSuccess = styled.div<{ open: boolean }>`
+  transition: all 0.5s ease-in-out;
+  opacity: ${(props) => (props.open ? 1 : 0)};
+  font-size: 12px;
+  color: green;
+  line-height: 16px;
+  font-weight: 400;
+  position: absolute;
+  margin-top: 0px;
+  right: 40px;
+  bottom: 60px;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 120%;
+  width: 220px;
+  height: 46px;
+  border-bottom: 2px solid green;
+  animation-name: description;
+  animation-duration: 1.5s;
+  animation-fill-mode: forwards;
+  position: relative;
+  @keyframes description {
+    from {
+      right: 30px;
+    }
+    to {
+      right: 0px;
+    }
+  }
+`;
+
 const Table = styled.table`
   margin-top: 32px;
   margin-bottom: 59px;
@@ -383,77 +350,6 @@ const Table = styled.table`
     }
     &:last-child {
       border-right: none;
-    }
-  }
-`;
-
-const StyledLoading = styled.div`
-  width: 100%;
-  height: 50vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const PaginationStyled = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  margin-top: 40px;
-  border-bottom: 1px solid #e0e0e0;
-  max-width: 798px;
-  width: 100%;
-  margin: 0 auto;
-  padding-bottom: 20px;
-`;
-
-const UploadImg = styled.img`
-  object-fit: contain;
-  width: 16px;
-  margin-bottom: -2px;
-  cursor: pointer;
-`;
-
-const MessaUploadStyled = styled.div<{ open: boolean }>`
-  transition: all 0.5s ease-in-out;
-  opacity: ${(props) => (props.open ? 1 : 0)};
-  font-size: 12px;
-  color: red;
-  line-height: 16px;
-  font-weight: 400;
-  position: absolute;
-  margin-top: 22px;
-`;
-
-const MessaUploadStyledSuccess = styled.div<{ open: boolean }>`
-  transition: all 0.5s ease-in-out;
-  opacity: ${(props) => (props.open ? 1 : 0)};
-  font-size: 12px;
-  color: green;
-  line-height: 16px;
-  font-weight: 400;
-  position: absolute;
-  margin-top: 0px;
-  right: 40px;
-  bottom: 60px;
-  font-family: "Poppins";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 120%;
-  width: 220px;
-  height: 46px;
-  border-bottom: 2px solid green;
-  animation-name: description;
-  animation-duration: 1.5s;
-  animation-fill-mode: forwards;
-  position: relative;
-  @keyframes description {
-    from {
-      right: 30px;
-    }
-    to {
-      right: 0px;
     }
   }
 `;

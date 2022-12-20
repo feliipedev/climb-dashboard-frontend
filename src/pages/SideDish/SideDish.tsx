@@ -19,9 +19,10 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import { toast } from "react-toastify";
-import { getLoans } from "../../services/loan";
+import { getLoans, getNotification } from "../../services/loan";
 import Spinner from "../../components/LoadingTable.tsx/LoadingTable";
 import useProtectedPage from "../../hooks/useProtectedPage";
+import HeaderTable from "../../components/HeaderTable/HeaderTable";
 
 export interface Loan {
   emprestimo_id: number;
@@ -131,10 +132,7 @@ const SideDish = (): JSX.Element => {
   ]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
   const [loading, setLoading] = useState<boolean>(true);
-  const [notificationDisabledOne, setNotificationDisabledOne] = useState(true);
-  const [notificationDisabledTwo, setNotificationDisabledTwo] = useState(false);
-  const [notificationNumberOne, setNotificationNumberOne] = useState(0);
-  const [notificationNumberTwo, setNotificationNumberTwo] = useState(1);
+
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -229,42 +227,14 @@ const SideDish = (): JSX.Element => {
     }, 2000);
   }, []);
 
-  const handleTitleOne = () => {
-    setNotificationDisabledOne(true);
-    setNotificationNumberOne(0);
-    navigate("/");
-  };
+ 
 
-  const handleTitleTwo = () => {
-    setNotificationDisabledOne(true);
-    setNotificationNumberOne(0);
-    navigate("/solicitacoes", {
-      state: {
-        notificationNumberOne,
-        notificationNumberTwo,
-      },
-    });
-  };
+ 
 
   return (
     <HomeStyled>
       <Header />
-      <Container>
-        <FlexContainer>
-          <Title onClick={() => handleTitleOne()}>
-            Acompanhamento
-            {!notificationDisabledOne && (
-              <NotificationStyled>{notificationNumberOne}</NotificationStyled>
-            )}
-          </Title>
-          <TitleTwo onClick={() => handleTitleTwo()}>
-            Solicitações
-            {!notificationDisabledTwo && (
-              <NotificationStyled>{notificationNumberTwo}</NotificationStyled>
-            )}
-          </TitleTwo>
-        </FlexContainer>
-      </Container>
+      <HeaderTable bodyTable={bodyTable} select="Acompanhamento"/>
       {loading ? (
         <StyledLoading>
           <Spinner />
@@ -474,32 +444,6 @@ export const Container = styled.div`
   }
 `;
 
-const Title = styled.p`
-  color: ${(props) => props.theme.colors.title};
-  font-family: "Poppins";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 30px;
-  line-height: 120%;
-  text-decoration: underline;
-  margin-top: 43px;
-  cursor: pointer;
-  position: relative;
-`;
-
-const TitleTwo = styled.span`
-  font-family: "Poppins";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 30px;
-  line-height: 120%;
-  color: ${(props) => props.theme.colors.fontColor};
-  margin-top: 43px;
-  margin-left: 33px;
-  cursor: pointer;
-  position: relative;
-`;
-
 export const FlexContainer = styled.div`
   display: flex;
 `;
@@ -670,238 +614,6 @@ const HeaderFilter = styled.div`
     color: #000000;
     text-align: center;
   }
-`;
-
-const RadioButtonLabelOrder = styled.label`
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  border: 1px solid #bebebe;
-`;
-
-const RadioButtonLabelDate = styled.label`
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  border: 1px solid #bebebe;
-  margin-left: 40px;
-`;
-
-const RadioButtonOrder = styled.input`
-  opacity: 0;
-  margin-top: 1px;
-  z-index: 1;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  margin-left: -1px;
-  cursor: pointer;
-  position: absolute;
-  &:hover ~ ${RadioButtonLabelOrder} {
-    background: #bebebe;
-    cursor: pointer;
-  }
-  ${(props) =>
-    props.checked &&
-    ` 
-    &:checked + ${RadioButtonLabelOrder} {
-      background: #fff;
-      border: 1px solid #6EAEA9;
-      &::after {
-        content: "";
-        display: block;
-        border-radius: 50%;
-        width: 10px;
-        height: 10px;
-        margin-top: 2px;
-        margin-left: 2px;
-        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
-        background: #6EAEA9;
-      }
-    }
-  `}
-`;
-
-const RadioButtonPendente = styled.input`
-  opacity: 0;
-  margin-top: 1px;
-  z-index: 1;
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
-  cursor: pointer;
-  position: absolute;
-  margin-left: -1px;
-  &:hover ~ ${RadioButtonLabelOrder} {
-    background: #bebebe;
-    cursor: pointer;
-  }
-  ${(props) =>
-    props.checked &&
-    ` 
-    &:checked + ${RadioButtonLabelOrder} {
-      background: #fff;
-      border: 1px solid #6EAEA9;
-      border-radius: 50%;
-      &::after {
-        content: "";
-        display: block;
-        width: 10px;
-        border-radius: 50%;
-        height: 10px;
-        margin-top: 2px;
-        margin-left: 2px;
-        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
-        background: #6EAEA9;
-      }
-    }
-  `}
-`;
-
-const RadioButtonOrdem = styled.input`
-  opacity: 0;
-  margin-top: 1px;
-  z-index: 1;
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
-  cursor: pointer;
-  position: absolute;
-  margin-left: -1px;
-  &:hover ~ ${RadioButtonLabelOrder} {
-    background: #bebebe;
-    cursor: pointer;
-  }
-  ${(props) =>
-    props.checked &&
-    ` 
-    &:checked + ${RadioButtonLabelOrder} {
-      background: #fff;
-      border: 1px solid #6EAEA9;
-      border-radius: 50%;
-      &::after {
-        content: "";
-        display: block;
-        width: 10px;
-        border-radius: 50%;
-        height: 10px;
-        margin-top: 2px;
-        margin-left: 2px;
-        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
-        background: #6EAEA9;
-      }
-    }
-  `}
-`;
-
-const RadioButtonData = styled.input`
-  opacity: 0;
-  margin-top: 1px;
-  z-index: 1;
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
-  cursor: pointer;
-  position: absolute;
-  margin-left: 213px;
-  &:hover ~ ${RadioButtonLabelDate} {
-    background: #bebebe;
-    cursor: pointer;
-  }
-  ${(props) =>
-    props.checked &&
-    ` 
-    &:checked + ${RadioButtonLabelDate} {
-      background: #fff;
-      border: 1px solid #6EAEA9;
-      border-radius: 50%;
-      &::after {
-        content: "";
-        display: block;
-        width: 10px;
-        border-radius: 50%;
-        height: 10px;
-        margin-top: 2px;
-        margin-left: 2px;
-        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
-        background: #6EAEA9;
-      }
-    }
-  `}
-`;
-
-const RadioButtonDate = styled.input`
-  opacity: 0;
-  margin-top: 1px;
-  z-index: 1;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
-  position: absolute;
-  margin-left: 213px;
-  cursor: pointer;
-  &:hover ~ ${RadioButtonLabelDate} {
-    background: #bebebe;
-    cursor: pointer;
-  }
-  ${(props) =>
-    props.checked &&
-    ` 
-    &:checked + ${RadioButtonLabelDate} {
-      background: #fff;
-      border: 1px solid #6EAEA9;
-      &::after {
-        content: "";
-        display: block;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin-top: 2px;
-        margin-left: 2px;
-        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
-        background: #6EAEA9;
-      }
-    }
-  `}
-`;
-
-const RadioButtonEfetuado = styled.input`
-  opacity: 0;
-  margin-top: 1px;
-  z-index: 1;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
-  position: absolute;
-  margin-left: 147px;
-  cursor: pointer;
-  &:hover ~ ${RadioButtonLabelDate} {
-    background: #bebebe;
-    cursor: pointer;
-  }
-  ${(props) =>
-    props.checked &&
-    ` 
-    &:checked + ${RadioButtonLabelDate} {
-      background: #fff;
-      border: 1px solid #6EAEA9;
-      &::after {
-        content: "";
-        display: block;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin-top: 2px;
-        margin-left: 2px;
-        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
-        background: #6EAEA9;
-      }
-    }
-  `}
 `;
 
 const BodyFilter = styled.div`
@@ -1101,18 +813,3 @@ const StyledLoading = styled.div`
   align-items: center;
 `;
 
-const NotificationStyled = styled.div`
-  width: 16px;
-  height: 16px;
-  color: black;
-  border-radius: 50%;
-  background: #edb900;
-  font-size: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  top: -1px;
-  right: -10px;
-  font-weight: 600;
-`;

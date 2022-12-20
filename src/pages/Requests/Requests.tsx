@@ -18,6 +18,7 @@ import moment from "moment";
 import CalendarIcon from "../../assets/icons/calendar.svg";
 import FilterComponent from "../../components/Filter/Filter";
 import { useLocation } from "react-router-dom";
+import HeaderTable from "../../components/HeaderTable/HeaderTable";
 
 export interface Loan {
   name: string;
@@ -276,22 +277,7 @@ const Requests = (): JSX.Element => {
   return (
     <HomeStyled>
       <Header />
-      <Container>
-        <FlexContainer>
-          <Title onClick={() => handleTitleOne()}>
-            Acompanhamento
-            {!notificationDisabledOne && (
-              <NotificationStyled>{notificationNumberOne}</NotificationStyled>
-            )}
-          </Title>
-          <TitleTwo onClick={() => handleTitleTwo()}>
-            Solicitações
-            {!notificationDisabledTwo && (
-              <NotificationStyled>{notificationNumberTwo}</NotificationStyled>
-            )}
-          </TitleTwo>
-        </FlexContainer>
-      </Container>
+      <HeaderTable bodyTable={bodyTable} select="Solicitações" />
       <Container>
         <TitleStyled>
           <SubTitle>Mostrando perído:</SubTitle>

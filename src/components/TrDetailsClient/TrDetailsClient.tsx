@@ -18,7 +18,7 @@ interface Upload {
   image: string;
 }
 
-const TableModalDetailClient = ({
+const TrDetailsClient = ({
   body,
   index,
   setBodyTable,
@@ -116,7 +116,7 @@ const TableModalDetailClient = ({
   );
 };
 
-export default TableModalDetailClient;
+export default TrDetailsClient;
 
 const UploadImg = styled.img`
   object-fit: contain;

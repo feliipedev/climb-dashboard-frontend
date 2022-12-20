@@ -1,15 +1,14 @@
 import styled from "styled-components";
-import React, { SetStateAction, useEffect, useRef, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import CloseFilter from "../../../assets/icons/close-filter.svg";
-
-import { FlexContainer, Loan } from "../../../pages/SideDish/SideDish";
+import { Loan } from "../../../pages/SideDish/SideDish";
 import { getLoans } from "../../../services/loan";
 import Spinner from "../../LoadingTable.tsx/LoadingTable";
 import moment from "moment";
 import Pagination from "../../Pagination/Pagination";
 import ModalHandleImage from "../ModalHandleImage/ModalHandleImage";
 import { toast } from "react-toastify";
-import TableModalDetailClient from "../../TableModalDetailsClient/TableModalDetailsClient";
+import TableModalDetailClient from "../../TrDetailsClient/TrDetailsClient";
 
 type Props = {
   isOpen: boolean;
@@ -28,12 +27,8 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(true);
   const [pg, setPg] = useState<number>(0);
   const [pp, setPp] = useState<number>(4);
-
-  const [data, setData] = useState<File[]>([]);
   const [image, setImage] = useState<string>("");
   const [modalImage, setModalImage] = useState<boolean>(false);
-  const [openMessageUploadSuccess, setOpenMessageUploadSuccess] =
-    useState<boolean>(false);
 
   useEffect(() => {
     setLoading(true);
@@ -78,16 +73,6 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
   const startIndex = pg * pp;
   const endIndex = startIndex + pp;
   const current: Loan[] = bodyTable?.slice(startIndex, endIndex);
-
-  /* useEffect(() => {
-    if (data.length > 0) {
-      setOpenMessageUploadSuccess(true);
-      setTimeout(() => {
-        setOpenMessageUploadSuccess(false);
-      }, 3000);
-    }
-  }, [data]); */
-  
 
   return (
     <ScreenContainer isVisible={isOpen}>
@@ -141,9 +126,6 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
                   total={bodyTable ? bodyTable.length : 0}
                 />
               </PaginationStyled>
-              <MessaUploadStyledSuccess open={openMessageUploadSuccess}>
-                Upload realizado.
-              </MessaUploadStyledSuccess>
             </>
           )}
         </ContainerForm>
@@ -200,7 +182,7 @@ const ContainerForm = styled.section`
   z-index: 2;
   margin: 0 auto;
   border-radius: 6px;
-  padding: 33px 26px  0px 24px;
+  padding: 33px 26px 0px 24px;
 `;
 
 const HeaderModal = styled.div`
@@ -276,39 +258,6 @@ const PaginationStyled = styled.div`
   width: 100%;
   margin: 0 auto;
   padding-bottom: 20px;
-`;
-
-const MessaUploadStyledSuccess = styled.div<{ open: boolean }>`
-  transition: all 0.5s ease-in-out;
-  opacity: ${(props) => (props.open ? 1 : 0)};
-  font-size: 12px;
-  color: green;
-  line-height: 16px;
-  font-weight: 400;
-  position: absolute;
-  margin-top: 0px;
-  right: 40px;
-  bottom: 60px;
-  font-family: "Poppins";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 120%;
-  width: 220px;
-  height: 46px;
-  border-bottom: 2px solid green;
-  animation-name: description;
-  animation-duration: 1.5s;
-  animation-fill-mode: forwards;
-  position: relative;
-  @keyframes description {
-    from {
-      right: 30px;
-    }
-    to {
-      right: 0px;
-    }
-  }
 `;
 
 const Table = styled.table`

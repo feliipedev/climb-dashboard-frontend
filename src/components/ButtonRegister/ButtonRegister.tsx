@@ -34,7 +34,7 @@ const ButtonRegisterContainer = styled.button<{ disabled: boolean }>`
   line-height: 120%;
   color: #ffffff;
   margin-top: -5px;
-  opacity: ${(props) => (props.disabled ? 0.8 : 1)};
+  opacity: ${(props) => (props.disabled ? 0.5 : 1)};  
   &:hover {
     opacity: 0.8;
   }

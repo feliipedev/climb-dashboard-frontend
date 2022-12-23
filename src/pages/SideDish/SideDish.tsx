@@ -21,7 +21,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Spinner from "../../components/LoadingTable.tsx/LoadingTable";
 import useProtectedPage from "../../hooks/useProtectedPage";
 import HeaderTable from "../../components/HeaderTable/HeaderTable";
-import { getListOfOutstandingLoans } from "../../services/loan";
+import { getListOfOutstandingLoans, getSideDish } from "../../services/loan";
 
 export interface Loan {
   emprestimo_id: number;
@@ -218,6 +218,34 @@ const SideDish = (): JSX.Element => {
   const endIndex = startIndex + pp;
   const current: Loan[] | undefined = bodyTable?.slice(startIndex, endIndex);
 
+  useEffect(() => {
+    setLoading(true);
+    handleList();
+    setLoading(false);
+  }, []);
+
+  const handleList = async () => {
+    await getSideDish().then((res: any) => {
+      res.result.map((item: any) => {
+        let dateAux = new Date(
+          item.ultimo_pagamento !== "None" ? item.ultimo_pagamento : null
+        );
+        let dateFormated = moment(dateAux).format("DD/MM/YYYY").toString();
+        let price = "1000";
+        let aux: Loan = {
+          name: item.name,
+          email: item.email,
+          date: dateFormated,
+          emprestimo_id: 1,
+          quantity: 1000,
+          parcela: item.parcelas,
+          numero_parcela: 1,
+          status_descricao: item.status_descricao,
+        };
+        return setBodyTable((current) => [...current, aux]);
+      });
+    });
+  };
 
   return (
     <HomeStyled>
@@ -800,3 +828,6 @@ const StyledLoading = styled.div`
   justify-content: center;
   align-items: center;
 `;
+function currencyFormat(arg0: number): number {
+  throw new Error("Function not implemented.");
+}

@@ -140,9 +140,7 @@ const Requests = (): JSX.Element => {
 
   useEffect(() => {
     setLoading(true);
-    if (bodyTable.length === 0) {
-      handleList();
-    }
+    handleList();
     setLoading(false);
   }, []);
 

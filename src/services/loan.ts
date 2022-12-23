@@ -43,3 +43,12 @@ export const getListOfOutstandingLoans = async () => {
   );
   return res.data;
 };
+
+
+export const getSideDish = async () => {
+  const res = await axios.get(
+    process.env.REACT_APP_API_URL +
+      "/installment/summary/list"
+  );
+  return res.data;
+}

@@ -2,7 +2,7 @@ import styled from "styled-components";
 import React, { SetStateAction, useEffect, useState } from "react";
 import CloseFilter from "../../../assets/icons/close-filter.svg";
 import { Loan } from "../../../pages/SideDish/SideDish";
-import { getLoans } from "../../../services/loan";
+import { getLoansDetails } from "../../../services/loan";
 import Spinner from "../../LoadingTable.tsx/LoadingTable";
 import moment from "moment";
 import Pagination from "../../Pagination/Pagination";
@@ -39,7 +39,7 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
 
   const handleRequest = async () => {
     setLoading(true);
-    await getLoans(id).then((res) => {
+    await getLoansDetails(id).then((res) => {
       if (res.internal_code === 200) {
         setTimeout(() => {
           setBodyTable(

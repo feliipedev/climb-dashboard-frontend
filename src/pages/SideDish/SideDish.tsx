@@ -18,11 +18,10 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
-import { toast } from "react-toastify";
-import { getLoans, getNotification } from "../../services/loan";
 import Spinner from "../../components/LoadingTable.tsx/LoadingTable";
 import useProtectedPage from "../../hooks/useProtectedPage";
 import HeaderTable from "../../components/HeaderTable/HeaderTable";
+import { getListOfOutstandingLoans } from "../../services/loan";
 
 export interface Loan {
   emprestimo_id: number;
@@ -133,7 +132,6 @@ const SideDish = (): JSX.Element => {
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
   const [loading, setLoading] = useState<boolean>(true);
 
-
   const handleFilter = () => {
     if (select === "Order") {
       bodyTable.sort((a, b) =>
@@ -220,21 +218,11 @@ const SideDish = (): JSX.Element => {
   const endIndex = startIndex + pp;
   const current: Loan[] | undefined = bodyTable?.slice(startIndex, endIndex);
 
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-  }, []);
-
- 
-
- 
 
   return (
     <HomeStyled>
       <Header />
-      <HeaderTable bodyTable={bodyTable} select="Acompanhamento"/>
+      <HeaderTable select="Acompanhamento" lengthTable={2} />
       {loading ? (
         <StyledLoading>
           <Spinner />
@@ -812,4 +800,3 @@ const StyledLoading = styled.div`
   justify-content: center;
   align-items: center;
 `;
-

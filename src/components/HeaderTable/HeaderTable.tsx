@@ -5,16 +5,16 @@ import { getNotification } from "../../services/loan";
 import { Loan } from "../../pages/SideDish/SideDish";
 
 interface Props {
-  bodyTable: any[];
+  lengthTable: number;
   select: string;
 }
 
-const HeaderTable = ({ select, bodyTable }: Props): JSX.Element => {
+const HeaderTable = ({ select, lengthTable }: Props): JSX.Element => {
   const navigate = useNavigate();
   const [notificationDisabledOne, setNotificationDisabledOne] = useState(true);
-  const [notificationDisabledTwo, setNotificationDisabledTwo] = useState(false);
+  const [notificationDisabledTwo, setNotificationDisabledTwo] = useState(true);
   const [notificationNumberOne, setNotificationNumberOne] = useState(0);
-  const [notificationNumberTwo, setNotificationNumberTwo] = useState(1);
+  const [notificationNumberTwo, setNotificationNumberTwo] = useState(0);
 
   const handleTitleOne = () => {
     setNotificationDisabledOne(true);
@@ -23,8 +23,8 @@ const HeaderTable = ({ select, bodyTable }: Props): JSX.Element => {
   };
 
   const handleTitleTwo = () => {
-    setNotificationDisabledOne(true);
-    setNotificationNumberOne(0);
+    setNotificationDisabledTwo(true);
+    setNotificationNumberTwo(0);
     navigate("/solicitacoes", {
       state: {
         notificationNumberOne,
@@ -36,12 +36,17 @@ const HeaderTable = ({ select, bodyTable }: Props): JSX.Element => {
   useEffect(() => {
     window.setInterval(async () => {
       const notificationResponse = await getNotification();
-      if (notificationResponse.result.loan_count > 6) {
-        setNotificationDisabledOne(false);
-        setNotificationNumberOne(notificationResponse.result.loan_count - 6);
+      if (
+        lengthTable > 0 &&
+        notificationResponse.result.loan_count + 1 > lengthTable
+      ) {
+        setNotificationDisabledTwo(false);
+        setNotificationNumberTwo(
+          notificationResponse.result.loan_count + 1 - lengthTable
+        );
       }
-    }, 30000);
-  }, []);
+    }, 10000);
+  }, [lengthTable]);
 
   return (
     <Container>

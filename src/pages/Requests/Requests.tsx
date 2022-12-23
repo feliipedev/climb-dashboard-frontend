@@ -3,13 +3,12 @@ import styled from "styled-components";
 import Search from "../../assets/icons/search.svg";
 import Filter from "../../assets/icons/filter.svg";
 import CloseFilter from "../../assets/icons/close-filter.svg";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import Pagination from "../../components/Pagination/Pagination";
 import CircularProgress from "../../components/CircularProgress/CircularProgress";
 import CircularProgressBarBase from "../../components/CircularProgress/CircleProgressBarBase";
 import ModalDetailsClient from "../../components/Modals/ModalDetailsClient/ModalDetailsClient";
 import { useNavigate } from "react-router-dom";
-import SelectModal from "../../components/SelectModal/SelectModal";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -19,7 +18,10 @@ import CalendarIcon from "../../assets/icons/calendar.svg";
 import FilterComponent from "../../components/Filter/Filter";
 import { useLocation } from "react-router-dom";
 import HeaderTable from "../../components/HeaderTable/HeaderTable";
-
+import { getListOfOutstandingLoans } from "../../services/loan";
+import Spinner from "../../components/Spinner/Spinner";
+import { upload } from "@testing-library/user-event/dist/upload";
+import TrRequests from "../../components/TrRequests/TrRequests";
 export interface Loan {
   name: string;
   cpf: string;
@@ -33,8 +35,6 @@ export interface Loan {
 }
 
 const Requests = (): JSX.Element => {
-  const navigate = useNavigate();
-  const params = useLocation();
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
   const [select, setSelect] = useState<"Sim" | "Não" | "Order" | "Clear">();
   const [pg, setPg] = useState<number>(0);
@@ -54,127 +54,10 @@ const Requests = (): JSX.Element => {
     "Data Pag",
     "Aprovação",
   ]);
-  const [bodyTable, setBodyTable] = useState<Loan[]>([
-    {
-      name: "Ivete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "R$ 100.000,00",
-      valorParcela: "R$ 10.000,00",
-      datPag: "28/11/2022",
-      status: "Não",
-    },
-    {
-      name: "avete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "",
-      valorParcela: "",
-      datPag: "28/10/2022",
-      status: "Sim",
-    },
-    {
-      name: "bvete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "R$ 100.000,00",
-      valorParcela: "R$ 10.000,00",
-      datPag: "28/09/2022",
-      status: "Não",
-    },
-    {
-      name: "cvete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "",
-      valorParcela: "",
-      datPag: "28/08/2022",
-      status: "Sim",
-    },
-    {
-      name: "dvete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "R$ 100.000,00",
-      valorParcela: "R$ 10.000,00",
-      datPag: "28/07/2022",
-      status: "Não",
-    },
-    {
-      name: "evete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "",
-      valorParcela: "",
-      datPag: "28/06/2022",
-      status: "Sim",
-    },
-    {
-      name: "Ivete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "R$ 100.000,00",
-      valorParcela: "R$ 10.000,00",
-      datPag: "28/05/2022",
-      status: "Não",
-    },
-    {
-      name: "Ivete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "",
-      valorParcela: "",
-      datPag: "28/04/2022",
-      status: "Sim",
-    },
-    {
-      name: "Ivete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "R$ 100.000,00",
-      valorParcela: "R$ 10.000,00",
-      datPag: "28/03/2022",
-      status: "Não",
-    },
-    {
-      name: "Ivete Prado Guimarães",
-      cpf: "000.000.000-00",
-      email: "ivete@gmail.com",
-      rendaMensal: "R$ 10000,00",
-      score: "160",
-      emprestimo: "",
-      valorParcela: "",
-      datPag: "28/02/2022",
-      status: "Sim",
-    },
-  ]);
+  const [bodyTable, setBodyTable] = useState<Loan[]>([]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
-  const [notificationNumberOne, setNotificationNumberOne] = useState(
-    params.state.notificationNumberOne
-  );
-  const [notificationNumberTwo, setNotificationNumberTwo] = useState(
-    params.state.notificationNumberTwo
-  );
-  const [notificationDisabledOne, setNotificationDisabledOne] = useState(true);
-  const [notificationDisabledTwo, setNotificationDisabledTwo] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [lengthTable, setLengthTable] = useState<number>(0);
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -253,207 +136,236 @@ const Requests = (): JSX.Element => {
   const pages: number = Math.ceil(bodyTable ? bodyTable.length / pp : 0);
   const startIndex = pg * pp;
   const endIndex = startIndex + pp;
-  const current: Loan[] | undefined = bodyTable?.slice(startIndex, endIndex);
+  const current: Loan[] = bodyTable?.slice(startIndex, endIndex);
 
-  const handleTitleOne = () => {
-    setNotificationDisabledOne(true);
-    setNotificationNumberOne(0);
-    setNotificationDisabledTwo(true);
-    setNotificationNumberTwo(0);
-    navigate("/");
-  };
+  useEffect(() => {
+    setLoading(true);
+    if (bodyTable.length === 0) {
+      handleList();
+    }
+    setLoading(false);
+  }, []);
 
-  const handleTitleTwo = () => {
-    setNotificationDisabledTwo(true);
-    setNotificationNumberTwo(0);
-    navigate("/solicitacoes", {
-      state: {
-        notificationNumberOne,
-        notificationNumberTwo,
-      },
+  const handleList = async () => {
+    await getListOfOutstandingLoans().then((res: any) => {
+      res.result.map((item: any) => {
+        const itemsFiltered = bodyTable.filter(
+          (loan: Loan) => loan.cpf === item.cpf
+        );
+        if (itemsFiltered.length === 0) {
+          let dateAux = new Date(item.created_at);
+          let dateFormated = moment(dateAux).format("DD/MM/YYYY").toString();
+          let aux: Loan = {
+            name: item.name,
+            cpf: item.cpf,
+            email: item.email,
+            rendaMensal: parseInt(item.income_value).toLocaleString("pt-br", {
+              style: "currency",
+              currency: "BRL",
+            }),
+            score: item.score,
+            emprestimo: parseInt(item.max_loan_amount)
+              .toLocaleString("pt-br", {
+                style: "currency",
+                currency: "BRL",
+              })
+              .toString(),
+
+            valorParcela: parseInt(item.installment_value)
+              .toLocaleString("pt-br", {
+                style: "currency",
+                currency: "BRL",
+              })
+              .toString(),
+
+            datPag: dateFormated,
+            status: item.approved === true ? "Sim" : "Não",
+          };
+          return setBodyTable((current) => [...current, aux]);
+        }
+      });
+      setLengthTable(res.result.length);
     });
   };
 
   return (
     <HomeStyled>
-      <Header />
-      <HeaderTable bodyTable={bodyTable} select="Solicitações" />
-      <Container>
-        <TitleStyled>
-          <SubTitle>Mostrando perído:</SubTitle>
-          <DateTitle>01 de maio de 2022</DateTitle>
-          <SubTitle>a</SubTitle>
-          <DateTitle>25 de maio de 2022</DateTitle>
-          <InputStyled>
-            <InputSearch
-              placeholder="Buscar por nome"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <img src={Search} alt="search" />
-          </InputStyled>
-          <CollumnContainer>
-            <ButtonFilter onClick={() => setOpenModalFilter(true)}>
-              <>Filtro</>
-              <img src={Filter} alt="filtro icon" />
-            </ButtonFilter>
-            <FilterContainer isOpen={openModalFilter}>
-              <HeaderFilter>
-                <div></div>
-                <p>Filtro</p>
-                <StyledCloseFilter onClick={() => setOpenModalFilter(false)}>
-                  <img src={CloseFilter} alt="fechar filtro" />
-                </StyledCloseFilter>
-              </HeaderFilter>
-              <FormControl>
-                <RadioGroup
-                  row={true}
-                  aria-labelledby="demo-radio-buttons-group-label"
-                  name="row-radio-buttons-group"
-                >
-                  <BodyFilter>
-                    <FormControlLabel
-                      value="clear"
-                      control={<Radio />}
-                      label="Limpar filtros"
-                      onChange={() => setSelect("Clear")}
+      <>
+        <Header />
+        <HeaderTable select="Solicitações" lengthTable={lengthTable} />
+        {loading ? (
+          <StyledLoading>
+            <Spinner />
+          </StyledLoading>
+        ) : (
+          <>
+            <Container>
+              <TitleStyled>
+                <SubTitle>Mostrando perído:</SubTitle>
+                <DateTitle>01 de maio de 2022</DateTitle>
+                <SubTitle>a</SubTitle>
+                <DateTitle>25 de maio de 2022</DateTitle>
+                <InputStyled>
+                  <InputSearch
+                    placeholder="Buscar por nome"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                  <img src={Search} alt="search" />
+                </InputStyled>
+                <CollumnContainer>
+                  <ButtonFilter onClick={() => setOpenModalFilter(true)}>
+                    <>Filtro</>
+                    <img src={Filter} alt="filtro icon" />
+                  </ButtonFilter>
+                  <FilterContainer isOpen={openModalFilter}>
+                    <HeaderFilter>
+                      <div></div>
+                      <p>Filtro</p>
+                      <StyledCloseFilter
+                        onClick={() => setOpenModalFilter(false)}
+                      >
+                        <img src={CloseFilter} alt="fechar filtro" />
+                      </StyledCloseFilter>
+                    </HeaderFilter>
+                    <FormControl>
+                      <RadioGroup
+                        row={true}
+                        aria-labelledby="demo-radio-buttons-group-label"
+                        name="row-radio-buttons-group"
+                      >
+                        <BodyFilter>
+                          <FormControlLabel
+                            value="clear"
+                            control={<Radio />}
+                            label="Limpar filtros"
+                            onChange={() => setSelect("Clear")}
+                          />
+                          <p>Ordenar por:</p>
+                          <FormControlLabel
+                            value="order"
+                            control={<Radio />}
+                            label="Ordem alfabética"
+                            onChange={() => setSelect("Order")}
+                          />
+                          <p>Status de pagamento:</p>
+                          <FlexContainer>
+                            <FormControlLabel
+                              value="female"
+                              control={<Radio />}
+                              label="Sim"
+                              onChange={() => setSelect("Sim")}
+                            />
+                            <FormControlLabel
+                              value="male"
+                              control={<Radio />}
+                              label="Não"
+                              onChange={() => setSelect("Não")}
+                            />
+                          </FlexContainer>
+                        </BodyFilter>
+                      </RadioGroup>
+                    </FormControl>
+                    <SelectDate>
+                      <P>Selecionar período:</P>
+                      <FlexContainer>
+                        <CalendarDate>
+                          <img src={CalendarIcon} alt="calendario" />
+                          <span>De</span>
+                        </CalendarDate>
+                        <FilterComponent
+                          date={dateInitial as Date}
+                          setDate={setDateInitial}
+                        />
+                      </FlexContainer>
+                      <FlexContainer>
+                        <CalendarDate>
+                          <img src={CalendarIcon} alt="calendario" />
+                          <span>Até</span>
+                        </CalendarDate>
+                        <FilterComponent
+                          date={dateEnd as Date}
+                          setDate={setDateEnd}
+                        />
+                      </FlexContainer>
+                    </SelectDate>
+                    <FilterButtonStyled>
+                      <ButtonFilterModal onClick={() => handleFilter()}>
+                        Filtrar
+                      </ButtonFilterModal>
+                    </FilterButtonStyled>
+                  </FilterContainer>
+                </CollumnContainer>
+              </TitleStyled>
+            </Container>
+            <Container>
+              <Table>
+                <tr>
+                  {titleTable &&
+                    titleTable.map((title: string, index: number) => {
+                      return <th key={index}>{title}</th>;
+                    })}
+                </tr>
+                {current.map((body: Loan, index: number) => {
+                  return (
+                    <TrRequests
+                      index={index}
+                      key={index}
+                      body={body}
+                      bodyTable={bodyTable}
+                      setBodyTable={setBodyTable}
                     />
-                    <p>Ordenar por:</p>
-                    <FormControlLabel
-                      value="order"
-                      control={<Radio />}
-                      label="Ordem alfabética"
-                      onChange={() => setSelect("Order")}
-                    />
-                    <p>Status de pagamento:</p>
-                    <FlexContainer>
-                      <FormControlLabel
-                        value="female"
-                        control={<Radio />}
-                        label="Sim"
-                        onChange={() => setSelect("Sim")}
-                      />
-                      <FormControlLabel
-                        value="male"
-                        control={<Radio />}
-                        label="Não"
-                        onChange={() => setSelect("Não")}
-                      />
-                    </FlexContainer>
-                  </BodyFilter>
-                </RadioGroup>
-              </FormControl>
-              <SelectDate>
-                <P>Selecionar período:</P>
-                <FlexContainer>
-                  <CalendarDate>
-                    <img src={CalendarIcon} alt="calendario" />
-                    <span>De</span>
-                  </CalendarDate>
-                  <FilterComponent
-                    date={dateInitial as Date}
-                    setDate={setDateInitial}
-                  />
-                </FlexContainer>
-                <FlexContainer>
-                  <CalendarDate>
-                    <img src={CalendarIcon} alt="calendario" />
-                    <span>Até</span>
-                  </CalendarDate>
-                  <FilterComponent
-                    date={dateEnd as Date}
-                    setDate={setDateEnd}
-                  />
-                </FlexContainer>
-              </SelectDate>
-              <FilterButtonStyled>
-                <ButtonFilterModal onClick={() => handleFilter()}>
-                  Filtrar
-                </ButtonFilterModal>
-              </FilterButtonStyled>
-            </FilterContainer>
-          </CollumnContainer>
-        </TitleStyled>
-      </Container>
-      <Container>
-        <Table>
-          <tr>
-            {titleTable &&
-              titleTable.map((title: string, index: number) => {
-                return <th key={index}>{title}</th>;
-              })}
-          </tr>
-          {current.map((body: Loan, index: number) => {
-            return (
-              <tr key={index}>
-                <td>
-                  <>{body.name}</>
-                </td>
-                <td>{body.cpf}</td>
-                <td>{body.email}</td>
-                <td>{body.rendaMensal}</td>
-                <td>{body.score}</td>
-                <td>{body.emprestimo}</td>
-                <td>{body.valorParcela}</td>
-                <td>{body.datPag}</td>
-                <td>
-                  {" "}
-                  <SelectModal
-                    loan={body}
-                    loans={bodyTable}
-                    setLoans={setBodyTable}
-                    i={index}
-                  />
-                </td>
-              </tr>
-            );
-          })}
-        </Table>
-        <PaginationStyled>
-          <Pagination
-            pages={pages}
-            pg={pg}
-            setPg={setPg}
-            lastPage={pages}
-            total={bodyTable ? bodyTable.length : 0}
-          />
-        </PaginationStyled>
-        <ShowTickets>
-          <p>Acompanhamento:</p>
-          <ButtonTicket onClick={() => handleFilterDate(7)}>
-            Últimos 7 dias
-          </ButtonTicket>
-          <ButtonTicket onClick={() => handleFilterDate(30)}>
-            Últimos 30 dias
-          </ButtonTicket>
-          <ButtonTicket onClick={() => handleFilterDate(90)}>
-            Últimos 3 meses
-          </ButtonTicket>
-          <ButtonTicket onClick={() => handleFilterDate(180)}>
-            Últimos 6 meses
-          </ButtonTicket>
-          <ButtonTicket>Escolher período</ButtonTicket>
-        </ShowTickets>
-        <CircularStyled>
-          <AlignContainer>
-            <p>Pagos</p>
-            <CircularProgress percentage={75} />
-          </AlignContainer>
-          <AlignContainer>
-            <p>Pendentes</p>
-            <CircularProgress percentage={30} />
-          </AlignContainer>
-          <AlignContainer>
-            <p>Total</p>
-            <CircularProgressBarBase percentage={100} />
-          </AlignContainer>
-        </CircularStyled>
-      </Container>
-      <ModalDetailsClient
-        isOpen={openModalDetails}
-        onClose={setOpenModalDetails}
-        id={1}
-      />
+                  );
+                })}
+              </Table>
+              <PaginationStyled>
+                <Pagination
+                  pages={pages}
+                  pg={pg}
+                  setPg={setPg}
+                  lastPage={pages}
+                  total={bodyTable ? bodyTable.length : 0}
+                />
+              </PaginationStyled>
+              <ShowTickets>
+                <p>Acompanhamento:</p>
+                <ButtonTicket onClick={() => handleFilterDate(7)}>
+                  Últimos 7 dias
+                </ButtonTicket>
+                <ButtonTicket onClick={() => handleFilterDate(30)}>
+                  Últimos 30 dias
+                </ButtonTicket>
+                <ButtonTicket onClick={() => handleFilterDate(90)}>
+                  Últimos 3 meses
+                </ButtonTicket>
+                <ButtonTicket onClick={() => handleFilterDate(180)}>
+                  Últimos 6 meses
+                </ButtonTicket>
+                <ButtonTicket>Escolher período</ButtonTicket>
+              </ShowTickets>
+              <CircularStyled>
+                <AlignContainer>
+                  <p>Pagos</p>
+                  <CircularProgress percentage={75} />
+                </AlignContainer>
+                <AlignContainer>
+                  <p>Pendentes</p>
+                  <CircularProgress percentage={30} />
+                </AlignContainer>
+                <AlignContainer>
+                  <p>Total</p>
+                  <CircularProgressBarBase percentage={100} />
+                </AlignContainer>
+              </CircularStyled>
+            </Container>
+          </>
+        )}
+        <ModalDetailsClient
+          isOpen={openModalDetails}
+          onClose={setOpenModalDetails}
+          id={1}
+        />
+      </>
     </HomeStyled>
   );
 };
@@ -584,62 +496,6 @@ const ButtonFilter = styled.button`
   }
   img {
     margin-left: 11px;
-  }
-`;
-
-const Table = styled.table`
-  margin-top: 22px;
-  margin-bottom: 59px;
-  width: 100%;
-  th {
-    font-family: "Poppins";
-    font-style: normal;
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 120%;
-    color: ${(props) => props.theme.colors.title};
-    border-top: 2px solid #e0e0e0;
-    padding: 22px 12px 15px 12px;
-    border-right: 1px solid #e0e0e0;
-    text-align: left;
-  }
-  td {
-    font-family: "Poppins";
-    font-style: normal;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 120%;
-    color: #151f1e;
-    border: 1px solid #e0e0e0;
-    border-left: none;
-    padding: 15px 0px 14px 12px;
-    img {
-      position: absolute;
-      right: 8px;
-      top: 26px;
-      cursor: pointer;
-    }
-    &:first-child {
-      position: relative;
-      width: 222px;
-      @media screen and (max-width: 1300px) {
-        width: 122px;
-      }
-    }
-    &:last-child {
-      text-align: center;
-    }
-    &:nth-child(2) {
-      min-width: 120px;
-    }
-    @media screen and (max-width: 1300px) {
-      font-size: 14px;
-      line-height: 18px;
-    }
-    @media screen and (max-width: 1250px) {
-      font-size: 12px;
-      line-height: 16px;
-    }
   }
 `;
 
@@ -1014,4 +870,68 @@ const NotificationStyled = styled.div`
   top: -1px;
   right: -10px;
   font-weight: 600;
+`;
+
+const StyledLoading = styled.div`
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Table = styled.table`
+  margin-top: 22px;
+  margin-bottom: 59px;
+  width: 100%;
+  th {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 120%;
+    color: ${(props) => props.theme.colors.title};
+    border-top: 2px solid #e0e0e0;
+    padding: 22px 12px 15px 12px;
+    border-right: 1px solid #e0e0e0;
+    text-align: left;
+  }
+  td {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 120%;
+    color: #151f1e;
+    border: 1px solid #e0e0e0;
+    border-left: none;
+    padding: 15px 0px 14px 12px;
+    img {
+      position: absolute;
+      right: 8px;
+      top: 26px;
+      cursor: pointer;
+    }
+    &:first-child {
+      position: relative;
+      width: 222px;
+      @media screen and (max-width: 1300px) {
+        width: 122px;
+      }
+    }
+    &:last-child {
+      text-align: center;
+    }
+    &:nth-child(2) {
+      min-width: 120px;
+    }
+    @media screen and (max-width: 1300px) {
+      font-size: 14px;
+      line-height: 18px;
+    }
+    @media screen and (max-width: 1250px) {
+      font-size: 12px;
+      line-height: 16px;
+    }
+  }
 `;

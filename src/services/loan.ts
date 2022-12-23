@@ -2,7 +2,7 @@ import axios from "axios";
 import { Loan } from "../pages/SideDish/SideDish";
 import api from "./api";
 
-export const getLoans = async (id: number) => {
+export const getLoansDetails = async (id: number) => {
   const res = await axios.get(
     process.env.REACT_APP_API_URL + `/installment/list?emprestimo_id=${id}`
   );
@@ -33,5 +33,13 @@ export const updateStatusLoans = async (item: Loan, field: string) => {
 
 export const getNotification = async () => {
   const res = await axios.get(process.env.REACT_APP_API_URL + "/loan/count");
+  return res.data;
+};
+
+export const getListOfOutstandingLoans = async () => {
+  const res = await axios.get(
+    process.env.REACT_APP_API_URL +
+      "/loan/list?items_per_page=1000&page_number=1"
+  );
   return res.data;
 };

@@ -24,7 +24,6 @@ const Signup = (): JSX.Element => {
   const [password, setPassword] = useState<string>("");
   const [passwordRepeat, setPasswordRepeat] = useState<string>("");
   const [upload, setUpload] = useState<Upload[]>([]);
-  console.log(upload);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

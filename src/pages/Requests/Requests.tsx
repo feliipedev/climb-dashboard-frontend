@@ -51,13 +51,18 @@ const Requests = (): JSX.Element => {
     "Score",
     "Empréstimo",
     "V. Parcela",
-    "Data Pag",
+    "Data Sol",
     "Aprovação",
   ]);
   const [bodyTable, setBodyTable] = useState<Loan[]>([]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
   const [loading, setLoading] = useState<boolean>(true);
   const [lengthTable, setLengthTable] = useState<number>(0);
+  const [beforeDate, setBeforeDate] = useState<string>("");
+  const [afterDate, setAfterDate] = useState<string>("");
+  const [aproved, setAproved] = useState<number>(0);
+  const [pending, setPending] = useState<number>(0);
+  const [total, setTotal] = useState<number>(0);
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -117,6 +122,17 @@ const Requests = (): JSX.Element => {
     }
   }, [search]);
 
+  function comparar_datas(a: any, b: any) {
+    let d1 = moment(a.datPag, "YYYY-MMM-DD");
+    let d2 = moment(b.datPag, "YYYY-MMM-DD");
+    if (d1.isAfter(d2)) {
+      return 1;
+    } else if (d1.isBefore(d2)) {
+      return -1;
+    }
+    return 0;
+  }
+
   const handleFilterDate = (ultimateDate: number) => {
     var dataUltimateDays = new Date();
     dataUltimateDays.setDate(dataUltimateDays.getDate() - ultimateDate);
@@ -144,45 +160,67 @@ const Requests = (): JSX.Element => {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    if (bodyTable.length > 0) {
+      moment.locale("pt");
+      bodyTable.sort(comparar_datas);
+      setBeforeDate(bodyTable[bodyTable.length - 1].datPag);
+      setAfterDate(bodyTable[0].datPag);
+      handleAproved();
+      handlePending();
+    }
+  }, [bodyTable]);
+
+  const handleAproved = () => {
+    let ap = bodyTable.filter((item) => item.status === "Sim");
+    setAproved((ap.length / bodyTable.length) * 100);
+  };
+
+  const handlePending = () => {
+    let ap = bodyTable.filter((item) => item.status === "Não");
+    setPending((ap.length / bodyTable.length) * 100);
+  };
+
   const handleList = async () => {
     await getListOfOutstandingLoans().then((res: any) => {
+      let sum = 0;
       res.result.map((item: any) => {
-        const itemsFiltered = bodyTable.filter(
-          (loan: Loan) => loan.cpf === item.cpf
-        );
-        if (itemsFiltered.length === 0) {
-          let dateAux = new Date(item.created_at);
-          let dateFormated = moment(dateAux).format("DD/MM/YYYY").toString();
-          let aux: Loan = {
-            name: item.name,
-            cpf: item.cpf,
-            email: item.email,
-            rendaMensal: parseInt(item.income_value).toLocaleString("pt-br", {
+        let dateAux = new Date(item.created_at);
+        let dateFormated = moment(dateAux).format("DD/MM/YYYY").toString();
+        let aux: Loan = {
+          name: item.name,
+          cpf: item.cpf,
+          email: item.email,
+          rendaMensal: parseInt(item.income_value).toLocaleString("pt-br", {
+            style: "currency",
+            currency: "BRL",
+          }),
+          score: item.score,
+          emprestimo: parseInt(item.max_loan_amount)
+            .toLocaleString("pt-br", {
               style: "currency",
               currency: "BRL",
-            }),
-            score: item.score,
-            emprestimo: parseInt(item.max_loan_amount)
-              .toLocaleString("pt-br", {
-                style: "currency",
-                currency: "BRL",
-              })
-              .toString(),
+            })
+            .toString(),
 
-            valorParcela: parseInt(item.installment_value)
-              .toLocaleString("pt-br", {
-                style: "currency",
-                currency: "BRL",
-              })
-              .toString(),
+          valorParcela: item.installment_value
+            ? parseInt(item.installment_value)
+                .toLocaleString("pt-br", {
+                  style: "currency",
+                  currency: "BRL",
+                })
+                .toString()
+            : "R$ 0,00",
 
-            datPag: dateFormated,
-            status: item.approved === true ? "Sim" : "Não",
-          };
-          return setBodyTable((current) => [...current, aux]);
-        }
+          datPag: dateFormated,
+          status: item.approved === true ? "Sim" : "Não",
+        };
+        sum += item.installment_value;
+        setBodyTableAux((current) => [...current, aux]);
+        return setBodyTable((current) => [...current, aux]);
       });
       setLengthTable(res.result.length);
+      setTotal(sum);
     });
   };
 
@@ -200,9 +238,9 @@ const Requests = (): JSX.Element => {
             <Container>
               <TitleStyled>
                 <SubTitle>Mostrando perído:</SubTitle>
-                <DateTitle>01 de maio de 2022</DateTitle>
+                <DateTitle>{beforeDate}</DateTitle>
                 <SubTitle>a</SubTitle>
-                <DateTitle>25 de maio de 2022</DateTitle>
+                <DateTitle>{afterDate}</DateTitle>
                 <InputStyled>
                   <InputSearch
                     placeholder="Buscar por nome"
@@ -343,16 +381,16 @@ const Requests = (): JSX.Element => {
               </ShowTickets>
               <CircularStyled>
                 <AlignContainer>
-                  <p>Pagos</p>
-                  <CircularProgress percentage={75} />
+                  <p>Aprovados</p>
+                  <CircularProgress percentage={aproved} />
                 </AlignContainer>
                 <AlignContainer>
-                  <p>Pendentes</p>
-                  <CircularProgress percentage={30} />
+                  <p>Não autorizados</p>
+                  <CircularProgress percentage={pending} />
                 </AlignContainer>
                 <AlignContainer>
                   <p>Total</p>
-                  <CircularProgressBarBase percentage={100} />
+                  <CircularProgressBarBase percentage={total} />
                 </AlignContainer>
               </CircularStyled>
             </Container>

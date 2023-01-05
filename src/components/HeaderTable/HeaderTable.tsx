@@ -5,7 +5,7 @@ import { getNotification } from "../../services/loan";
 import { Loan } from "../../pages/SideDish/SideDish";
 
 interface Props {
-  lengthTable: number;
+  lengthTable?: number;
   select: string;
 }
 
@@ -34,18 +34,17 @@ const HeaderTable = ({ select, lengthTable }: Props): JSX.Element => {
   };
 
   useEffect(() => {
-    window.setInterval(async () => {
-      const notificationResponse = await getNotification();
-      if (
-        lengthTable > 0 &&
-        notificationResponse.result.loan_count + 1 > lengthTable
-      ) {
-        setNotificationDisabledTwo(false);
-        setNotificationNumberTwo(
-          notificationResponse.result.loan_count + 1 - lengthTable
-        );
-      }
-    }, 10000);
+    if (lengthTable) {
+      window.setInterval(async () => {
+        const notificationResponse = await getNotification();
+        if (notificationResponse.result.loan_count > lengthTable) {
+          setNotificationDisabledTwo(false);
+          setNotificationNumberTwo(
+            notificationResponse.result.loan_count - lengthTable
+          );
+        }
+      }, 30000);
+    }
   }, [lengthTable]);
 
   return (

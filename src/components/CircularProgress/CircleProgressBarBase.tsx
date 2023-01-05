@@ -4,9 +4,7 @@ type Props = {
   percentage: number;
 };
 
-const CircularProgressBarBase = ({
-  percentage,
-}: Props): JSX.Element => {
+const CircularProgressBarBase = ({ percentage }: Props): JSX.Element => {
   const [progress, setProgress] = useState(0);
   const viewBox = `0 0 ${150} ${150}`;
   const radius = (150 - 10) / 2;
@@ -58,7 +56,12 @@ const CircularProgressBarBase = ({
           dy="10px"
           textAnchor="middle"
         >
-          {`R$ 18.589,63`}
+          {percentage
+            .toLocaleString("pt-br", {
+              style: "currency",
+              currency: "BRL",
+            })
+            .toString()}
         </text>
       </svg>
     </>

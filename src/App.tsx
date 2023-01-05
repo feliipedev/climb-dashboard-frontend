@@ -9,11 +9,6 @@ import "react-toastify/dist/ReactToastify.css";
 const App = (): JSX.Element => {
   const theme = lightTheme;
 
-  useEffect(()=>{
-    console.log("Isso será executado uma única vez...")
-  },[])
-
-
   return (
     <>
       <ToastContainer />

@@ -52,85 +52,19 @@ const SideDish = (): JSX.Element => {
   const [titleTable, setTitleTable] = useState<string[]>([
     "Cliente",
     "E-mail",
-    "Último Pagam.",
+    "Vencimento",
     "Valor Total",
     "Parcela",
     "Aprovação",
   ]);
-  const [bodyTable, setBodyTable] = useState<Loan[]>([
-    {
-      name: "Amanda Gomes Rocha",
-      email: "amandarocha@email.com",
-      date: "21/11/2022",
-      quantity: 1000,
-      parcela: "2/24",
-      status_descricao: "Pendente",
-      emprestimo_id: 1,
-      numero_parcela: 1,
-    },
-    {
-      name: "Rafael Silva Mateus",
-      email: "rafael@email.com",
-      date: "21/10/2022",
-      quantity: 1000,
-      parcela: "6/24",
-      status_descricao: "Em atraso",
-      emprestimo_id: 1,
-      numero_parcela: 1,
-    },
-    {
-      name: "Conh MackBook",
-      email: "jonh@email.com",
-      date: "21/08/2022",
-      quantity: 1000,
-      parcela: "19/24",
-      status_descricao: "Efetuado",
-      emprestimo_id: 1,
-      numero_parcela: 1,
-    },
-    {
-      name: "Donh MackBook",
-      email: "jonh@email.com",
-      date: "14/06/2022",
-      quantity: 1000,
-      parcela: "19/24",
-      status_descricao: "Efetuado",
-      emprestimo_id: 1,
-      numero_parcela: 1,
-    },
-    {
-      name: "Eonh MackBook",
-      email: "jonh@email.com",
-      date: "14/05/2001",
-      quantity: 1000,
-      parcela: "19/24",
-      status_descricao: "Efetuado",
-      emprestimo_id: 1,
-      numero_parcela: 1,
-    },
-    {
-      name: "Fonh MackBook",
-      email: "jonh@email.com",
-      date: "14/04/2006",
-      quantity: 1000,
-      parcela: "19/24",
-      status_descricao: "Efetuado",
-      emprestimo_id: 1,
-      numero_parcela: 1,
-    },
-    {
-      name: "Amanda Gomes Rocha",
-      email: "amandarocha@email.com",
-      date: "10/05/2022",
-      quantity: 1000,
-      parcela: "2/24",
-      status_descricao: "Pendente",
-      emprestimo_id: 1,
-      numero_parcela: 1,
-    },
-  ]);
+  const [bodyTable, setBodyTable] = useState<Loan[]>([]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
   const [loading, setLoading] = useState<boolean>(true);
+  const [beforeDate, setBeforeDate] = useState<string>("");
+  const [afterDate, setAfterDate] = useState<string>("");
+  const [aproved, setAproved] = useState<number>(0);
+  const [pending, setPending] = useState<number>(0);
+  const [total, setTotal] = useState<number>(0);
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -197,6 +131,38 @@ const SideDish = (): JSX.Element => {
     }
   }, [search]);
 
+  function comparar_datas(a: any, b: any) {
+    let d1 = moment(a.date, "YYYY-MMM-DD");
+    let d2 = moment(b.date, "YYYY-MMM-DD");
+    if (d1.isAfter(d2)) {
+      return 1;
+    } else if (d1.isBefore(d2)) {
+      return -1;
+    }
+    return 0;
+  }
+
+  useEffect(() => {
+    if (bodyTable.length > 0) {
+      moment.locale("pt");
+      bodyTable.sort(comparar_datas);
+      setBeforeDate(bodyTable[bodyTable.length - 1].date);
+      setAfterDate(bodyTable[0].date);
+      handleAproved();
+      handlePending();
+    }
+  }, [bodyTable]);
+
+  const handleAproved = () => {
+    let ap = bodyTable.filter((item) => item.status_descricao === "Efetuado");
+    setAproved((ap.length / bodyTable.length) * 100);
+  };
+
+  const handlePending = () => {
+    let ap = bodyTable.filter((item) => item.status_descricao === "Pendente");
+    setPending((ap.length / bodyTable.length) * 100);
+  };
+
   const handleFilterDate = (ultimateDate: number) => {
     var dataUltimateDays = new Date();
     dataUltimateDays.setDate(dataUltimateDays.getDate() - ultimateDate);
@@ -226,31 +192,32 @@ const SideDish = (): JSX.Element => {
 
   const handleList = async () => {
     await getSideDish().then((res: any) => {
+      let sum = 0;
       res.result.map((item: any) => {
-        let dateAux = new Date(
-          item.ultimo_pagamento !== "None" ? item.ultimo_pagamento : null
-        );
+        let dateAux = new Date(item.vencimento);
         let dateFormated = moment(dateAux).format("DD/MM/YYYY").toString();
-        let price = "1000";
         let aux: Loan = {
-          name: item.name,
-          email: item.email,
+          name: item.customer_name,
+          email: item.customer_email,
           date: dateFormated,
           emprestimo_id: 1,
-          quantity: 1000,
+          quantity: item.valor_total,
           parcela: item.parcelas,
           numero_parcela: 1,
           status_descricao: item.status_descricao,
         };
+        sum += item.valor_total;
+        setBodyTableAux((current) => [...current, aux]);
         return setBodyTable((current) => [...current, aux]);
       });
+      setTotal(sum);
     });
   };
 
   return (
     <HomeStyled>
       <Header />
-      <HeaderTable select="Acompanhamento" lengthTable={2} />
+      <HeaderTable select="Acompanhamento" />
       {loading ? (
         <StyledLoading>
           <Spinner />
@@ -260,9 +227,9 @@ const SideDish = (): JSX.Element => {
           <Container>
             <TitleStyled>
               <SubTitle>Mostrando perído:</SubTitle>
-              <DateTitle>01 de maio de 2022</DateTitle>
+              <DateTitle>{beforeDate}</DateTitle>
               <SubTitle>a</SubTitle>
-              <DateTitle>25 de maio de 2022</DateTitle>
+              <DateTitle>{afterDate}</DateTitle>
               <InputStyled>
                 <InputSearch
                   placeholder="Buscar por nome"
@@ -421,15 +388,15 @@ const SideDish = (): JSX.Element => {
             <CircularStyled>
               <AlignContainer>
                 <p>Pagos</p>
-                <CircularProgress percentage={75} />
+                <CircularProgress percentage={aproved} />
               </AlignContainer>
               <AlignContainer>
                 <p>Pendentes</p>
-                <CircularProgress percentage={30} />
+                <CircularProgress percentage={pending} />
               </AlignContainer>
               <AlignContainer>
                 <p>Total</p>
-                <CircularProgressBarBase percentage={100} />
+                <CircularProgressBarBase percentage={total} />
               </AlignContainer>
             </CircularStyled>
           </Container>

@@ -3,7 +3,6 @@ import { memo } from "react";
 import SelectModal from "../../components/SelectModal/SelectModal";
 import { Loan } from "../../pages/Requests/Requests";
 import React from "react";
-
 interface Props {
   index: number;
   body: Loan;
@@ -42,7 +41,4 @@ const TrRequests = ({
   );
 };
 
-export default React.memo(
-  TrRequests,
-  (oldProps, newProps) => oldProps.body.cpf === newProps.body.cpf
-);
+export default TrRequests;

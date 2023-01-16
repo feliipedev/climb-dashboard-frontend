@@ -44,11 +44,35 @@ export const getListOfOutstandingLoans = async () => {
   return res.data;
 };
 
-
 export const getSideDish = async () => {
   const res = await axios.get(
-    process.env.REACT_APP_API_URL +
-      "/installment/summary/list"
+    process.env.REACT_APP_API_URL + "/installment/summary/list"
   );
   return res.data;
-}
+};
+
+export const uploadImage = async (
+  emprestimoId: number,
+  parcelaId: number,
+  vencimento: string,
+  file: string
+) => {
+  const res = await axios.post(
+    process.env.REACT_APP_API_URL + `/upload_fatura`,
+    {
+      emprestimo_id: emprestimoId,
+      parcela_id: parcelaId,
+      vencimento,
+      file,
+    }
+  );
+  return res.data;
+};
+
+export const getUploadImage = async (fatura_file_name: string) => {
+  const res = await axios.get(
+    process.env.REACT_APP_API_URL +
+      `/download_fatura?file_name=${fatura_file_name.split('/')[1]}`
+  );
+  return res.data;
+};

@@ -13,10 +13,16 @@ import TableModalDetailClient from "../../TrDetailsClient/TrDetailsClient";
 type Props = {
   isOpen: boolean;
   onClose: React.Dispatch<SetStateAction<boolean>>;
-  id: number;
+  id: number | null;
+  parcela_id: number | null;
 };
 
-const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
+const ModalDetailsClient = ({
+  isOpen,
+  onClose,
+  id,
+  parcela_id,
+}: Props): JSX.Element => {
   const [titleTable, setTitleTable] = useState<string[]>([
     "Data de Vencimento",
     "Valor da Parcela",
@@ -32,14 +38,14 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
 
   useEffect(() => {
     setLoading(true);
-    setTimeout(() => {
+    if (parcela_id && id) {
       handleRequest();
-    }, 2000);
-  }, []);
+    }
+  }, [parcela_id, id]);
 
   const handleRequest = async () => {
     setLoading(true);
-    await getLoansDetails(id).then((res) => {
+    await getLoansDetails(id as number).then((res) => {
       if (res.internal_code === 200) {
         setTimeout(() => {
           setBodyTable(
@@ -57,6 +63,8 @@ const ModalDetailsClient = ({ isOpen, onClose, id }: Props): JSX.Element => {
                 comprovante: "comprovante.jpg",
                 emprestimo_id: res.emprestimo_id,
                 numero_parcela: res.numero_parcela,
+                parcela_id: parcela_id as number,
+                fatura_file_name: res.fatura_file_name
               };
               return loan;
             })

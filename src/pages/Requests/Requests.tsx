@@ -400,6 +400,7 @@ const Requests = (): JSX.Element => {
           isOpen={openModalDetails}
           onClose={setOpenModalDetails}
           id={1}
+          parcela_id={null}
         />
       </>
     </HomeStyled>

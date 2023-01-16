@@ -16,7 +16,13 @@ const ModalHandleImage: React.FC<Props> = ({
 }: Props) => {
   return (
     <ScreenContainer isVisible={isOpen}>
-      <Image src={image}>
+      <Image
+        src={
+          image.substring(0, 4) === "data"
+            ? image
+            : `data:image/png;base64,${image}`
+        }
+      >
         <ButtonRemoveImage onClick={() => onClose()}>
           <Img src={ClosePhoto} />
         </ButtonRemoveImage>

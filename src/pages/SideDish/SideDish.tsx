@@ -33,6 +33,8 @@ export interface Loan {
   status_descricao: "Pendente" | "Em atraso" | "Efetuado";
   comprovante?: string;
   numero_parcela: number;
+  parcela_id: number;
+  fatura_file_name?: string;
 }
 
 const SideDish = (): JSX.Element => {
@@ -65,6 +67,8 @@ const SideDish = (): JSX.Element => {
   const [aproved, setAproved] = useState<number>(0);
   const [pending, setPending] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
+  const [idParcela, setIdParcela] = useState<number | undefined>();
+  const [idEmprestimo, setIdEmprestimo] = useState<number | undefined>();
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -200,11 +204,12 @@ const SideDish = (): JSX.Element => {
           name: item.customer_name,
           email: item.customer_email,
           date: dateFormated,
-          emprestimo_id: 1,
+          emprestimo_id: item.emprestimo_id,
           quantity: item.valor_total,
           parcela: item.parcelas,
-          numero_parcela: 1,
+          numero_parcela: item.numero_parcela,
           status_descricao: item.status_descricao,
+          parcela_id: item.parcela_id,
         };
         sum += item.valor_total;
         setBodyTableAux((current) => [...current, aux]);
@@ -212,6 +217,18 @@ const SideDish = (): JSX.Element => {
       });
       setTotal(sum);
     });
+  };
+
+  const handleModal = (
+    open: boolean,
+    parcela_id: number,
+    emprestimo_id: number
+  ) => {
+    if (parcela_id && emprestimo_id) {
+      setIdParcela(parcela_id);
+      setIdEmprestimo(emprestimo_id);
+      setOpenModalDetails(open);
+    }
   };
 
   return (
@@ -341,7 +358,13 @@ const SideDish = (): JSX.Element => {
                       <img
                         src={Eye}
                         alt="olho"
-                        onClick={() => setOpenModalDetails(true)}
+                        onClick={() =>
+                          handleModal(
+                            true,
+                            body.parcela_id as number,
+                            body.emprestimo_id as number
+                          )
+                        }
                       />
                     </td>
                     <td>{body.email}</td>
@@ -405,7 +428,8 @@ const SideDish = (): JSX.Element => {
       <ModalDetailsClient
         isOpen={openModalDetails}
         onClose={setOpenModalDetails}
-        id={1}
+        id={idEmprestimo as number}
+        parcela_id={idParcela as number}
       />
     </HomeStyled>
   );
@@ -540,7 +564,7 @@ const Table = styled.table`
     color: #151f1e;
     border: 1px solid #e0e0e0;
     border-left: none;
-    padding: 15px 0px 14px 12px;
+    padding: 15px 30px 14px 12px;
     img {
       position: absolute;
       right: 8px;
@@ -549,7 +573,7 @@ const Table = styled.table`
     }
     &:first-child {
       position: relative;
-      width: 295px;
+      width: 350px;
     }
     &:last-child {
       text-align: center;

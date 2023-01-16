@@ -2,10 +2,12 @@ import styled from "styled-components";
 import { FlexContainer, Loan } from "../../pages/SideDish/SideDish";
 import Select from "../Select/Select";
 import EyeModal from "../../assets/icons/eye-modal.svg";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UploadIcon from "../../assets/icons/upload.svg";
 import ModalHandleImage from "../Modals/ModalHandleImage/ModalHandleImage";
 import { toast } from "react-toastify";
+import { getUploadImage, uploadImage } from "../../services/loan";
+import moment from "moment";
 
 interface Props {
   body: Loan;
@@ -18,11 +20,7 @@ interface Upload {
   image: string;
 }
 
-const TrDetailsClient = ({
-  body,
-  index,
-  setBodyTable,
-}: Props): JSX.Element => {
+const TrDetailsClient = ({ body, index, setBodyTable }: Props): JSX.Element => {
   const hiddenFileInput = useRef<HTMLInputElement>(null);
   const [upload, setUpload] = useState<Upload[]>([]);
   const [openMessageUpload, setOpenMessageUpload] = useState<number>();
@@ -36,6 +34,7 @@ const TrDetailsClient = ({
   };
 
   const handleFileChange = (e: any) => {
+    let aux = moment(body.date, "DD/MM/YYYY").format("YYYY-MM-DD");
     if (e.target.files) {
       Array.from(e.target.files).map((selectedFile: any) => {
         if (selectedFile) {
@@ -50,6 +49,7 @@ const TrDetailsClient = ({
                   image: e.target?.result?.toString() ?? "",
                 },
               ]);
+              uploadImage(body.emprestimo_id, body.parcela_id, aux, e.target?.result?.toString());
               toast.success("Upload realizado!");
             }
           };
@@ -62,11 +62,16 @@ const TrDetailsClient = ({
     if (upload.length > 0) {
       setImage(upload[0].image);
       setModalImage(true);
-    } else {
-      setOpenMessageUpload(index);
-      setTimeout(() => {
-        setOpenMessageUpload(undefined);
-      }, 3000);
+    }
+    if (upload.length === 0) {
+      getUploadImage(body.fatura_file_name as string)
+        .then((image_item: string) => {
+          setImage(image_item);
+          setModalImage(true);
+        })
+        .catch((err: any) => {
+          setOpenMessageUpload(index);
+        });
     }
   };
 
@@ -83,7 +88,7 @@ const TrDetailsClient = ({
         <td>
           <CollumnContainer>
             <FlexContainer>
-              <Comprovant>{body.comprovante} </Comprovant>
+              <Comprovant>{body.comprovante}</Comprovant>
               <img
                 src={EyeModal}
                 alt="olho"

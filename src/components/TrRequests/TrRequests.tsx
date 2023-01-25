@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { memo } from "react";
-import SelectModal from "../../components/SelectModal/SelectModal";
 import { Loan } from "../../pages/Requests/Requests";
 import React from "react";
+import Select from "../Select/Select";
 interface Props {
   index: number;
   body: Loan;
@@ -30,12 +30,7 @@ const TrRequests = ({
       <td>{body.datPag}</td>
       <td>
         {" "}
-        <SelectModal
-          loan={body}
-          loans={bodyTable}
-          setLoans={setBodyTable}
-          i={index}
-        />
+        <Select loan={body} setLoans={setBodyTable} i={index} />
       </td>
     </tr>
   );

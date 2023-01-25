@@ -48,7 +48,7 @@ const HeaderTable = ({ select, lengthTable }: Props): JSX.Element => {
   }, [lengthTable]);
 
   return (
-    <Container>
+    <Container select={select}>
       <FlexContainer>
         <Title select={select} onClick={() => handleTitleOne()}>
           Acompanhamento
@@ -69,11 +69,12 @@ const HeaderTable = ({ select, lengthTable }: Props): JSX.Element => {
 
 export default HeaderTable;
 
-export const Container = styled.div`
-  max-width: 1312px;
+export const Container = styled.div<{ select: string }>`
+  max-width: ${(props) =>
+    props.select === "Acompanhamento" ? "1312px" : "1401px"};
   width: 100%;
   margin: 0 auto;
-  @media screen and (max-width: 1300px) {
+  @media screen and (max-width: 1401px) {
     width: 90%;
   }
 `;

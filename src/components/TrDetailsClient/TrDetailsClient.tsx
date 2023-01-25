@@ -49,7 +49,7 @@ const TrDetailsClient = ({ body, index, setBodyTable }: Props): JSX.Element => {
                   image: e.target?.result?.toString() ?? "",
                 },
               ]);
-              uploadImage(body.emprestimo_id, body.parcela_id, aux, e.target?.result?.toString());
+              uploadImage(body.emprestimo_id, body.numero_parcela, aux, e.target?.result?.toString());
               toast.success("Upload realizado!");
             }
           };

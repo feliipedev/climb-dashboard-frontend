@@ -3,37 +3,64 @@ import ArrowDown from "../../assets/icons/arrow-down.svg";
 import { Loan } from "../../pages/SideDish/SideDish";
 import { updateStatusLoans } from "../../services/loan";
 import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 
 interface Props {
-  loan: Loan;
+  loan: any;
   setLoans: any;
   i: number;
 }
 
 const SelectContainer = ({ loan, setLoans, i }: Props): JSX.Element => {
+  const [requestSideDish, setRequestSideDish] = useState<boolean>(true);
+  useEffect(() => {
+    if (window.location.href.includes("solicitacoes")) {
+      setRequestSideDish(false);
+    }
+  }, []);
 
   const handleSetSelectStatus = async (value: string) => {
-    await updateStatusLoans(loan, value)
-      .then(() => {
-        setLoans((current: Loan[]) => {
-          return current.map((obj, index) => {
-            if (index === i) {
-              return { ...obj, status_descricao: value };
-            }
-            return obj;
+    console.log(loan)
+    if (requestSideDish) {
+      await updateStatusLoans(loan, value)
+        .then(() => {
+          setLoans((current: Loan[]) => {
+            return current.map((obj, index) => {
+              if (index === i) {
+                return { ...obj, status_descricao: value };
+              }
+              return obj;
+            });
           });
+          /* toast.success("Status da parcela alterado com sucesso."); */
+        })
+        .catch(() => toast.error("Falha ao atualizar status da parcela."));
+    } else {
+      setLoans((current: Loan[]) => {
+        return current.map((obj, index) => {
+          if (index === i) {
+            return { ...obj, status_descricao: value };
+          }
+          return obj;
         });
-        /* toast.success("Status da parcela alterado com sucesso."); */
-      })
-      .catch(() => toast.error("Falha ao atualizar status da parcela."));
+      });
+    }
   };
 
   return (
     <>
       <SelectContainerStyled
         name="status_descricao"
-        value={loan.status_descricao}
-        defaultValue={loan.status_descricao}
+        value={
+          loan.status_descricao === "Em andamento"
+            ? "Pendente"
+            : loan.status_descricao
+        }
+        defaultValue={
+          loan.status_descricao === "Em andamento"
+            ? "Pendente"
+            : loan.status_descricao
+        }
         onChange={(e) => handleSetSelectStatus(e.target.value)}
       >
         <Option value="Em atraso">Em atraso</Option>

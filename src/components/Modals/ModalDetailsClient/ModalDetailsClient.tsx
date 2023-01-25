@@ -13,16 +13,10 @@ import TableModalDetailClient from "../../TrDetailsClient/TrDetailsClient";
 type Props = {
   isOpen: boolean;
   onClose: React.Dispatch<SetStateAction<boolean>>;
-  id: number | null;
-  parcela_id: number | null;
+  body: Loan;
 };
 
-const ModalDetailsClient = ({
-  isOpen,
-  onClose,
-  id,
-  parcela_id,
-}: Props): JSX.Element => {
+const ModalDetailsClient = ({ isOpen, onClose, body }: Props): JSX.Element => {
   const [titleTable, setTitleTable] = useState<string[]>([
     "Data de Vencimento",
     "Valor da Parcela",
@@ -38,14 +32,14 @@ const ModalDetailsClient = ({
 
   useEffect(() => {
     setLoading(true);
-    if (parcela_id && id) {
+    if (body) {
       handleRequest();
     }
-  }, [parcela_id, id]);
+  }, [body]);
 
   const handleRequest = async () => {
     setLoading(true);
-    await getLoansDetails(id as number).then((res) => {
+    await getLoansDetails(body.emprestimo_id as number).then((res) => {
       if (res.internal_code === 200) {
         setTimeout(() => {
           setBodyTable(
@@ -63,8 +57,8 @@ const ModalDetailsClient = ({
                 comprovante: "comprovante.jpg",
                 emprestimo_id: res.emprestimo_id,
                 numero_parcela: res.numero_parcela,
-                parcela_id: parcela_id as number,
-                fatura_file_name: res.fatura_file_name
+                parcela_id: body.parcela_id as number,
+                fatura_file_name: res.fatura_file_name,
               };
               return loan;
             })
@@ -89,8 +83,8 @@ const ModalDetailsClient = ({
           <HeaderModal>
             <h1>Detalhamento</h1>
             <CollumnContainer>
-              <Name>Amanda Gomes Rocha</Name>
-              <Email>amandarocha@email.com</Email>
+              <Name>{body ? body.name : ""}</Name>
+              <Email>{body ? body.email : ""}</Email>
             </CollumnContainer>
             <StyledCloseFilter onClick={() => onClose(false)}>
               <img src={CloseFilter} alt="fechar filtro" />

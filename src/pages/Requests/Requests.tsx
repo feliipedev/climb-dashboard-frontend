@@ -7,7 +7,6 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import Pagination from "../../components/Pagination/Pagination";
 import CircularProgress from "../../components/CircularProgress/CircularProgress";
 import CircularProgressBarBase from "../../components/CircularProgress/CircleProgressBarBase";
-import ModalDetailsClient from "../../components/Modals/ModalDetailsClient/ModalDetailsClient";
 import { useNavigate } from "react-router-dom";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -31,7 +30,7 @@ export interface Loan {
   emprestimo: string;
   valorParcela: string;
   datPag: string;
-  status: "Sim" | "Não";
+  status_descricao: "Pendente" | "Em atraso" | "Efetuado";
 }
 
 const Requests = (): JSX.Element => {
@@ -52,7 +51,7 @@ const Requests = (): JSX.Element => {
     "Empréstimo",
     "V. Parcela",
     "Data Sol",
-    "Aprovação",
+    "Status",
   ]);
   const [bodyTable, setBodyTable] = useState<Loan[]>([]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
@@ -75,14 +74,14 @@ const Requests = (): JSX.Element => {
       );
       setOpenModalFilter(false);
     }
-    if (select === "Não") {
+    /*  if (select === "Não") {
       setBodyTable(bodyTableAux.filter((item) => item.status === "Não"));
       setOpenModalFilter(false);
     }
     if (select === "Sim") {
       setBodyTable(bodyTableAux.filter((item) => item.status === "Sim"));
       setOpenModalFilter(false);
-    }
+    } */
     if (select === "Clear") {
       setDateInitial(undefined);
       setDateEnd(undefined);
@@ -166,12 +165,12 @@ const Requests = (): JSX.Element => {
       bodyTable.sort(comparar_datas);
       setBeforeDate(bodyTable[bodyTable.length - 1].datPag);
       setAfterDate(bodyTable[0].datPag);
-      handleAproved();
-      handlePending();
+      /* handleAproved();
+      handlePending(); */
     }
   }, [bodyTable]);
 
-  const handleAproved = () => {
+  /*  const handleAproved = () => {
     let ap = bodyTable.filter((item) => item.status === "Sim");
     setAproved((ap.length / bodyTable.length) * 100);
   };
@@ -179,7 +178,7 @@ const Requests = (): JSX.Element => {
   const handlePending = () => {
     let ap = bodyTable.filter((item) => item.status === "Não");
     setPending((ap.length / bodyTable.length) * 100);
-  };
+  }; */
 
   const handleList = async () => {
     await getListOfOutstandingLoans().then((res: any) => {
@@ -187,6 +186,7 @@ const Requests = (): JSX.Element => {
       res.result.map((item: any) => {
         let dateAux = new Date(item.created_at);
         let dateFormated = moment(dateAux).format("DD/MM/YYYY").toString();
+        console.log(item);
         let aux: Loan = {
           name: item.name,
           cpf: item.cpf,
@@ -213,7 +213,7 @@ const Requests = (): JSX.Element => {
             : "R$ 0,00",
 
           datPag: dateFormated,
-          status: item.approved === true ? "Sim" : "Não",
+          status_descricao: item.status,
         };
         sum += item.installment_value;
         setBodyTableAux((current) => [...current, aux]);
@@ -396,12 +396,6 @@ const Requests = (): JSX.Element => {
             </Container>
           </>
         )}
-        <ModalDetailsClient
-          isOpen={openModalDetails}
-          onClose={setOpenModalDetails}
-          id={1}
-          parcela_id={null}
-        />
       </>
     </HomeStyled>
   );
@@ -415,37 +409,15 @@ export const HomeStyled = styled.div`
 `;
 
 export const Container = styled.div`
-  max-width: 1312px;
+  max-width: 1401px;
   width: 100%;
   margin: 0 auto;
+  @media screen and (max-width: 1400px) {
+    width: 90%;
+  }
   @media screen and (max-width: 1300px) {
     width: 90%;
   }
-`;
-
-const Title = styled.p`
-  cursor: pointer;
-  margin-top: 43px;
-  font-family: "Poppins";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 30px;
-  line-height: 120%;
-  color: ${(props) => props.theme.colors.fontColor};
-  position: relative;
-`;
-
-const TitleTwo = styled.span`
-  color: ${(props) => props.theme.colors.title};
-  font-family: "Poppins";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 30px;
-  line-height: 120%;
-  text-decoration: underline;
-  cursor: pointer;
-  margin-top: 43px;
-  margin-left: 33px;
 `;
 
 export const FlexContainer = styled.div`
@@ -576,129 +548,6 @@ const HeaderFilter = styled.div`
     color: #000000;
     text-align: center;
   }
-`;
-
-const RadioButtonLabelOrder = styled.label`
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  border: 1px solid #bebebe;
-`;
-
-const RadioButtonLabelDate = styled.label`
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  border: 1px solid #bebebe;
-  margin-left: 40px;
-`;
-
-const RadioButtonOrder = styled.input`
-  opacity: 0;
-  margin-top: 1px;
-  z-index: 1;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
-  cursor: pointer;
-  position: absolute;
-  &:hover ~ ${RadioButtonLabelOrder} {
-    background: #bebebe;
-    cursor: pointer;
-  }
-  ${(props) =>
-    props.checked &&
-    ` 
-    &:checked + ${RadioButtonLabelOrder} {
-      background: #fff;
-      border: 1px solid #6EAEA9;
-      &::after {
-        content: "";
-        display: block;
-        border-radius: 50%;
-        width: 10px;
-        height: 10px;
-        margin-top: 2px;
-        margin-left: 2px;
-        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
-        background: #6EAEA9;
-      }
-    }
-  `}
-`;
-
-const RadioButtonPendente = styled.input`
-  opacity: 0;
-  margin-top: 1px;
-  z-index: 1;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  position: absolute;
-  margin-left: 1px;
-  &:hover ~ ${RadioButtonLabelOrder} {
-    background: #bebebe;
-    cursor: pointer;
-  }
-  ${(props) =>
-    props.checked &&
-    ` 
-    &:checked + ${RadioButtonLabelOrder} {
-      background: #fff;
-      border: 1px solid #6EAEA9;
-      border-radius: 50%;
-      &::after {
-        content: "";
-        display: block;
-        width: 10px;
-        border-radius: 50%;
-        height: 10px;
-        margin-top: 2px;
-        margin-left: 2px;
-        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
-        background: #6EAEA9;
-      }
-    }
-  `}
-`;
-
-const RadioButtonEfetuado = styled.input`
-  opacity: 0;
-  margin-top: 1px;
-  z-index: 1;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
-  position: absolute;
-  margin-left: 104px;
-  cursor: pointer;
-  &:hover ~ ${RadioButtonLabelDate} {
-    background: #bebebe;
-    cursor: pointer;
-  }
-  ${(props) =>
-    props.checked &&
-    ` 
-    &:checked + ${RadioButtonLabelDate} {
-      background: #fff;
-      border: 1px solid #6EAEA9;
-      &::after {
-        content: "";
-        display: block;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin-top: 2px;
-        margin-left: 2px;
-        box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.1);
-        background: #6EAEA9;
-      }
-    }
-  `}
 `;
 
 const BodyFilter = styled.div`
@@ -893,22 +742,6 @@ const P = styled.div`
   margin-left: 24px;
 `;
 
-const NotificationStyled = styled.div`
-  width: 16px;
-  height: 16px;
-  color: black;
-  border-radius: 50%;
-  background: #edb900;
-  font-size: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  top: -1px;
-  right: -10px;
-  font-weight: 600;
-`;
-
 const StyledLoading = styled.div`
   width: 100%;
   height: 100vh;
@@ -920,7 +753,7 @@ const StyledLoading = styled.div`
 const Table = styled.table`
   margin-top: 22px;
   margin-bottom: 59px;
-  width: 100%;
+  max-width: 1301px;
   th {
     font-family: "Poppins";
     font-style: normal;
@@ -942,7 +775,7 @@ const Table = styled.table`
     color: #151f1e;
     border: 1px solid #e0e0e0;
     border-left: none;
-    padding: 15px 0px 14px 12px;
+    padding: 15px 20px 14px 12px;
     img {
       position: absolute;
       right: 8px;
@@ -959,9 +792,7 @@ const Table = styled.table`
     &:last-child {
       text-align: center;
     }
-    &:nth-child(2) {
-      min-width: 120px;
-    }
+
     @media screen and (max-width: 1300px) {
       font-size: 14px;
       line-height: 18px;

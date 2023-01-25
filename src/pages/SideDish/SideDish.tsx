@@ -57,7 +57,7 @@ const SideDish = (): JSX.Element => {
     "Vencimento",
     "Valor Total",
     "Parcela",
-    "Aprovação",
+    "Status",
   ]);
   const [bodyTable, setBodyTable] = useState<Loan[]>([]);
   const [bodyTableAux, setBodyTableAux] = useState<Loan[]>(bodyTable);
@@ -67,8 +67,7 @@ const SideDish = (): JSX.Element => {
   const [aproved, setAproved] = useState<number>(0);
   const [pending, setPending] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
-  const [idParcela, setIdParcela] = useState<number | undefined>();
-  const [idEmprestimo, setIdEmprestimo] = useState<number | undefined>();
+  const [bodyAux, setBodyAux] = useState<Loan>()
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -219,14 +218,9 @@ const SideDish = (): JSX.Element => {
     });
   };
 
-  const handleModal = (
-    open: boolean,
-    parcela_id: number,
-    emprestimo_id: number
-  ) => {
-    if (parcela_id && emprestimo_id) {
-      setIdParcela(parcela_id);
-      setIdEmprestimo(emprestimo_id);
+  const handleModal = (open: boolean, body: Loan) => {
+    if (body) {
+      setBodyAux(body)
       setOpenModalDetails(open);
     }
   };
@@ -358,13 +352,7 @@ const SideDish = (): JSX.Element => {
                       <img
                         src={Eye}
                         alt="olho"
-                        onClick={() =>
-                          handleModal(
-                            true,
-                            body.parcela_id as number,
-                            body.emprestimo_id as number
-                          )
-                        }
+                        onClick={() => handleModal(true, body)}
                       />
                     </td>
                     <td>{body.email}</td>
@@ -428,8 +416,7 @@ const SideDish = (): JSX.Element => {
       <ModalDetailsClient
         isOpen={openModalDetails}
         onClose={setOpenModalDetails}
-        id={idEmprestimo as number}
-        parcela_id={idParcela as number}
+        body={bodyAux as Loan}
       />
     </HomeStyled>
   );

@@ -31,6 +31,33 @@ export const updateStatusLoans = async (item: Loan, field: string) => {
   return res.data;
 };
 
+export const updateStatusRequest = async (item: Loan, field: string) => {
+  let numberField = 0;
+  switch (field) {
+    case "Pendente":
+      numberField = 1;
+      break;
+    case "Em andamento":
+      numberField = 2;
+      break;
+    case "Reprovado":
+      numberField = 3;
+      break;
+    case "Concluído":
+      numberField = 4;
+      break;
+  }
+  const res = await axios.put(
+    process.env.REACT_APP_API_URL + `/loan?emprestimo_id=${item.emprestimo_id}`,
+    {
+      emprestimo_id: Number(item.emprestimo_id),
+      field_to_update: "status_id",
+      value_to_update: numberField,
+    }
+  );
+  return res.data;
+};
+
 export const getNotification = async () => {
   const res = await axios.get(process.env.REACT_APP_API_URL + "/loan/count");
   return res.data;
@@ -72,7 +99,7 @@ export const uploadImage = async (
 export const getUploadImage = async (fatura_file_name: string) => {
   const res = await axios.get(
     process.env.REACT_APP_API_URL +
-      `/download_fatura?file_name=${fatura_file_name.split('/')[1]}`
+      `/download_fatura?file_name=${fatura_file_name.split("/")[1]}`
   );
   return res.data;
 };

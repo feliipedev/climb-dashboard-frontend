@@ -20,7 +20,6 @@ const SelectContainer = ({ loan, setLoans, i }: Props): JSX.Element => {
   }, []);
 
   const handleSetSelectStatus = async (value: string) => {
-    console.log(loan)
     if (requestSideDish) {
       await updateStatusLoans(loan, value)
         .then(() => {

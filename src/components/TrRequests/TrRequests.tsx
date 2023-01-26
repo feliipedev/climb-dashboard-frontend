@@ -1,19 +1,14 @@
-import styled from "styled-components";
-import { memo } from "react";
 import { Loan } from "../../pages/Requests/Requests";
-import React from "react";
-import Select from "../Select/Select";
+import SelectRequest from "../SelectRequest/SelectRequest";
 interface Props {
   index: number;
   body: Loan;
-  bodyTable: Loan[];
   setBodyTable: any;
 }
 
 const TrRequests = ({
   index,
   body,
-  bodyTable,
   setBodyTable,
 }: Props): JSX.Element => {
   return (
@@ -30,7 +25,7 @@ const TrRequests = ({
       <td>{body.datPag}</td>
       <td>
         {" "}
-        <Select loan={body} setLoans={setBodyTable} i={index} />
+        <SelectRequest loan={body} setLoans={setBodyTable} i={index} />
       </td>
     </tr>
   );

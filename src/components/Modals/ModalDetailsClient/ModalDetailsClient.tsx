@@ -48,7 +48,10 @@ const ModalDetailsClient = ({ isOpen, onClose, body }: Props): JSX.Element => {
                 name: "Jonh MackBook" + index,
                 email: `teste${index}@gmail.com`,
                 date: moment(res.vencimento).format("DD/MM/YYYY"),
-                quantity: res.valor,
+                quantity: parseInt(res.valor).toLocaleString("pt-br", {
+                  style: "currency",
+                  currency: "BRL",
+                }),
                 status_descricao:
                   res.status_descricao === "A Pagar"
                     ? "Pendente"

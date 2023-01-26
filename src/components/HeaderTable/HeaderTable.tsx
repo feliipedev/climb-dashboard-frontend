@@ -11,30 +11,25 @@ interface Props {
 
 const HeaderTable = ({ select, lengthTable }: Props): JSX.Element => {
   const navigate = useNavigate();
-  const [notificationDisabledOne, setNotificationDisabledOne] = useState(true);
   const [notificationDisabledTwo, setNotificationDisabledTwo] = useState(true);
-  const [notificationNumberOne, setNotificationNumberOne] = useState(0);
   const [notificationNumberTwo, setNotificationNumberTwo] = useState(0);
 
   const handleTitleOne = () => {
-    setNotificationDisabledOne(true);
-    setNotificationNumberOne(0);
     navigate("/");
   };
 
   const handleTitleTwo = () => {
     setNotificationDisabledTwo(true);
     setNotificationNumberTwo(0);
-    navigate("/solicitacoes", {
-      state: {
-        notificationNumberOne,
-        notificationNumberTwo,
-      },
-    });
+    if (window.location.href.includes("/solicitacoes")) {
+      window.location.reload();
+    } else {
+      navigate("/solicitacoes");
+    }
   };
 
   useEffect(() => {
-    if (lengthTable) {
+    /* if (lengthTable) {
       window.setInterval(async () => {
         const notificationResponse = await getNotification();
         if (notificationResponse.result.loan_count > lengthTable) {
@@ -43,8 +38,8 @@ const HeaderTable = ({ select, lengthTable }: Props): JSX.Element => {
             notificationResponse.result.loan_count - lengthTable
           );
         }
-      }, 30000);
-    }
+      }, 1000);
+    } */
   }, [lengthTable]);
 
   return (
@@ -52,9 +47,6 @@ const HeaderTable = ({ select, lengthTable }: Props): JSX.Element => {
       <FlexContainer>
         <Title select={select} onClick={() => handleTitleOne()}>
           Acompanhamento
-          {!notificationDisabledOne && (
-            <NotificationStyled>{notificationNumberOne}</NotificationStyled>
-          )}
         </Title>
         <TitleTwo select={select} onClick={() => handleTitleTwo()}>
           Solicitações

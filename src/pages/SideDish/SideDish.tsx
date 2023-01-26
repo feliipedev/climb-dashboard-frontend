@@ -28,9 +28,9 @@ export interface Loan {
   name: string;
   email: string;
   date: string;
-  quantity: number;
+  quantity: string;
   parcela: string;
-  status_descricao: "Pendente" | "Em atraso" | "Efetuado";
+  status_descricao: string;
   comprovante?: string;
   numero_parcela: number;
   parcela_id: number;
@@ -67,7 +67,7 @@ const SideDish = (): JSX.Element => {
   const [aproved, setAproved] = useState<number>(0);
   const [pending, setPending] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
-  const [bodyAux, setBodyAux] = useState<Loan>()
+  const [bodyAux, setBodyAux] = useState<Loan>();
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -206,7 +206,7 @@ const SideDish = (): JSX.Element => {
           emprestimo_id: item.emprestimo_id,
           quantity: item.valor_total,
           parcela: item.parcelas,
-          numero_parcela: item.numero_parcela,
+          numero_parcela: item.numero_parcela_atual,
           status_descricao: item.status_descricao,
           parcela_id: item.parcela_id,
         };
@@ -220,7 +220,7 @@ const SideDish = (): JSX.Element => {
 
   const handleModal = (open: boolean, body: Loan) => {
     if (body) {
-      setBodyAux(body)
+      setBodyAux(body);
       setOpenModalDetails(open);
     }
   };
@@ -358,7 +358,7 @@ const SideDish = (): JSX.Element => {
                     <td>{body.email}</td>
                     <td>{body.date}</td>
                     <td>
-                      {body.quantity.toLocaleString("pt-br", {
+                      {parseInt(body.quantity).toLocaleString("pt-br", {
                         style: "currency",
                         currency: "BRL",
                       })}

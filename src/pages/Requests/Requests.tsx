@@ -3,11 +3,10 @@ import styled from "styled-components";
 import Search from "../../assets/icons/search.svg";
 import Filter from "../../assets/icons/filter.svg";
 import CloseFilter from "../../assets/icons/close-filter.svg";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Pagination from "../../components/Pagination/Pagination";
 import CircularProgress from "../../components/CircularProgress/CircularProgress";
 import CircularProgressBarBase from "../../components/CircularProgress/CircleProgressBarBase";
-import { useNavigate } from "react-router-dom";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -15,11 +14,9 @@ import FormControl from "@material-ui/core/FormControl";
 import moment from "moment";
 import CalendarIcon from "../../assets/icons/calendar.svg";
 import FilterComponent from "../../components/Filter/Filter";
-import { useLocation } from "react-router-dom";
 import HeaderTable from "../../components/HeaderTable/HeaderTable";
 import { getListOfOutstandingLoans } from "../../services/loan";
 import Spinner from "../../components/Spinner/Spinner";
-import { upload } from "@testing-library/user-event/dist/upload";
 import TrRequests from "../../components/TrRequests/TrRequests";
 export interface Loan {
   name: string;
@@ -30,12 +27,13 @@ export interface Loan {
   emprestimo: string;
   valorParcela: string;
   datPag: string;
-  status_descricao: "Pendente" | "Em atraso" | "Efetuado";
+  status_descricao: string;
+  emprestimo_id: string;
 }
 
 const Requests = (): JSX.Element => {
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
-  const [select, setSelect] = useState<"Sim" | "Não" | "Order" | "Clear">();
+  const [select, setSelect] = useState<string>();
   const [pg, setPg] = useState<number>(0);
   const [pp, setPp] = useState<number>(8);
   const [search, setSearch] = useState<string>("");
@@ -74,14 +72,24 @@ const Requests = (): JSX.Element => {
       );
       setOpenModalFilter(false);
     }
-    /*  if (select === "Não") {
-      setBodyTable(bodyTableAux.filter((item) => item.status === "Não"));
+    if (select === "Pendente") {
       setOpenModalFilter(false);
+      setBodyTable(
+        bodyTableAux.filter((item) => item.status_descricao === "Pendente")
+      );
     }
-    if (select === "Sim") {
-      setBodyTable(bodyTableAux.filter((item) => item.status === "Sim"));
+    if (select === "Reprovado") {
       setOpenModalFilter(false);
-    } */
+      setBodyTable(
+        bodyTableAux.filter((item) => item.status_descricao === "Reprovado")
+      );
+    }
+    if (select === "Em andamento") {
+      setOpenModalFilter(false);
+      setBodyTable(
+        bodyTableAux.filter((item) => item.status_descricao === "Em andamento")
+      );
+    }
     if (select === "Clear") {
       setDateInitial(undefined);
       setDateEnd(undefined);
@@ -170,6 +178,25 @@ const Requests = (): JSX.Element => {
     }
   }, [bodyTable]);
 
+  const handleStatus = (status: number) => {
+    let statusValue = "";
+    switch (status) {
+      case 1:
+        statusValue = "Pendente";
+        break;
+      case 2:
+        statusValue = "Em andamento";
+        break;
+      case 3:
+        statusValue = "Reprovado";
+        break;
+      case 4:
+        statusValue = "Concluído";
+        break;
+    }
+    return statusValue;
+  };
+
   /*  const handleAproved = () => {
     let ap = bodyTable.filter((item) => item.status === "Sim");
     setAproved((ap.length / bodyTable.length) * 100);
@@ -186,7 +213,6 @@ const Requests = (): JSX.Element => {
       res.result.map((item: any) => {
         let dateAux = new Date(item.created_at);
         let dateFormated = moment(dateAux).format("DD/MM/YYYY").toString();
-        console.log(item);
         let aux: Loan = {
           name: item.name,
           cpf: item.cpf,
@@ -202,7 +228,6 @@ const Requests = (): JSX.Element => {
               currency: "BRL",
             })
             .toString(),
-
           valorParcela: item.installment_value
             ? parseInt(item.installment_value)
                 .toLocaleString("pt-br", {
@@ -211,9 +236,9 @@ const Requests = (): JSX.Element => {
                 })
                 .toString()
             : "R$ 0,00",
-
           datPag: dateFormated,
-          status_descricao: item.status,
+          emprestimo_id: item.emprestimo_id,
+          status_descricao: handleStatus(item.emprestimo_status_id),
         };
         sum += item.installment_value;
         setBodyTableAux((current) => [...current, aux]);
@@ -289,16 +314,22 @@ const Requests = (): JSX.Element => {
                             <FormControlLabel
                               value="female"
                               control={<Radio />}
-                              label="Sim"
-                              onChange={() => setSelect("Sim")}
+                              label="Pendente"
+                              onChange={() => setSelect("Pendente")}
                             />
                             <FormControlLabel
                               value="male"
                               control={<Radio />}
-                              label="Não"
-                              onChange={() => setSelect("Não")}
+                              label="Em Andamento"
+                              onChange={() => setSelect("Em Andamento")}
                             />
                           </FlexContainer>
+                          <FormControlLabel
+                            value="male"
+                            control={<Radio />}
+                            label="Reprovado"
+                            onChange={() => setSelect("Reprovado")}
+                          />
                         </BodyFilter>
                       </RadioGroup>
                     </FormControl>
@@ -348,7 +379,6 @@ const Requests = (): JSX.Element => {
                       index={index}
                       key={index}
                       body={body}
-                      bodyTable={bodyTable}
                       setBodyTable={setBodyTable}
                     />
                   );
@@ -788,9 +818,6 @@ const Table = styled.table`
       @media screen and (max-width: 1300px) {
         width: 122px;
       }
-    }
-    &:last-child {
-      text-align: center;
     }
 
     @media screen and (max-width: 1300px) {

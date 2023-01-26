@@ -29,7 +29,7 @@ const HeaderTable = ({ select, lengthTable }: Props): JSX.Element => {
   };
 
   useEffect(() => {
-    /* if (lengthTable) {
+    if (lengthTable) {
       window.setInterval(async () => {
         const notificationResponse = await getNotification();
         if (notificationResponse.result.loan_count > lengthTable) {
@@ -38,8 +38,8 @@ const HeaderTable = ({ select, lengthTable }: Props): JSX.Element => {
             notificationResponse.result.loan_count - lengthTable
           );
         }
-      }, 1000);
-    } */
+      }, 30000);
+    }
   }, [lengthTable]);
 
   return (

@@ -9,9 +9,16 @@ interface Props {
   loan: any;
   setLoans: any;
   i: number;
+  bodyTable: Loan[];
 }
 
-const SelectContainer = ({ loan, setLoans, i }: Props): JSX.Element => {
+const SelectContainer = ({
+  loan,
+  setLoans,
+  i,
+  bodyTable,
+}: Props): JSX.Element => {
+  const [activeFilter, setActiveFilter] = useState<boolean>(false);
   const handleSetSelectStatus = async (value: string) => {
     await updateStatusRequest(loan, value)
       .then(() => {
@@ -23,12 +30,24 @@ const SelectContainer = ({ loan, setLoans, i }: Props): JSX.Element => {
             return obj;
           });
         });
+        setActiveFilter(true);
       })
       .catch((err) => {
         toast.error("Falha ao atualizar status da parcela.");
         console.log(err);
       });
   };
+
+  useEffect(() => {
+    if (activeFilter) {
+      setTimeout(() => {
+        setLoans(
+          bodyTable.filter((item) => item.status_descricao !== "Concluído")
+        );
+        setActiveFilter(false);
+      }, 1000);
+    }
+  }, [activeFilter]);
 
   return (
     <>

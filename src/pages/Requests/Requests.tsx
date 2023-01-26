@@ -242,12 +242,18 @@ const Requests = (): JSX.Element => {
         };
         sum += item.installment_value;
         setBodyTableAux((current) => [...current, aux]);
-        return setBodyTable((current) => [...current, aux]);
+        setBodyTable((current) => [...current, aux]);
       });
       setLengthTable(res.result.length);
       setTotal(sum);
     });
   };
+
+  useEffect(() => {
+    setBodyTable(
+      bodyTable.filter((item) => item.status_descricao !== "Concluído")
+    );
+  }, [total]);
 
   return (
     <HomeStyled>
@@ -380,6 +386,7 @@ const Requests = (): JSX.Element => {
                       key={index}
                       body={body}
                       setBodyTable={setBodyTable}
+                      bodyTable={bodyTable}
                     />
                   );
                 })}

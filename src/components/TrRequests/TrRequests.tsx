@@ -4,11 +4,13 @@ interface Props {
   index: number;
   body: Loan;
   setBodyTable: any;
+  bodyTable: any;
 }
 
 const TrRequests = ({
   index,
   body,
+  bodyTable,
   setBodyTable,
 }: Props): JSX.Element => {
   return (
@@ -25,7 +27,12 @@ const TrRequests = ({
       <td>{body.datPag}</td>
       <td>
         {" "}
-        <SelectRequest loan={body} setLoans={setBodyTable} i={index} />
+        <SelectRequest
+          loan={body}
+          setLoans={setBodyTable}
+          i={index}
+          bodyTable={bodyTable}
+        />
       </td>
     </tr>
   );

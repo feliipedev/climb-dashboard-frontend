@@ -9,6 +9,7 @@ type Props = {
   setPg: (pg: number) => void;
   lastPage: number;
   total: number;
+  setOpenMessageUpload?: any;
 };
 
 const Pagination = ({
@@ -17,6 +18,7 @@ const Pagination = ({
   setPg,
   lastPage,
   total,
+  setOpenMessageUpload,
 }: Props): JSX.Element => {
   const [showResults, setShowResults] = useState<boolean>(false);
   const [skipButton, setSkipButton] = useState<boolean>(true);
@@ -40,6 +42,9 @@ const Pagination = ({
     }
     if (lastPage < 5) {
       setShowResults(false);
+    }
+    if (setOpenMessageUpload) {
+      setOpenMessageUpload(999999);
     }
   }, [pg]);
 

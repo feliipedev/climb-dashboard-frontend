@@ -37,6 +37,28 @@ export interface Loan {
   fatura_file_name?: string;
 }
 
+export const convertDate = (dateStr: string) => {
+  const months = [
+    "janeiro",
+    "fevereiro",
+    "março",
+    "abril",
+    "maio",
+    "junho",
+    "julho",
+    "agosto",
+    "setembro",
+    "outubro",
+    "novembro",
+    "dezembro",
+  ];
+  const dateParts = dateStr.split("/");
+  const day = dateParts[0];
+  const month = months[parseInt(dateParts[1]) - 1];
+  const year = dateParts[2];
+  return `${day} de ${month} de ${year}`;
+};
+
 const SideDish = (): JSX.Element => {
   useProtectedPage();
   const navigate = useNavigate();
@@ -134,23 +156,19 @@ const SideDish = (): JSX.Element => {
     }
   }, [search]);
 
-  function comparar_datas(a: any, b: any) {
-    let d1 = moment(a.date, "YYYY-MMM-DD");
-    let d2 = moment(b.date, "YYYY-MMM-DD");
-    if (d1.isAfter(d2)) {
-      return 1;
-    } else if (d1.isBefore(d2)) {
-      return -1;
-    }
-    return 0;
+  function comparar_datas(arr: Loan[]) {
+    return arr.sort((a: any, b: any) => {
+      const dateA = new Date(a.date.split("/").reverse().join("/"));
+      const dateB = new Date(b.date.split("/").reverse().join("/"));
+      return dateB.getTime() - dateA.getTime();
+    });
   }
 
   useEffect(() => {
     if (bodyTable.length > 0) {
-      moment.locale("pt");
-      bodyTable.sort(comparar_datas);
-      setBeforeDate(bodyTable[bodyTable.length - 1].date);
-      setAfterDate(bodyTable[0].date);
+      comparar_datas(bodyTableAux);
+      setBeforeDate(bodyTableAux[0].date);
+      setAfterDate(bodyTableAux[bodyTableAux.length - 1].date);
       handleAproved();
       handlePending();
     }
@@ -237,10 +255,12 @@ const SideDish = (): JSX.Element => {
         <>
           <Container>
             <TitleStyled>
-              <SubTitle>Mostrando perído:</SubTitle>
-              <DateTitle>{beforeDate}</DateTitle>
+              <SubTitle>Mostrando período:</SubTitle>
+              <DateTitle>{convertDate(afterDate)}</DateTitle>
               <SubTitle>a</SubTitle>
-              <DateTitle>{afterDate}</DateTitle>
+              <DateTitle style={{ marginLeft: "13px" }}>
+                {convertDate(beforeDate)}
+              </DateTitle>
               <InputStyled>
                 <InputSearch
                   placeholder="Buscar por nome"
@@ -454,17 +474,19 @@ const SubTitle = styled.p`
   font-size: 24px;
   line-height: 120%;
   color: ${(props) => props.theme.colors.fontColor};
-  margin-right: 17px;
+  &:first-child {
+    width: 30%;
+  }
 `;
 
-const DateTitle = styled.p`
+const DateTitle = styled.span`
   font-family: "Poppins";
   font-style: normal;
   font-weight: 500;
   font-size: 24px;
   line-height: 120%;
   color: ${(props) => props.theme.colors.dateTitle};
-  margin-right: 35px;
+  width: 35%;
 `;
 
 const InputSearch = styled.input`

@@ -29,6 +29,8 @@ const ModalDetailsClient = ({ isOpen, onClose, body }: Props): JSX.Element => {
   const [pp, setPp] = useState<number>(4);
   const [image, setImage] = useState<string>("");
   const [modalImage, setModalImage] = useState<boolean>(false);
+  const [openMessageUpload, setOpenMessageUpload] = useState<number>();
+
 
   useEffect(() => {
     setLoading(true);
@@ -118,6 +120,8 @@ const ModalDetailsClient = ({ isOpen, onClose, body }: Props): JSX.Element => {
                         setBodyTable={setBodyTable}
                         index={index}
                         body={body}
+                        openMessageUpload={openMessageUpload as number}
+                        setOpenMessageUpload={setOpenMessageUpload}
                       />
                     );
                   })}
@@ -129,6 +133,7 @@ const ModalDetailsClient = ({ isOpen, onClose, body }: Props): JSX.Element => {
                   setPg={setPg}
                   lastPage={pages}
                   total={bodyTable ? bodyTable.length : 0}
+                  setOpenMessageUpload={setOpenMessageUpload}
                 />
               </PaginationStyled>
             </>

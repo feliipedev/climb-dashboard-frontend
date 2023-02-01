@@ -31,13 +31,13 @@ export const updateStatusLoans = async (item: Loan, field: string) => {
   return res.data;
 };
 
-export const updateStatusRequest = async (item: Loan, field: string) => {
+export const updateStatusRequest = async (item: any, field: string) => {
   let numberField = 0;
   switch (field) {
     case "Pendente":
       numberField = 1;
       break;
-    case "Em andamento":
+    case "Aprovado":
       numberField = 2;
       break;
     case "Reprovado":
@@ -101,5 +101,20 @@ export const getUploadImage = async (fatura_file_name: string) => {
     process.env.REACT_APP_API_URL +
       `/download_fatura?file_name=${fatura_file_name.split("/")[1]}`
   );
+  return res.data;
+};
+
+export const createPlots = async (
+  emprestimo_id: number,
+  number_parcela: number,
+  value: number,
+  due_date: string
+) => {
+  const res = await axios.post(process.env.REACT_APP_API_URL + "/installment", {
+    emprestimo_id,
+    number: number_parcela,
+    value,
+    due_date,
+  });
   return res.data;
 };

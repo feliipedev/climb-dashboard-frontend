@@ -18,6 +18,7 @@ import HeaderTable from "../../components/HeaderTable/HeaderTable";
 import { getListOfOutstandingLoans } from "../../services/loan";
 import Spinner from "../../components/Spinner/Spinner";
 import TrRequests from "../../components/TrRequests/TrRequests";
+import { convertDate } from "../SideDish/SideDish";
 export interface Loan {
   name: string;
   cpf: string;
@@ -29,6 +30,7 @@ export interface Loan {
   datPag: string;
   status_descricao: string;
   emprestimo_id: string;
+  qtd_parcelas: number;
 }
 
 const Requests = (): JSX.Element => {
@@ -57,7 +59,7 @@ const Requests = (): JSX.Element => {
   const [lengthTable, setLengthTable] = useState<number>(0);
   const [beforeDate, setBeforeDate] = useState<string>("");
   const [afterDate, setAfterDate] = useState<string>("");
-  const [aproved, setAproved] = useState<number>(0);
+  const [reproved, setReproved] = useState<number>(0);
   const [pending, setPending] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
 
@@ -129,15 +131,12 @@ const Requests = (): JSX.Element => {
     }
   }, [search]);
 
-  function comparar_datas(a: any, b: any) {
-    let d1 = moment(a.datPag, "YYYY-MMM-DD");
-    let d2 = moment(b.datPag, "YYYY-MMM-DD");
-    if (d1.isAfter(d2)) {
-      return 1;
-    } else if (d1.isBefore(d2)) {
-      return -1;
-    }
-    return 0;
+  function comparar_datas(arr: Loan[]) {
+    return arr.sort((a: any, b: any) => {
+      const dateA = new Date(a.datPag.split("/").reverse().join("/"));
+      const dateB = new Date(b.datPag.split("/").reverse().join("/"));
+      return dateB.getTime() - dateA.getTime();
+    });
   }
 
   const handleFilterDate = (ultimateDate: number) => {
@@ -168,15 +167,24 @@ const Requests = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (bodyTable.length > 0) {
-      moment.locale("pt");
-      bodyTable.sort(comparar_datas);
-      setBeforeDate(bodyTable[bodyTable.length - 1].datPag);
-      setAfterDate(bodyTable[0].datPag);
-      /* handleAproved();
-      handlePending(); */
+    if (bodyTable.length > 0 && total !== 0) {
+      comparar_datas(bodyTableAux);
+      setBeforeDate(bodyTableAux[bodyTableAux.length - 1].datPag);
+      setAfterDate(bodyTableAux[0].datPag);
+      handleReproved();
+      handlePending();
     }
   }, [bodyTable]);
+
+  const handleReproved = () => {
+    let ap = bodyTable.filter((item) => item.status_descricao === "Reprovado");
+    setReproved((ap.length / bodyTable.length) * 100);
+  };
+
+  const handlePending = () => {
+    let ap = bodyTable.filter((item) => item.status_descricao === "Pendente");
+    setPending((ap.length / bodyTable.length) * 100);
+  };
 
   const handleStatus = (status: number) => {
     let statusValue = "";
@@ -185,7 +193,7 @@ const Requests = (): JSX.Element => {
         statusValue = "Pendente";
         break;
       case 2:
-        statusValue = "Em andamento";
+        statusValue = "Aprovado";
         break;
       case 3:
         statusValue = "Reprovado";
@@ -196,16 +204,6 @@ const Requests = (): JSX.Element => {
     }
     return statusValue;
   };
-
-  /*  const handleAproved = () => {
-    let ap = bodyTable.filter((item) => item.status === "Sim");
-    setAproved((ap.length / bodyTable.length) * 100);
-  };
-
-  const handlePending = () => {
-    let ap = bodyTable.filter((item) => item.status === "Não");
-    setPending((ap.length / bodyTable.length) * 100);
-  }; */
 
   const handleList = async () => {
     await getListOfOutstandingLoans().then((res: any) => {
@@ -239,8 +237,9 @@ const Requests = (): JSX.Element => {
           datPag: dateFormated,
           emprestimo_id: item.emprestimo_id,
           status_descricao: handleStatus(item.emprestimo_status_id),
+          qtd_parcelas: item.qtd_parcelas,
         };
-        sum += item.installment_value;
+        sum += item.max_loan_amount;
         setBodyTableAux((current) => [...current, aux]);
         setBodyTable((current) => [...current, aux]);
       });
@@ -251,7 +250,11 @@ const Requests = (): JSX.Element => {
 
   useEffect(() => {
     setBodyTable(
-      bodyTable.filter((item) => item.status_descricao !== "Concluído")
+      bodyTable.filter(
+        (item) =>
+          item.status_descricao !== "Concluído" &&
+          item.status_descricao !== "Aprovado"
+      )
     );
   }, [total]);
 
@@ -268,10 +271,12 @@ const Requests = (): JSX.Element => {
           <>
             <Container>
               <TitleStyled>
-                <SubTitle>Mostrando perído:</SubTitle>
-                <DateTitle>{beforeDate}</DateTitle>
+                <SubTitle>Mostrando período:</SubTitle>
+                <DateTitle>{convertDate(beforeDate)}</DateTitle>
                 <SubTitle>a</SubTitle>
-                <DateTitle>{afterDate}</DateTitle>
+                <DateTitle style={{ marginLeft: "13px" }}>
+                  {convertDate(afterDate)}
+                </DateTitle>
                 <InputStyled>
                   <InputSearch
                     placeholder="Buscar por nome"
@@ -418,12 +423,12 @@ const Requests = (): JSX.Element => {
               </ShowTickets>
               <CircularStyled>
                 <AlignContainer>
-                  <p>Aprovados</p>
-                  <CircularProgress percentage={aproved} />
+                  <p>Pendentes</p>
+                  <CircularProgress percentage={pending} />
                 </AlignContainer>
                 <AlignContainer>
-                  <p>Não autorizados</p>
-                  <CircularProgress percentage={pending} />
+                  <p>Reprovados</p>
+                  <CircularProgress percentage={reproved} />
                 </AlignContainer>
                 <AlignContainer>
                   <p>Total</p>
@@ -464,6 +469,7 @@ export const FlexContainer = styled.div`
 export const TitleStyled = styled.div`
   display: flex;
   margin-top: 44px;
+  max-width: 1400px;
 `;
 
 const SubTitle = styled.p`
@@ -484,6 +490,9 @@ const DateTitle = styled.p`
   line-height: 120%;
   color: ${(props) => props.theme.colors.dateTitle};
   margin-right: 35px;
+  &:last-child {
+    margin-right: 0;
+  }
 `;
 
 const InputSearch = styled.input`
@@ -790,7 +799,7 @@ const StyledLoading = styled.div`
 const Table = styled.table`
   margin-top: 22px;
   margin-bottom: 59px;
-  max-width: 1301px;
+  max-width: 1401px;
   th {
     font-family: "Poppins";
     font-style: normal;

@@ -13,6 +13,8 @@ interface Props {
   body: Loan;
   index: number;
   setBodyTable: any;
+  openMessageUpload: number;
+  setOpenMessageUpload: any;
 }
 
 interface Upload {
@@ -20,10 +22,15 @@ interface Upload {
   image: string;
 }
 
-const TrDetailsClient = ({ body, index, setBodyTable }: Props): JSX.Element => {
+const TrDetailsClient = ({
+  body,
+  index,
+  setBodyTable,
+  openMessageUpload,
+  setOpenMessageUpload,
+}: Props): JSX.Element => {
   const hiddenFileInput = useRef<HTMLInputElement>(null);
   const [upload, setUpload] = useState<Upload[]>([]);
-  const [openMessageUpload, setOpenMessageUpload] = useState<number>();
   const [image, setImage] = useState<string>("");
   const [modalImage, setModalImage] = useState<boolean>(false);
 
@@ -49,7 +56,12 @@ const TrDetailsClient = ({ body, index, setBodyTable }: Props): JSX.Element => {
                   image: e.target?.result?.toString() ?? "",
                 },
               ]);
-              uploadImage(body.emprestimo_id, body.numero_parcela, aux, e.target?.result?.toString());
+              uploadImage(
+                body.emprestimo_id,
+                body.numero_parcela,
+                aux,
+                e.target?.result?.toString()
+              );
               toast.success("Upload realizado!");
             }
           };

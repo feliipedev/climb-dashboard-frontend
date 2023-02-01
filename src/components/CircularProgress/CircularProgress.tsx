@@ -56,7 +56,7 @@ const CircularProgress = ({ percentage }: Props): JSX.Element => {
             dy="10px"
             textAnchor="middle"
           >
-            {`${percentage}%`}
+            {`${parseInt(percentage.toString())}%`}
           </text>
         </svg>
       ) : (
@@ -108,7 +108,7 @@ const CircularProgress = ({ percentage }: Props): JSX.Element => {
             dy="10px"
             textAnchor="middle"
           >
-            {`${percentage}%`}
+            {`${parseInt(percentage.toString())}%`}
           </text>
         </svg>
       )}

@@ -64,7 +64,7 @@ const SideDish = (): JSX.Element => {
   const navigate = useNavigate();
   const [openModalFilter, setOpenModalFilter] = useState<boolean>(false);
   const [select, setSelect] = useState<
-    "Pendente" | "Efetuado" | "Order" | "Clear"
+    "Pendente" | "Efetuado" | "Em atraso" | "Order" | "Clear"
   >();
   const [pg, setPg] = useState<number>(0);
   const [pp, setPp] = useState<number>(8);
@@ -116,6 +116,13 @@ const SideDish = (): JSX.Element => {
       setOpenModalFilter(false);
     }
 
+    if (select === "Em atraso") {
+      setBodyTable(
+        bodyTableAux.filter((item) => item.status_descricao === "Em atraso")
+      );
+      setOpenModalFilter(false);
+    }
+
     if (select === "Clear") {
       setDateInitial(undefined);
       setDateEnd(undefined);
@@ -132,16 +139,22 @@ const SideDish = (): JSX.Element => {
       var mesTwo = String(dateEnd.getMonth() + 1).padStart(2, "0");
       var anoTwo = dateEnd.getFullYear();
       const dataTwo = diaTwo + "/" + mesTwo + "/" + anoTwo;
-      setBodyTable(
-        bodyTable.filter((item) => {
-          let date1 = moment(item.date, "DD/MM/YYYY").format("YYYYMMDD");
-          let date2 = moment(dataI, "DD/MM/YYYY").format("YYYYMMDD");
-          let date3 = moment(dataTwo, "DD/MM/YYYY").format("YYYYMMDD");
-          return moment(date2).isBefore(date1) && moment(date3).isAfter(date1);
-        })
-      );
+      setBodyTable(filterArrayByDate(bodyTable, dataI, dataTwo));
       setOpenModalFilter(false);
     }
+  };
+
+  const filterArrayByDate = (
+    array: Loan[],
+    startDate: string,
+    endDate: string
+  ) => {
+    var start = new Date(startDate.split("/").reverse().join("-"));
+    var end = new Date(endDate.split("/").reverse().join("-"));
+    return array.filter(function (item) {
+      var itemDate = new Date(item.date.split("/").reverse().join("-"));
+      return itemDate >= start && itemDate <= end;
+    });
   };
 
   useEffect(() => {
@@ -320,6 +333,12 @@ const SideDish = (): JSX.Element => {
                             onChange={() => setSelect("Pendente")}
                           />
                         </FlexContainer>
+                        <FormControlLabel
+                          value="atraso"
+                          control={<Radio />}
+                          label="Em atraso"
+                          onChange={() => setSelect("Em atraso")}
+                        />
                       </RadioGroup>
                     </FormControl>{" "}
                     <SelectDate>

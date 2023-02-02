@@ -31,7 +31,6 @@ const ModalDetailsClient = ({ isOpen, onClose, body }: Props): JSX.Element => {
   const [modalImage, setModalImage] = useState<boolean>(false);
   const [openMessageUpload, setOpenMessageUpload] = useState<number>();
 
-
   useEffect(() => {
     setLoading(true);
     if (body) {
@@ -81,6 +80,11 @@ const ModalDetailsClient = ({ isOpen, onClose, body }: Props): JSX.Element => {
   const endIndex = startIndex + pp;
   const current: Loan[] = bodyTable?.slice(startIndex, endIndex);
 
+  const handleCloseModal = () => {
+    onClose(false);
+    window.location.reload();
+  };
+
   return (
     <ScreenContainer isVisible={isOpen}>
       <Container>
@@ -91,7 +95,7 @@ const ModalDetailsClient = ({ isOpen, onClose, body }: Props): JSX.Element => {
               <Name>{body ? body.name : ""}</Name>
               <Email>{body ? body.email : ""}</Email>
             </CollumnContainer>
-            <StyledCloseFilter onClick={() => onClose(false)}>
+            <StyledCloseFilter onClick={() => handleCloseModal()}>
               <img src={CloseFilter} alt="fechar filtro" />
             </StyledCloseFilter>
           </HeaderModal>

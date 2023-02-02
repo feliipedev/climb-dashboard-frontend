@@ -107,16 +107,22 @@ const Requests = (): JSX.Element => {
       var mesTwo = String(dateEnd.getMonth() + 1).padStart(2, "0");
       var anoTwo = dateEnd.getFullYear();
       const dataTwo = diaTwo + "/" + mesTwo + "/" + anoTwo;
-      setBodyTable(
-        bodyTableAux.filter((item) => {
-          let date1 = moment(item.datPag, "DD/MM/YYYY").format("YYYYMMDD");
-          let date2 = moment(dataI, "DD/MM/YYYY").format("YYYYMMDD");
-          let date3 = moment(dataTwo, "DD/MM/YYYY").format("YYYYMMDD");
-          return moment(date2).isBefore(date1) && moment(date3).isAfter(date1);
-        })
-      );
+      setBodyTable(filterArrayByDate(bodyTable, dataI, dataTwo));
       setOpenModalFilter(false);
     }
+  };
+
+  const filterArrayByDate = (
+    array: Loan[],
+    startDate: string,
+    endDate: string
+  ) => {
+    var start = new Date(startDate.split("/").reverse().join("-"));
+    var end = new Date(endDate.split("/").reverse().join("-"));
+    return array.filter(function (item) {
+      var itemDate = new Date(item.datPag.split("/").reverse().join("-"));
+      return itemDate >= start && itemDate <= end;
+    });
   };
 
   useEffect(() => {
@@ -336,7 +342,7 @@ const Requests = (): JSX.Element => {
                             />
                           </FlexContainer>
                           <FormControlLabel
-                            value="male"
+                            value="reproved"
                             control={<Radio />}
                             label="Reprovado"
                             onChange={() => setSelect("Reprovado")}

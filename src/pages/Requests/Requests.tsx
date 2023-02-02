@@ -62,6 +62,7 @@ const Requests = (): JSX.Element => {
   const [reproved, setReproved] = useState<number>(0);
   const [pending, setPending] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
+  const [disabledDateEnd, setDisabledDateEnd] = useState<boolean>(false);
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -174,9 +175,14 @@ const Requests = (): JSX.Element => {
 
   useEffect(() => {
     if (bodyTable.length > 0 && total !== 0) {
-      comparar_datas(bodyTableAux);
-      setBeforeDate(bodyTableAux[bodyTableAux.length - 1].datPag);
-      setAfterDate(bodyTableAux[0].datPag);
+      if (bodyTable[0].datPag === bodyTable[bodyTable.length - 1].datPag) {
+        setDisabledDateEnd(true);
+      }else{
+        setDisabledDateEnd(false);
+      }
+      comparar_datas(bodyTable);
+      setBeforeDate(bodyTable[bodyTable.length - 1].datPag);
+      setAfterDate(bodyTable[0].datPag);
       handleReproved();
       handlePending();
     }
@@ -279,10 +285,14 @@ const Requests = (): JSX.Element => {
               <TitleStyled>
                 <SubTitle>Mostrando período:</SubTitle>
                 <DateTitle>{convertDate(beforeDate)}</DateTitle>
-                <SubTitle>a</SubTitle>
-                <DateTitle style={{ marginLeft: "13px" }}>
-                  {convertDate(afterDate)}
-                </DateTitle>
+                {!disabledDateEnd && (
+                  <>
+                    <SubTitle>a</SubTitle>
+                    <DateTitle style={{ marginLeft: "13px" }}>
+                      {convertDate(afterDate)}
+                    </DateTitle>
+                  </>
+                )}
                 <InputStyled>
                   <InputSearch
                     placeholder="Buscar por nome"

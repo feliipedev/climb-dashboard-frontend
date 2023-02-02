@@ -90,6 +90,7 @@ const SideDish = (): JSX.Element => {
   const [pending, setPending] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
   const [bodyAux, setBodyAux] = useState<Loan>();
+  const [disabledDateEnd, setDisabledDateEnd] = useState<boolean>(false);
 
   const handleFilter = () => {
     if (select === "Order") {
@@ -179,9 +180,14 @@ const SideDish = (): JSX.Element => {
 
   useEffect(() => {
     if (bodyTable.length > 0) {
-      comparar_datas(bodyTableAux);
-      setBeforeDate(bodyTableAux[0].date);
-      setAfterDate(bodyTableAux[bodyTableAux.length - 1].date);
+      comparar_datas(bodyTable);
+      if (bodyTable[0].date === bodyTable[bodyTable.length - 1].date) {
+        setDisabledDateEnd(true);
+      }else{
+        setDisabledDateEnd(false);
+      }
+      setBeforeDate(bodyTable[0].date);
+      setAfterDate(bodyTable[bodyTable.length - 1].date);
       handleAproved();
       handlePending();
     }
@@ -269,11 +275,17 @@ const SideDish = (): JSX.Element => {
           <Container>
             <TitleStyled>
               <SubTitle>Mostrando período:</SubTitle>
-              <DateTitle>{convertDate(afterDate)}</DateTitle>
-              <SubTitle>a</SubTitle>
-              <DateTitle style={{ marginLeft: "13px" }}>
-                {convertDate(beforeDate)}
+              <DateTitle disabledDateEnd={disabledDateEnd}>
+                {convertDate(afterDate)}
               </DateTitle>
+              {!disabledDateEnd && (
+                <>
+                  <SubTitle>a</SubTitle>
+                  <DateTitle style={{ marginLeft: "13px" }}>
+                    {convertDate(beforeDate)}
+                  </DateTitle>
+                </>
+              )}
               <InputStyled>
                 <InputSearch
                   placeholder="Buscar por nome"
@@ -498,7 +510,7 @@ const SubTitle = styled.p`
   }
 `;
 
-const DateTitle = styled.span`
+const DateTitle = styled.span<{ disabledDateEnd?: boolean }>`
   font-family: "Poppins";
   font-style: normal;
   font-weight: 500;
@@ -506,6 +518,7 @@ const DateTitle = styled.span`
   line-height: 120%;
   color: ${(props) => props.theme.colors.dateTitle};
   width: 35%;
+  margin-left: ${(props) => props.disabledDateEnd && "-120px"};
 `;
 
 const InputSearch = styled.input`
